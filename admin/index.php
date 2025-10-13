@@ -34,7 +34,10 @@ if ($userType !== 'admin') {
       .sidebar{width:260px;background:linear-gradient(180deg,#0e1117 0%,#0b0e13 100%);position:fixed;inset:0 auto 0 0;box-shadow:0 0 0 1px #1f2330}
       .sidebar .nav-link{color:var(--muted)}
       .sidebar .nav-link.active,.sidebar .nav-link:hover{color:var(--text);background:#1a1f2b;border-radius:10px}
-      .content{margin-left:260px;min-height:100vh}
+      .content{margin-left:0;min-height:100vh}
+      @media (min-width: 992px) {
+        .content{margin-left:260px;}
+      }
       .topbar{background:#0b0e13;box-shadow:0 1px 0 #1f2330}
       .card{background:var(--panel);border:1px solid #1f2330;border-radius:16px}
       .metric{display:flex;gap:12px;align-items:center}
@@ -45,10 +48,15 @@ if ($userType !== 'admin') {
       .table thead th{color:var(--muted)}
       .btn-gradient{background:linear-gradient(135deg,#ff7a18 0%,#af002d 74%);border:none;color:#fff}
       .lang-select{background:#0f131b;color:var(--text);border:1px solid #273044}
+      /* Mobile menu styles */
+      #mobile-menu { background: linear-gradient(180deg, #0e1117 0%, #0b0e13 100%); box-shadow: 0 0 0 1px #1f2330; transform: translateX(-100%); transition: transform 0.3s ease-in-out; }
+      #mobile-menu.show { transform: translateX(0); }
+      #mobile-menu .nav-link { color: var(--muted); }
+      #mobile-menu .nav-link.active, #mobile-menu .nav-link:hover { color: var(--text); background: #1a1f2b; border-radius: 10px; }
     </style>
   </head>
   <body>
-    <div class="sidebar d-flex flex-column p-3">
+    <div class="sidebar d-flex flex-column p-3 d-none d-lg-flex">
       <h5 class="mb-4 d-flex align-items-center gap-2"><i class="bi bi-fire text-warning"></i> Masu Admin</h5>
       <nav class="nav nav-pills flex-column gap-1">
         <a class="nav-link active" href="#" data-page="dashboard"><i class="bi bi-speedometer2 me-2"></i><span data-i18n="dashboard">Dashboard</span></a>
@@ -65,7 +73,7 @@ if ($userType !== 'admin') {
     <div class="content">
       <div class="topbar d-flex align-items-center justify-content-between px-3 px-lg-4 py-3">
         <div class="d-flex align-items-center gap-2">
-          <i class="bi bi-list d-lg-none"></i>
+          <i class="bi bi-list d-lg-none" id="mobile-menu-toggle" style="cursor: pointer; font-size: 1.5rem;"></i>
           <div class="input-group input-group-sm" style="width:320px;">
             <span class="input-group-text bg-transparent border-secondary-subtle text-secondary"><i class="bi bi-search"></i></span>
             <input id="search" type="text" class="form-control bg-transparent border-secondary-subtle text-light" placeholder="Search…" />
@@ -79,6 +87,27 @@ if ($userType !== 'admin') {
           <a class="btn btn-sm btn-outline-light" href="/Masu%20Ko%20Jhol%28full%29/includes/logout.php"><i class="bi bi-box-arrow-right me-1"></i><span data-i18n="logout">Logout</span></a>
         </div>
       </div>
+      
+      <!-- Mobile Menu -->
+      <div id="mobile-menu" class="position-fixed top-0 start-0 w-75 h-100 d-lg-none" style="z-index: 1000;">
+        <div class="d-flex flex-column h-100 p-3">
+          <div class="d-flex justify-content-between align-items-center mb-4 mt-2">
+            <h5 class="mb-0 d-flex align-items-center gap-2"><i class="bi bi-fire text-warning"></i> Masu Admin</h5>
+            <i class="bi bi-x-lg" id="mobile-menu-close" style="cursor: pointer; font-size: 1.5rem;"></i>
+          </div>
+          <nav class="nav nav-pills flex-column gap-1 flex-grow-1">
+            <a class="nav-link active" href="#" data-page="dashboard"><i class="bi bi-speedometer2 me-2"></i><span data-i18n="dashboard">Dashboard</span></a>
+            <a class="nav-link" href="#" data-page="orders"><i class="bi bi-bag-check me-2"></i><span data-i18n="orders">Orders</span></a>
+            <a class="nav-link" href="#" data-page="menu"><i class="bi bi-card-checklist me-2"></i><span data-i18n="menu">Menu</span></a>
+            <a class="nav-link" href="#" data-page="customers"><i class="bi bi-people me-2"></i><span data-i18n="customers">Customers</span></a>
+            <a class="nav-link" href="#" data-page="bookings"><i class="bi bi-calendar-check me-2"></i><span data-i18n="bookings">Table Bookings</span></a>
+            <a class="nav-link" href="#" data-page="analytics"><i class="bi bi-graph-up-arrow me-2"></i><span data-i18n="analytics">Analytics</span></a>
+            <a class="nav-link" href="#" data-page="settings"><i class="bi bi-gear me-2"></i><span data-i18n="settings">Settings</span></a>
+          </nav>
+          <div class="mt-auto small text-muted pt-3 border-top border-secondary">© <span id="mobile-copyright-year"></span> Masu Ko Jhol</div>
+        </div>
+      </div>
+      <!-- Mobile Menu End -->
 
       <main class="p-3 p-lg-4">
         <div id="dashboard" class="page">
@@ -336,9 +365,8 @@ if ($userType !== 'admin') {
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
     <script>
       document.getElementById('y').textContent = new Date().getFullYear();
-      const pages = document.querySelectorAll('.page');
       document.querySelectorAll('.sidebar .nav-link').forEach(l=>{
-        l.addEventListener('click',e=>{e.preventDefault();document.querySelector('.sidebar .nav-link.active')?.classList.remove('active');l.classList.add('active');pages.forEach(p=>p.classList.add('d-none'));document.getElementById(l.dataset.page).classList.remove('d-none');});
+        l.addEventListener('click',e=>{e.preventDefault();document.querySelector('.sidebar .nav-link.active')?.classList.remove('active');l.classList.add('active');const pages = document.querySelectorAll('.page');pages.forEach(p=>p.classList.add('d-none'));document.getElementById(l.dataset.page).classList.remove('d-none');});
       });
 
       const i18n = {
@@ -450,6 +478,69 @@ if ($userType !== 'admin') {
       // Load snapshots immediately and then every 5 seconds
       loadSnapshots(); 
       setInterval(loadSnapshots, 5000);
+      
+      // Mobile menu functionality
+      const mobileMenu = document.getElementById('mobile-menu');
+      const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+      const mobileMenuClose = document.getElementById('mobile-menu-close');
+      
+      // Set current year for copyright
+      document.getElementById('mobile-copyright-year').textContent = new Date().getFullYear();
+      
+      // Toggle mobile menu
+      if (mobileMenuToggle && mobileMenu) {
+        mobileMenuToggle.addEventListener('click', () => {
+          mobileMenu.classList.add('show');
+        });
+      }
+      
+      // Close mobile menu
+      if (mobileMenuClose && mobileMenu) {
+        mobileMenuClose.addEventListener('click', () => {
+          mobileMenu.classList.remove('show');
+        });
+      }
+      
+      // Close mobile menu when clicking outside
+      if (mobileMenu) {
+        mobileMenu.addEventListener('click', (e) => {
+          if (e.target === mobileMenu) {
+            mobileMenu.classList.remove('show');
+          }
+        });
+      }
+      
+      // Mobile menu navigation
+      document.querySelectorAll('#mobile-menu .nav-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          
+          // Remove active class from all links in both menus
+          document.querySelectorAll('.sidebar .nav-link, #mobile-menu .nav-link').forEach(l => {
+            l.classList.remove('active');
+          });
+          
+          // Add active class to clicked link in both menus
+          this.classList.add('active');
+          const page = this.dataset.page;
+          
+          // Also update the desktop menu to match
+          const desktopLink = document.querySelector(`.sidebar .nav-link[data-page="${page}"]`);
+          if (desktopLink) {
+            desktopLink.classList.add('active');
+          }
+          
+          // Show the selected page
+          const pages = document.querySelectorAll('.page');
+          pages.forEach(p => p.classList.add('d-none'));
+          document.getElementById(page).classList.remove('d-none');
+          
+          // Close mobile menu
+          if (mobileMenu) {
+            mobileMenu.classList.remove('show');
+          }
+        });
+      });
     </script>
   </body>
 </html>

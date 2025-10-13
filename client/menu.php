@@ -175,29 +175,29 @@ if ($catResult) {
 
       <div class="d-flex justify-content-around py-3 align-items-center d-lg-none">
         <div id="hamburger">
-          <i class="fa fa-2x fa-bars me-3"></i>
+          <i class="fa fa-2x fa-bars me-3 text-dark"></i>
         </div>
         <div class="mobile-nav-logo">
           <div class="logo">
             <a href="./index.php">
-              <i class="fa fa-utensils me-3"></i>
-              <h1 class="mb-0">Masu Ko Jhol</h1>
+              <i class="fa fa-utensils me-3 text-dark"></i>
+              <h1 class="mb-0 text-dark">Masu Ko Jhol</h1>
             </a>
           </div>
         </div>
         <div class="mobile-nav-icons">
           <div class="icons">
             <a class="text-decoration-none" id="searchBtnMobile" href="#">
-              <i class="fa fa-search me-3"></i>
+              <i class="fa fa-search me-3 text-dark"></i>
             </a>
             <a class="text-decoration-none" id="shoppingbuttonMobile" href="#">
-              <i class="fa fa-shopping-bag me-3"></i>
+              <i class="fa fa-shopping-bag me-3 text-dark"></i>
             </a>
           </div>
         </div>
         <div class="position-fixed w-75 bg-white h-100 top-0 start-0" id="mobile-menu">
           <div id="hamburger-cross" class="d-flex justify-content-end align-items-center py-2">
-            <i class="fa fa-2x fa-plus me-3"></i>
+            <i class="fa fa-2x fa-times me-3"></i>
           </div>
           <div class="menus">
             <ul class="d-flex flex-column ps-2 mb-0 mt-4">

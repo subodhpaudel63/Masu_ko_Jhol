@@ -748,6 +748,7 @@ header.scrolled {
 #hamburger-cross i {
   cursor: pointer;
   transform: rotate(45deg);
+  color: #343a40; /* Dark color for better visibility on white background */
 }
 
 .menus > ul > li::after {
@@ -756,7 +757,7 @@ header.scrolled {
 #mobile-menu {
   transition: 0.6s all ease-in-out;
   transform: translateX(-100%);
-  z-index: 10;
+  z-index: 10000;
   background-color: white;
   display: block !important;
   overflow-y: auto;
@@ -764,10 +765,20 @@ header.scrolled {
   left: 0;
   top: 0;
   width: 75%;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  visibility: hidden;
 }
 
 #mobile-menu.show {
   transform: translateX(0%);
+  visibility: visible;
+}
+
+/* Ensure mobile menu is visible on all pages */
+@media (max-width: 991.98px) {
+  #mobile-menu {
+    display: block !important;
+  }
 }
 
 .mobile-nav-logo > .logo > a > h1,

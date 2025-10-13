@@ -169,7 +169,7 @@
             id="hamburger-cross"
             class="d-flex justify-content-end align-items-center py-2"
           >
-            <i class="fa fa-2x fa-plus me-3"></i>
+            <i class="fa fa-2x fa-times me-3"></i>
           </div>
           <div class="menus">
             <ul class="d-flex flex-column ps-2 mb-0 mt-4">

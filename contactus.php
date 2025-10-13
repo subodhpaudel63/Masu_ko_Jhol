@@ -1,6 +1,8 @@
 <?php
-session_start();
-include_once __DIR__ . '/includes/auth_check.php';
+ob_start();
+
+require_once __DIR__ . '/includes/db.php';
+require_once __DIR__ . '/includes/auth_check.php';
 
 // Check if user is logged in
 $user = getUserFromCookie();
@@ -29,6 +31,7 @@ $user = getUserFromCookie();
       crossorigin="anonymous"
     />
     <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
+    <?php require_once __DIR__ . '/config/bootstrap.php'; ?>
     <link rel="stylesheet" href="./assets/css/style.css" />
     
     <style>
@@ -200,14 +203,14 @@ $user = getUserFromCookie();
             <a class="text-decoration-none" id="searchBtnMobile" href="#">
               <i class="fa fa-search me-3 text-dark"></i>
             </a>
-            <a class="text-decoration-none" id="shoppingbuttonMobile" href="#">
+            <a class="text-decoration-none" id="shoppingbuttonMobile" href="">
               <i class="fa fa-shopping-bag me-3 text-dark"></i>
             </a>
           </div>
         </div>
         <div class="position-fixed w-75 bg-white h-100 top-0 start-0" id="mobile-menu">
           <div id="hamburger-cross" class="d-flex justify-content-end align-items-center py-2">
-            <i class="fa fa-2x fa-plus me-3 "></i>
+            <i class="fa fa-2x fa-times me-3"></i>
           </div>
           <div class="menus">
             <ul class="d-flex flex-column ps-2 mb-0 mt-4">

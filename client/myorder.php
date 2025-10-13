@@ -208,7 +208,7 @@ if (isset($_COOKIE['user_img'])) {
         </div>
         <div class="position-fixed w-75 bg-white h-100 top-0 start-0" id="mobile-menu">
           <div id="hamburger-cross" class="d-flex justify-content-end align-items-center py-2">
-            <i class="fa fa-2x fa-plus me-3"></i>
+            <i class="fa fa-2x fa-times me-3"></i>
           </div>
           <div class="menus">
             <ul class="d-flex flex-column ps-2 mb-0 mt-4">

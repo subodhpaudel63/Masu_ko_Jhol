@@ -172,7 +172,81 @@ if (isset($_COOKIE['user_img'])) {
         </div>
       </div>
 
-     
+      <div
+        class="d-flex justify-content-around py-3 align-items-center d-lg-none"
+      >
+        <div id="hamburger">
+          <i class="fa fa-2x fa-bars me-3 text-white"></i>
+        </div>
+        <div class="mobile-nav-logo">
+          <div class="logo">
+            <a href="./index.php">
+              <i class="fa fa-utensils me-3 text-white"></i>
+              <h1 class="mb-0 text-white">Masu Ko Jhol</h1>
+            </a>
+          </div>
+        </div>
+        <div class="mobile-nav-icons">
+          <div class="icons">
+            <a class="text-decoration-none" id="searchBtnMobile" href="#">
+              <i class="fa fa-search me-3 text-white"></i>
+            </a>
+            <a class="text-decoration-none" id="shoppingbuttonMobile" href="./cart.php">
+              <i class="fa fa-shopping-bag me-3 text-white"></i>
+            </a>
+          </div>
+        </div>
+        <div
+          class="position-fixed w-75 bg-white h-100 top-0 start-0"
+          id="mobile-menu"
+        >
+          <div
+            id="hamburger-cross"
+            class="d-flex justify-content-end align-items-center py-2"
+          >
+            <i class="fa fa-2x fa-times me-3"></i>
+          </div>
+          <div class="menus">
+            <ul class="d-flex flex-column ps-2 mb-0 mt-4">
+              <li class="list-unstyled py-2">
+                <a
+                  class="text-dark text-decoration-none text-uppercase p-4"
+                  href="./index.php"
+                  >Home</a
+                >
+              </li>
+              <li class="list-unstyled py-2">
+                <a
+                  class="text-dark text-decoration-none text-uppercase p-4"
+                  href="./aboutus.php"
+                  >About</a
+                >
+              </li>
+              <li class="list-unstyled py-2">
+                <a
+                  class="text-dark text-decoration-none text-uppercase p-4"
+                  href="./menu.php"
+                  >Menu</a
+                >
+              </li>
+              <li class="list-unstyled py-2">
+                <a
+                  class="text-dark text-decoration-none text-uppercase p-4"
+                  href="./myorder.php"
+                  >My Order</a
+                >
+              </li>
+              <li class="list-unstyled py-2">
+                <a
+                  class="text-dark text-decoration-none text-uppercase p-4"
+                  href="./contactus.php"
+                  >Contact</a
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
     </header>
 
     
