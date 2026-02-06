@@ -1196,6 +1196,8 @@ MEDIA QUERY PHONE
   padding: 0.25rem 0.5rem;
   border-radius: 4px;
   font-weight: 600;
+}
+
 .status-container {
   display: flex;
   flex-direction: column;
