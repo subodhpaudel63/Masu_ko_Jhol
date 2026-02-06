@@ -161,8 +161,8 @@ if (isset($_COOKIE['user_img'])) {
               <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileMenu">
                 <li><h6 class="dropdown-header"><?php echo htmlspecialchars($currentUser['email'] ?? ''); ?></h6></li>
                 <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="./update_password.php"><i class="bi bi-key me-2"></i>Update Password</a></li>
-                <li><a class="dropdown-item" href="<?php echo url('./includes/logout.php'); ?>"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+                <li><a class="dropdown-item" href="./update_password.php"><i class="fa fa-key me-2"></i>Update Password</a></li>
+                <li><a class="dropdown-item" href="<?php echo url('./includes/logout.php'); ?>"><i class="fa fa-right-from-bracket me-2"></i>Logout</a></li>
               </ul>
             </div>
           <?php endif; ?>
@@ -281,8 +281,7 @@ if (isset($_COOKIE['user_img'])) {
           </div>
         </div>
       </section>
-
-      <section class="about-story mt-5 pt-5">
+<section class="about-story mt-5 pt-5">
         <div class="container">
           <div class="row" data-aos="fade-right">
             <h2 class="text-center display-6 fw-bold">
@@ -301,7 +300,7 @@ if (isset($_COOKIE['user_img'])) {
                   <div data-aos="fade-right" class="image-box col-lg-2 px-0">
                     <img
                       class="w-100"
-                      src="<?php echo asset('images/timeline-1.jpg'); ?>"
+                      src="./assets/images/timeline-1.jpg"
                       alt=""
                     />
                     <div class="image-box-inner"><p class="mb-0">2000</p></div>
@@ -309,7 +308,7 @@ if (isset($_COOKIE['user_img'])) {
                   <div data-aos="fade-down" class="image-box col-lg-2 px-0">
                     <img
                       class="w-100"
-                      src="<?php echo asset('images/timeline-2.jpg'); ?>"
+                      src="./assets/images/timeline-2.jpg"
                       alt=""
                     />
                     <div class="image-box-inner"><p class="mb-0">2002</p></div>
@@ -318,7 +317,7 @@ if (isset($_COOKIE['user_img'])) {
                   <div data-aos="fade-up" class="image-box col-lg-2 px-0">
                     <img
                       class="w-100"
-                      src="<?php echo asset('images/timeline-3.jpg'); ?>"
+                      src="./assets/images/timeline-3.jpg"
                       alt=""
                     />
                     <div class="image-box-inner"><p class="mb-0">2004</p></div>
@@ -326,7 +325,7 @@ if (isset($_COOKIE['user_img'])) {
                   <div data-aos="fade-down" class="image-box col-lg-2 px-0">
                     <img
                       class="w-100"
-                      src="<?php echo asset('images/timeline-4.jpg'); ?>"
+                      src="./assets/images/timeline-4.jpg"
                       alt=""
                     />
                     <div class="image-box-inner"><p class="mb-0">2008</p></div>
@@ -335,7 +334,7 @@ if (isset($_COOKIE['user_img'])) {
                   <div data-aos="fade-up" class="image-box col-lg-2 px-0">
                     <img
                       class="w-100"
-                      src="<?php echo asset('images/timeline-5.jpg'); ?>"
+                      src="./assets/images/timeline-5.jpg"
                       alt=""
                     />
                     <div class="image-box-inner"><p class="mb-0">2012</p></div>
@@ -344,7 +343,7 @@ if (isset($_COOKIE['user_img'])) {
                   <div data-aos="fade-left" class="image-box col-lg-2 px-0">
                     <img
                       class="w-100"
-                      src="<?php echo asset('images/timeline-6.jpg'); ?>"
+                      src="./assets/images/timeline-6.jpg"
                       alt=""
                     />
                     <div class="image-box-inner"><p class="mb-0">2016</p></div>
@@ -352,64 +351,65 @@ if (isset($_COOKIE['user_img'])) {
                   </div>
                 </div>
               </div>
-                <div class="story-content py-5 my-4" data-aos="fade-right">
-  <div>
-    <p class="text-center"><strong>16.10.2000:</strong> The Humble Beginning</p>
-    <p class="text-center">
-      Masu Ko Jhol started as a small family kitchen with a dream to serve authentic Nepali flavors. From day one, our mission was to create a space where food brings people together and memories are made.
-    </p>
-    <p class="text-center">
-      Every dish was crafted with passion, turning simple ingredients into a culinary experience that celebrated the heart of Nepali tradition.
-    </p>
-  </div>
-  <div>
-    <p class="text-center"><strong>2002:</strong> Growing Popularity</p>
-    <p class="text-center">
-      By 2002, word had spread about Masu Ko Jhol’s signature flavors and warm hospitality. Guests from all walks of life came to savor the rich taste and authentic recipes that made our eatery stand out.
-    </p>
-    <p class="text-center">
-      Our small kitchen began gaining recognition for quality and consistency, laying the foundation for our legacy.
-    </p>
-  </div>
-  <div>
-    <p class="text-center"><strong>2004:</strong> Expanding Horizons</p>
-    <p class="text-center">
-      With growing demand, we expanded our kitchen and menu, introducing new dishes while keeping our roots intact. Each plate served told the story of Nepali culture, craftsmanship, and the love we pour into every meal.
-    </p>
-    <p class="text-center">
-      Masu Ko Jhol became more than a restaurant—it became a destination for those seeking authentic flavors and heartfelt dining.
-    </p>
-  </div>
-  <div>
-    <p class="text-center"><strong>2008:</strong> A Culinary Landmark</p>
-    <p class="text-center">
-      By 2008, Masu Ko Jhol had cemented its reputation as a local culinary landmark. Food enthusiasts and critics alike praised our dedication to authenticity, consistency, and exemplary service.
-    </p>
-    <p class="text-center">
-      Our restaurant became a beloved gathering place, known for bringing people together through the joy of great food.
-    </p>
-  </div>
-  <div>
-    <p class="text-center"><strong>2012:</strong> Honoring Tradition, Embracing Growth</p>
-    <p class="text-center">
-      In 2012, we modernized aspects of our restaurant while honoring our traditional roots. This perfect blend of innovation and heritage allowed Masu Ko Jhol to reach new audiences while continuing to serve our loyal patrons.
-    </p>
-    <p class="text-center">
-      Every dish continued to tell a story of culture, dedication, and culinary excellence.
-    </p>
-  </div>
-  <div>
-    <p class="text-center"><strong>2016:</strong> A Legacy of Flavor</p>
-    <p class="text-center">
-      Today, Masu Ko Jhol stands as a symbol of passion, perseverance, and the timeless allure of Nepali cuisine. From a modest family kitchen to a celebrated culinary destination, our journey is honored in every dish we serve.
-    </p>
-    <p class="text-center">
-      We continue to uphold our founders’ vision: bringing people together through food, flavor, and unforgettable dining experiences.
-    </p>
-  </div>
-</div>
-
-           
+              <div class="story-content py-5 my-4" data-aos="fade-right">
+                <div>
+                  <p class="text-center"><strong>16.10.2000:</strong> Humble Beginnings</p>
+                  <p class="text-center">
+                    Masu Ko Jhol started as a small family-run restaurant in the heart of the city. With just a handful of tables and a passion for authentic Nepali flavors, we served our first customers with traditional recipes passed down through generations.
+                  </p>
+                  <p class="text-center">
+                    Our founder, Subodh Paudel, had a vision to bring the authentic taste of Nepali cuisine to food lovers everywhere, starting with his signature spicy meat curry that would become our namesake dish.
+                  </p>
+                </div>
+                <div>
+                  <p class="text-center"><strong>05.03.2002:</strong> First Expansion</p>
+                  <p class="text-center">
+                    Due to overwhelming customer response, we expanded our seating capacity and introduced our now-famous thukpa and momos to the menu. The restaurant became a local favorite among food enthusiasts.
+                  </p>
+                  <p class="text-center">
+                    We also began sourcing ingredients from local farms to ensure the highest quality and freshness in all our dishes, establishing relationships that continue to this day.
+                  </p>
+                </div>
+                <div>
+                  <p class="text-center"><strong>18.07.2004:</strong> Recognition & Awards</p>
+                  <p class="text-center">
+                    Masu Ko Jhol received its first culinary award for "Best Ethnic Cuisine" from the City Food Council. This recognition motivated us to further refine our recipes and service quality.
+                  </p>
+                  <p class="text-center">
+                    We introduced our signature spice blends and began training our chefs in traditional cooking techniques to maintain consistency across all our locations.
+                  </p>
+                </div>
+                <div>
+                  <p class="text-center"><strong>22.11.2008:</strong> Second Location</p>
+                  <p class="text-center">
+                    Growing demand led us to open our second restaurant in the suburban area, bringing our authentic flavors to a new community. Both locations maintained the same quality and hospitality.
+                  </p>
+                  <p class="text-center">
+                    We also launched our catering service, providing Nepali cuisine for special events and celebrations, which became increasingly popular among our customers.
+                  </p>
+                </div>
+                <div>
+                  <p class="text-center"><strong>12.04.2012:</strong> Culinary Innovation</p>
+                  <p class="text-center">
+                    We introduced fusion dishes that combined traditional Nepali flavors with international cooking techniques, creating unique offerings that appealed to diverse palates while preserving authenticity.
+                  </p>
+                  <p class="text-center">
+                    Our third location opened in the city's business district, making our cuisine accessible to working professionals and business travelers seeking a taste of home.
+                  </p>
+                </div>
+                <div>
+                  <p class="text-center"><strong>30.09.2016:</strong> Regional Chain</p>
+                  <p class="text-center">
+                    Masu Ko Jhol had grown to five locations across the region, becoming a recognized name for authentic Nepali cuisine. We established our own spice farm to ensure consistent quality.
+                  </p>
+                  <p class="text-center">
+                    With our growing reputation, we began training programs for aspiring Nepali chefs and started exporting our signature spice blends to international markets.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
 
 
@@ -417,73 +417,73 @@ if (isset($_COOKIE['user_img'])) {
         <div class="container my-2 py-2 mt-lg-4 pt-lg-4 mb-lg-0 pb-lg-0">
           <div class="row">
             <div class="col-lg-4 d-none d-lg-block">
-              <img src="<?php echo asset('images/ab_team_01.png'); ?>" alt="" data-aos="fade-right">
+              <img src="./assets/images/ab_team_01.png" alt="" data-aos="fade-right">
             </div>
             <div class="col-12 col-lg-8">
               <div class="testimonial-slider-wrapper">
                 <div class="slider-content pt-5 pb-4 mx-4" data-aos="fade-down-left">
                   <div>
                     <div class="testi-content">
-                      <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Architecto vel ipsa dolore sunt vitae, culpa, dolor reiciendis facilis sed blanditiis repellat incidunt impedit iusto? Odio veniam beatae veritatis adipisci a!</p>
+                      <p>"The authentic flavors of Nepal in every bite! Masu Ko Jhol brings back memories of my grandmother's cooking. Their dal bhat is exactly how I remember it from my childhood in Bangsing."</p>
                     </div>
                     <div class="d-flex justify-content-center mb-3">
-                      <img src="<?php echo asset('images/testi-signal.png'); ?>" alt="">
+                      <img src="./assets/images/testi-signal.png" alt="">
                     </div>
                     <div class="testi-info">
-                      <span class="name">Timothy Doe</span>
-                      <span class="position">Customer</span>
+                      <span class="name">Anil Shah</span>
+                      <span class="position">Regular Customer</span>
                     </div>
                   </div>
                   <div>
                     <div class="testi-content">
-                      <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Architecto vel ipsa dolore sunt vitae, culpa, dolor reiciendis facilis sed blanditiis repellat incidunt impedit iusto? Odio veniam beatae veritatis adipisci a!</p>
+                      <p>"As someone who has never been to Nepal, Masu Ko Jhol gave me an incredible introduction to Nepali cuisine. The atmosphere is warm and welcoming, and the food is absolutely delicious!"</p>
                     </div>
                     <div class="d-flex justify-content-center mb-3">
-                      <img src="<?php echo asset('images/testi-signal.png'); ?>" alt="">
+                      <img src="./assets/images/testi-signal.png" alt="">
                     </div>
                     <div class="testi-info">
-                      <span class="name">Sarah	Ruiz</span>
-                      <span class="position">Director</span>
+                      <span class="name">Priya Sharma</span>
+                      <span class="position">Food Blogger</span>
                     </div>
                   </div>
                   <div>
                     <div class="testi-content">
-                      <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Architecto vel ipsa dolore sunt vitae, culpa, dolor reiciendis facilis sed blanditiis repellat incidunt impedit iusto? Odio veniam beatae veritatis adipisci a!</p>
+                      <p>"I've been coming to Masu Ko Jhol for over five years now, and they never disappoint. Their momos are the best I've had outside of Nepal, and their service is consistently excellent."</p>
                     </div>
                     <div class="d-flex justify-content-center mb-3">
-                      <img src="<?php echo asset('images/testi-signal.png'); ?>" alt="">
+                      <img src="./assets/images/testi-signal.png" alt="">
                     </div>
                     <div class="testi-info">
-                      <span class="name">Tracey Lewis</span>
-                      <span class="position">Designer</span>
+                      <span class="name">Raj KC</span>
+                      <span class="position">Loyal Patron</span>
                     </div>
                   </div>
                   <div>
                     <div class="testi-content">
-                      <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Architecto vel ipsa dolore sunt vitae, culpa, dolor reiciendis facilis sed blanditiis repellat incidunt impedit iusto? Odio veniam beatae veritatis adipisci a!</p>
+                      <p>"The perfect spot for family gatherings! Masu Ko Jhol offers not just great food but an authentic cultural experience. Their thukpa warmed my heart on a cold winter evening."</p>
                     </div>
                     <div class="d-flex justify-content-center mb-3">
-                      <img src="<?php echo asset('images/testi-signal.png'); ?>" alt="">
+                      <img src="./assets/images/testi-signal.png" alt="">
                     </div>
                     <div class="testi-info">
-                      <span class="name">Jamie	Erickson</span>
-                      <span class="position">Manager</span>
+                      <span class="name">Sunita Rai</span>
+                      <span class="position">Event Organizer</span>
                     </div>
                   </div>
                 </div>
                 <div class="slider-nav-wrapper mx-5" data-aos="fade-up-right">
                   <div class="slider-nav">
                     <div class="slider-nav-img active">
-                      <img src="<?php echo asset('images/testi-1.jpg'); ?>" alt="">
+                      <img src="./assets/images/testi-1.jpg" alt="">
                     </div>
                     <div class="slider-nav-img">
-                      <img src="<?php echo asset('images/testi-2.jpg'); ?>" alt="">
+                      <img src="./assets/images/testi-2.jpg" alt="">
                     </div>
                     <div class="slider-nav-img">
-                      <img src="<?php echo asset('images/testi-3.jpg'); ?>" alt="">
+                      <img src="./assets/images/testi-3.jpg" alt="">
                     </div>
                     <div class="slider-nav-img">
-                      <img src="<?php echo asset('images/testi-4.jpg'); ?>" alt="">
+                      <img src="./assets/images/testi-4.jpg" alt="">
                     </div>
                   </div>
                 </div>
@@ -700,7 +700,7 @@ if (isset($_COOKIE['user_img'])) {
                   <i class="fa-solid fa-mobile text-white fa-2x border-bottom pb-2"></i>
                   <div class="ps-3">
                     <p class="mb-0">
-                      007-44444 <br>
+                      9748759699 <br>
                   
                       
                     </p>

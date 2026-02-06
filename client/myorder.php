@@ -176,8 +176,8 @@ if (isset($_COOKIE['user_img'])) {
               <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileMenu">
                 <li><h6 class="dropdown-header"><?php echo htmlspecialchars($currentUser['email'] ?? ''); ?></h6></li>
                 <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="./update_password.php"><i class="bi bi-key me-2"></i>Update Password</a></li>
-                <li><a class="dropdown-item" href="<?php echo url('includes/logout.php'); ?>"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+                <li><a class="dropdown-item" href="./update_password.php"><i class="fa fa-key me-2"></i>Update Password</a></li>
+                <li><a class="dropdown-item" href="<?php echo url('includes/logout.php'); ?>"><i class="fa fa-right-from-bracket me-2"></i>Logout</a></li>
               </ul>
             </div>
           <?php endif; ?>

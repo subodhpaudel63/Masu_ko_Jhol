@@ -166,6 +166,7 @@ if (isset($_GET['session_expired']) && $_GET['session_expired'] == 1) {
             </div>
         </div>
     </div>
+    <?php include_once __DIR__ . '/footer.php'; ?>
 
     <!-- Scroll Top -->
     <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>

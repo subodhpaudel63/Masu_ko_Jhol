@@ -148,3 +148,19 @@ checkScroll(); // Initial check
 
 // Update copyright year
 document.getElementById('copyrightCurrentYear').textContent = new Date().getFullYear();
+
+
+$('.testimonials .slider-content').slick({
+  slidesToShow: 1,
+  slidesToScroll: 1,
+  arrows: false,
+  asNavFor: '.testimonials .slider-nav',
+});
+
+$('.testimonials .slider-nav').slick({
+  slidesToShow: 3,
+  slidesToScroll: 1,
+  asNavFor: '.testimonials .slider-content',
+  focusOnSelect: true,
+  centerMode: true,
+});

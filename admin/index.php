@@ -1,548 +1,386 @@
 <?php
+// Start session if not already started
 declare(strict_types=1);
-ob_start();
-session_start();
-
-require_once __DIR__ . '/../includes/db.php';
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
 require_once __DIR__ . '/../includes/admin_auth.php';
+require_admin();
+require_once __DIR__ . '/../includes/db.php';
 
-// Check if user is admin, if not redirect to admin login
-$userType = null;
-if (isset($_COOKIE['user_type'])) {
-    require_once __DIR__ . '/../includes/auth_check.php';
-    $userType = decrypt($_COOKIE['user_type'], SECRET_KEY);
+// Fetch dashboard data
+$orders_query = $conn->query("SELECT * FROM orders ORDER BY order_id DESC LIMIT 5");
+$orders = [];
+if ($orders_query) {
+    while ($row = $orders_query->fetch_assoc()) {
+        $row['total_price'] = (float)$row['total_price'];
+        $orders[] = $row;
+    }
 }
 
-if ($userType !== 'admin') {
-    header('Location: /Masu%20Ko%20Jhol%28full%29/admin/login.php');
-    exit();
-}
+// Calculate dashboard statistics
+$total_revenue_query = $conn->query("SELECT SUM(total_price) as revenue FROM orders");
+$total_revenue = (float)($total_revenue_query->fetch_assoc()['revenue'] ?? 0);
 
+$total_orders_query = $conn->query("SELECT COUNT(*) as total FROM orders");
+$total_orders = $total_orders_query->fetch_assoc()['total'];
+
+$confirmed_orders_query = $conn->query("SELECT COUNT(*) as confirmed FROM orders WHERE status = 'Confirmed'");
+$confirmed_orders = $confirmed_orders_query->fetch_assoc()['confirmed'];
+
+$shipping_orders_query = $conn->query("SELECT COUNT(*) as shipping FROM orders WHERE status = 'Shipping'");
+$shipping_orders = $shipping_orders_query->fetch_assoc()['shipping'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Admin Dashboard • Masu Ko Jhol</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" />
-    <style>
-      :root{--bg:#0f1115;--panel:#161a22;--muted:#8b95a7;--text:#e8edf3;--brand:#ffb74d;--accent:#7c4dff;--danger:#ff6b6b;--success:#4caf50}
-      html,body{height:100%}
-      body{background:var(--bg);color:var(--text);}
-      .sidebar{width:260px;background:linear-gradient(180deg,#0e1117 0%,#0b0e13 100%);position:fixed;inset:0 auto 0 0;box-shadow:0 0 0 1px #1f2330}
-      .sidebar .nav-link{color:var(--muted)}
-      .sidebar .nav-link.active,.sidebar .nav-link:hover{color:var(--text);background:#1a1f2b;border-radius:10px}
-      .content{margin-left:0;min-height:100vh}
-      @media (min-width: 992px) {
-        .content{margin-left:260px;}
-      }
-      .topbar{background:#0b0e13;box-shadow:0 1px 0 #1f2330}
-      .card{background:var(--panel);border:1px solid #1f2330;border-radius:16px}
-      .metric{display:flex;gap:12px;align-items:center}
-      .metric .icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center}
-      .metric.small .value{font-size:20px}
-      .badge-cat{text-transform:uppercase;letter-spacing:.06em}
-      .table> :not(caption)>*>*{background:transparent;color:var(--text)}
-      .table thead th{color:var(--muted)}
-      .btn-gradient{background:linear-gradient(135deg,#ff7a18 0%,#af002d 74%);border:none;color:#fff}
-      .lang-select{background:#0f131b;color:var(--text);border:1px solid #273044}
-      /* Mobile menu styles */
-      #mobile-menu { background: linear-gradient(180deg, #0e1117 0%, #0b0e13 100%); box-shadow: 0 0 0 1px #1f2330; transform: translateX(-100%); transition: transform 0.3s ease-in-out; }
-      #mobile-menu.show { transform: translateX(0); }
-      #mobile-menu .nav-link { color: var(--muted); }
-      #mobile-menu .nav-link.active, #mobile-menu .nav-link:hover { color: var(--text); background: #1a1f2b; border-radius: 10px; }
-    </style>
-  </head>
-  <body>
-    <div class="sidebar d-flex flex-column p-3 d-none d-lg-flex">
-      <h5 class="mb-4 d-flex align-items-center gap-2"><i class="bi bi-fire text-warning"></i> Masu Admin</h5>
-      <nav class="nav nav-pills flex-column gap-1">
-        <a class="nav-link active" href="#" data-page="dashboard"><i class="bi bi-speedometer2 me-2"></i><span data-i18n="dashboard">Dashboard</span></a>
-        <a class="nav-link" href="#" data-page="orders"><i class="bi bi-bag-check me-2"></i><span data-i18n="orders">Orders</span></a>
-        <a class="nav-link" href="#" data-page="menu"><i class="bi bi-card-checklist me-2"></i><span data-i18n="menu">Menu</span></a>
-        <a class="nav-link" href="#" data-page="customers"><i class="bi bi-people me-2"></i><span data-i18n="customers">Customers</span></a>
-        <a class="nav-link" href="#" data-page="bookings"><i class="bi bi-calendar-check me-2"></i><span data-i18n="bookings">Table Bookings</span></a>
-        <a class="nav-link" href="#" data-page="analytics"><i class="bi bi-graph-up-arrow me-2"></i><span data-i18n="analytics">Analytics</span></a>
-        <a class="nav-link" href="#" data-page="settings"><i class="bi bi-gear me-2"></i><span data-i18n="settings">Settings</span></a>
-      </nav>
-      <div class="mt-auto small text-muted">© <span id="y"></span> Masu Ko Jhol</div>
-    </div>
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard </title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,0,0" />
+  <link rel="stylesheet" href="../assets/css/adminstyle.css">
+</head>
+<body>
+   <div class="container">
+      <aside>
+           
+         <div class="top">
+           <div class="logo">
+             <h2>Masu <span class="danger"> ko jhol</span> </h2>
+           </div>
+           <div class="close" id="close_btn">
+            <span class="material-symbols-sharp">
+              close
+              </span>
+           </div>
+         </div>
+         <!-- end top -->
+          <div class="sidebar">
 
-    <div class="content">
-      <div class="topbar d-flex align-items-center justify-content-between px-3 px-lg-4 py-3">
-        <div class="d-flex align-items-center gap-2">
-          <i class="bi bi-list d-lg-none" id="mobile-menu-toggle" style="cursor: pointer; font-size: 1.5rem;"></i>
-          <div class="input-group input-group-sm" style="width:320px;">
-            <span class="input-group-text bg-transparent border-secondary-subtle text-secondary"><i class="bi bi-search"></i></span>
-            <input id="search" type="text" class="form-control bg-transparent border-secondary-subtle text-light" placeholder="Search…" />
+            <a href="./index.php" class="active">
+              <span class="material-symbols-sharp">grid_view </span>
+              <h3>Dashbord</h3>
+           </a>
+           <a href="users.php">
+              <span class="material-symbols-sharp">person_outline </span>
+              <h3>costumers</h3>
+           </a>
+           <a href="analytics.php">
+              <span class="material-symbols-sharp">insights </span>
+              <h3>Analytics</h3>
+           </a>
+           <a href="myorder.php">
+              <span class="material-symbols-sharp">mail_outline </span>
+              <h3>Orders</h3>
+              <span class="msg_count">14</span>
+           </a>
+           <a href="menu.php">
+              <span class="material-symbols-sharp">receipt_long </span>
+              <h3>Menu</h3>
+           </a>
+           <a href="bookings.php">
+              <span class="material-symbols-sharp">calendar_month </span>
+              <h3>Bookings</h3>
+           </a>
+           <a href="#">
+              <span class="material-symbols-sharp">settings </span>
+              <h3>settings</h3>
+           </a>
+           <a href="#">
+              <span class="material-symbols-sharp">add </span>
+              <h3>Add Product</h3>
+           </a>
+           <a href="../includes/logout.php">
+              <span class="material-symbols-sharp">logout </span>
+              <h3>logout</h3>
+           </a>
+             
+
+
           </div>
+
+      </aside>
+      <!-- --------------
+        end asid
+      -------------------- -->
+
+      <!-- --------------
+        start main part
+      --------------- -->
+
+      <main>
+           <h1>Dashbord</h1>
+
+           <div class="date">
+             <input type="date" >
+           </div>
+
+        <div class="insights">
+
+           <!-- start seling -->
+            <div class="sales">
+               <span class="material-symbols-sharp">trending_up</span>
+               <div class="middle">
+
+                 <div class="left">
+                   <h3>Total Sales</h3>
+                   <h1 class="total-revenue-display">Rs <?php echo number_format($total_revenue, 2); ?></h1>
+                 </div>
+                  <div class="progress">
+                      <svg>
+                         <circle  r="30" cy="40" cx="40"></circle>
+                      </svg>
+                      <div class="number"><p>80%</p></div>
+                  </div>
+
+               </div>
+               <small>Last 24 Hours</small>
+            </div>
+           <!-- end seling -->
+              <!-- start expenses -->
+              <div class="expenses">
+                <span class="material-symbols-sharp">local_mall</span>
+                <div class="middle">
+ 
+                  <div class="left">
+                    <h3>Total Orders</h3>
+                    <h1 class="total-orders-display"><?php echo $total_orders; ?></h1>
+                  </div>
+                   <div class="progress">
+                       <svg>
+                          <circle  r="30" cy="40" cx="40"></circle>
+                       </svg>
+                       <div class="number"><p>80%</p></div>
+                   </div>
+ 
+                </div>
+                <small>Last 24 Hours</small>
+             </div>
+            <!-- end seling -->
+               <!-- start seling -->
+               <div class="income">
+                <span class="material-symbols-sharp">stacked_line_chart</span>
+                <div class="middle">
+ 
+                  <div class="left">
+                    <h3>Confirmed Orders</h3>
+                    <h1><?php echo $confirmed_orders; ?></h1>
+                  </div>
+                   <div class="progress">
+                       <svg>
+                          <circle  r="30" cy="40" cx="40"></circle>
+                       </svg>
+                       <div class="number"><p>80%</p></div>
+                   </div>
+ 
+                </div>
+                <small>Last 24 Hours</small>
+             </div>
+            <!-- end seling -->
+
         </div>
-        <div class="d-flex align-items-center gap-2">
-          <select id="lang" class="form-select form-select-sm lang-select">
-            <option value="en">English</option>
-            <option value="ne">नेपाली</option>
-          </select>
-          <a class="btn btn-sm btn-outline-light" href="/Masu%20Ko%20Jhol%28full%29/includes/logout.php"><i class="bi bi-box-arrow-right me-1"></i><span data-i18n="logout">Logout</span></a>
-        </div>
+       <!-- end insights -->
+      <div class="recent_order">
+         <h2>Recent Orders</h2>
+         <table> 
+             <thead>
+              <tr>
+                <th>Product Name</th>
+                <th>Product Number</th>
+                <th>Payments</th>
+                <th>Status</th>
+              </tr>
+             </thead>
+              <tbody>
+                <?php if (empty($orders)): ?>
+                  <tr>
+                    <td colspan="4" class="text-center">No recent orders</td>
+                  </tr>
+                <?php else: ?>
+                  <?php foreach ($orders as $order): ?>
+                    <tr>
+                      <td><?php echo htmlspecialchars($order['menu_name']); ?></td>
+                      <td>#<?php echo $order['order_id']; ?></td>
+                      <td>Rs. <?php echo number_format($order['total_price'], 2); ?></td>
+                      <td class="status-<?php echo strtolower($order['status']); ?>">
+                        <?php echo $order['status']; ?>
+                      </td>
+                    </tr>
+                  <?php endforeach; ?>
+                <?php endif; ?>
+              </tbody>
+         </table>
+         <a href="#">Show All</a>
       </div>
-      
-      <!-- Mobile Menu -->
-      <div id="mobile-menu" class="position-fixed top-0 start-0 w-75 h-100 d-lg-none" style="z-index: 1000;">
-        <div class="d-flex flex-column h-100 p-3">
-          <div class="d-flex justify-content-between align-items-center mb-4 mt-2">
-            <h5 class="mb-0 d-flex align-items-center gap-2"><i class="bi bi-fire text-warning"></i> Masu Admin</h5>
-            <i class="bi bi-x-lg" id="mobile-menu-close" style="cursor: pointer; font-size: 1.5rem;"></i>
-          </div>
-          <nav class="nav nav-pills flex-column gap-1 flex-grow-1">
-            <a class="nav-link active" href="#" data-page="dashboard"><i class="bi bi-speedometer2 me-2"></i><span data-i18n="dashboard">Dashboard</span></a>
-            <a class="nav-link" href="#" data-page="orders"><i class="bi bi-bag-check me-2"></i><span data-i18n="orders">Orders</span></a>
-            <a class="nav-link" href="#" data-page="menu"><i class="bi bi-card-checklist me-2"></i><span data-i18n="menu">Menu</span></a>
-            <a class="nav-link" href="#" data-page="customers"><i class="bi bi-people me-2"></i><span data-i18n="customers">Customers</span></a>
-            <a class="nav-link" href="#" data-page="bookings"><i class="bi bi-calendar-check me-2"></i><span data-i18n="bookings">Table Bookings</span></a>
-            <a class="nav-link" href="#" data-page="analytics"><i class="bi bi-graph-up-arrow me-2"></i><span data-i18n="analytics">Analytics</span></a>
-            <a class="nav-link" href="#" data-page="settings"><i class="bi bi-gear me-2"></i><span data-i18n="settings">Settings</span></a>
-          </nav>
-          <div class="mt-auto small text-muted pt-3 border-top border-secondary">© <span id="mobile-copyright-year"></span> Masu Ko Jhol</div>
-        </div>
-      </div>
-      <!-- Mobile Menu End -->
 
-      <main class="p-3 p-lg-4">
-        <div id="dashboard" class="page">
-          <div class="row g-3 g-lg-4">
-            <div class="col-6 col-lg-3">
-              <div class="card p-3">
-                <div class="metric"><div class="icon bg-dark-subtle"><i class="bi bi-currency-rupee text-warning"></i></div>
-                  <div>
-                    <div class="small text-secondary" data-i18n="revenue">Today's Revenue</div>
-                    <div class="h4 mb-0" id="m-revenue">—</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-6 col-lg-3">
-              <div class="card p-3">
-                <div class="metric"><div class="icon bg-dark-subtle"><i class="bi bi-bag text-info"></i></div>
-                  <div>
-                    <div class="small text-secondary" data-i18n="ordersToday">Today's Orders</div>
-                    <div class="h4 mb-0" id="m-orders">—</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-6 col-lg-3">
-              <div class="card p-3">
-                <div class="metric"><div class="icon bg-dark-subtle"><i class="bi bi-people text-success"></i></div>
-                  <div>
-                    <div class="small text-secondary" data-i18n="customers">Customers</div>
-                    <div class="h4 mb-0" id="m-customers">—</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-6 col-lg-3">
-              <div class="card p-3">
-                <div class="metric"><div class="icon bg-dark-subtle"><i class="bi bi-cash-coin text-danger"></i></div>
-                  <div>
-                    <div class="small text-secondary" data-i18n="expenses">Avg. Expense</div>
-                    <div class="h4 mb-0" id="m-expense">—</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="row g-3 g-lg-4 mt-1">
-            <div class="col-lg-6">
-              <div class="card p-3">
-                <div class="d-flex justify-content-between align-items-center">
-                  <h6 class="mb-0" data-i18n="salesBreakdown">Sales Breakdown</h6>
-                  <select id="sales-period" class="form-select form-select-sm w-auto bg-transparent text-light border-secondary-subtle">
-                    <option value="month">Monthly</option>
-                    <option value="week">Weekly</option>
-                  </select>
-                </div>
-                <canvas id="chartDonut" height="200"></canvas>
-              </div>
-            </div>
-            <div class="col-lg-6">
-              <div class="card p-3">
-                <div class="d-flex justify-content-between align-items-center">
-                  <h6 class="mb-0" data-i18n="weeklyOrders">Weekly Orders</h6>
-                  <select id="orders-period" class="form-select form-select-sm w-auto bg-transparent text-light border-secondary-subtle">
-                    <option value="week">This Week</option>
-                    <option value="month">This Month</option>
-                  </select>
-                </div>
-                <canvas id="chartBars" height="200"></canvas>
-              </div>
-            </div>
-          </div>
-
-          <div class="row g-3 g-lg-4 mt-1">
-            <div class="col-lg-12">
-              <div class="card p-3">
-                <div class="d-flex justify-content-between align-items-center">
-                  <h6 class="mb-0" data-i18n="monthlyRevenue">Monthly Revenue Trend</h6>
-                </div>
-                <canvas id="chartRevenue" height="100"></canvas>
-              </div>
-            </div>
-          </div>
-
-          <div class="row g-3 g-lg-4 mt-1">
-            <div class="col-lg-6">
-              <div class="card p-3">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                  <h6 class="mb-0" data-i18n="latestOrders">Latest Orders</h6>
-                </div>
-                <div class="table-responsive">
-                  <table class="table table-sm">
-                    <thead>
-                      <tr>
-                        <th>#</th>
-                        <th>Item</th>
-                        <th>Email</th>
-                        <th>Status</th>
-                        <th>Amount</th>
-                        <th>Address</th>
-                        <th>Time</th>
-                      </tr>
-                    </thead>
-                    <tbody id="tbl-orders">
-                      <tr><td colspan="6" class="text-center text-muted">Loading...</td></tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-            <div class="col-lg-6">
-              <div class="card p-3">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                  <h6 class="mb-0" data-i18n="recentCustomers">Recent Customers</h6>
-                </div>
-                <div class="table-responsive">
-                  <table class="table table-sm">
-                    <thead>
-                      <tr>
-                        <th>ID</th>
-                        <th>Email</th>
-                        <th>Type</th>
-                        <th>Joined</th>
-                      </tr>
-                    </thead>
-                    <tbody id="tbl-customers">
-                      <tr><td colspan="4" class="text-center text-muted">Loading...</td></tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="card mt-4 p-3">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <h6 class="mb-0" data-i18n="trending">Trending Orders</h6>
-              <a href="/Masu%20Ko%20Jhol%28full%29/admin/myorder.php" class="btn btn-sm btn-gradient" data-i18n="viewAll">View All</a>
-            </div>
-            <div class="row g-3" id="trending"></div>
-          </div>
-        </div>
-
-        <div id="orders" class="page d-none">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="mb-0" data-i18n="orders">Orders</h5>
-            <a href="/Masu%20Ko%20Jhol%28full%29/admin/myorder.php" class="btn btn-sm btn-gradient" data-i18n="manage">Manage</a>
-          </div>
-          <div class="card p-0">
-            <div class="table-responsive">
-              <table class="table align-middle mb-0">
-                <thead><tr><th>#</th><th data-i18n="item">Item</th><th data-i18n="customer">Customer</th><th data-i18n="status">Status</th><th>Address</th><th class="text-end" data-i18n="actions">Actions</th></tr></thead>
-                <tbody id="tbl-orders-main"></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <div id="menu" class="page d-none">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="mb-0" data-i18n="menu">Menu</h5>
-            <a href="/Masu%20Ko%20Jhol%28full%29/admin/menu.php" class="btn btn-sm btn-gradient" data-i18n="manage">Manage</a>
-          </div>
-          <div class="card p-3">
-            <div class="row g-3" id="menu-cards"></div>
-          </div>
-        </div>
-
-        <div id="customers" class="page d-none">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="mb-0" data-i18n="customers">Customers</h5>
-            <a href="/Masu%20Ko%20Jhol%28full%29/admin/users.php" class="btn btn-sm btn-gradient" data-i18n="manage">Manage</a>
-          </div>
-          <div class="card p-0">
-            <div class="table-responsive">
-              <table class="table align-middle mb-0">
-                <thead><tr><th>#</th><th data-i18n="email">Email</th><th data-i18n="role">Role</th><th class="text-end" data-i18n="actions">Actions</th></tr></thead>
-                <tbody id="tbl-customers"></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <div id="analytics" class="page d-none">
-          <h5 class="mb-3" data-i18n="analytics">Analytics</h5>
-          <div class="row g-3 g-lg-4">
-            <div class="col-lg-6">
-              <div class="card p-3">
-                <div class="d-flex justify-content-between align-items-center">
-                  <h6 class="mb-0" data-i18n="salesBreakdown">Sales Breakdown</h6>
-                  <a href="/Masu%20Ko%20Jhol%28full%29/admin/analytics.php" class="btn btn-sm btn-gradient">View Detailed Analytics</a>
-                </div>
-                <canvas id="chartDonut" height="200"></canvas>
-              </div>
-            </div>
-            <div class="col-lg-6">
-              <div class="card p-3">
-                <div class="d-flex justify-content-between align-items-center">
-                  <h6 class="mb-0" data-i18n="weeklyOrders">Weekly Orders</h6>
-                  <a href="/Masu%20Ko%20Jhol%28full%29/admin/analytics.php" class="btn btn-sm btn-gradient">View Detailed Analytics</a>
-                </div>
-                <canvas id="chartBars" height="200"></canvas>
-              </div>
-            </div>
-          </div>
-          
-          <div class="row g-3 g-lg-4 mt-1">
-            <div class="col-lg-12">
-              <div class="card p-3">
-                <div class="d-flex justify-content-between align-items-center">
-                  <h6 class="mb-0" data-i18n="monthlyRevenue">Monthly Revenue Trend</h6>
-                  <a href="/Masu%20Ko%20Jhol%28full%29/admin/analytics.php" class="btn btn-sm btn-gradient">View Detailed Analytics</a>
-                </div>
-                <canvas id="chartRevenue" height="100"></canvas>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div id="settings" class="page d-none">
-          <h5 class="mb-3" data-i18n="settings">Settings</h5>
-          <div class="card p-3">
-            <form id="form-settings" class="row g-3">
-              <div class="col-md-6">
-                <label class="form-label" data-i18n="siteName">Site Name</label>
-                <input class="form-control bg-transparent text-light border-secondary" name="site_name" value="Masu Ko Jhol" />
-              </div>
-              <div class="col-md-6">
-                <label class="form-label" data-i18n="defaultLang">Default Language</label>
-                <select class="form-select bg-transparent text-light border-secondary" name="default_lang"><option value="en">English</option><option value="ne">नेपाली</option></select>
-              </div>
-              <div class="col-12"><button type="submit" class="btn btn-gradient" data-i18n="save">Save</button></div>
-            </form>
-          </div>
-        </div>
-        
-        <div id="bookings" class="page d-none">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="mb-0" data-i18n="bookings">Table Bookings</h5>
-            <a href="/Masu%20Ko%20Jhol%28full%29/admin/bookings.php" class="btn btn-sm btn-gradient" data-i18n="manage">Manage</a>
-          </div>
-          <div class="card p-0">
-            <div class="table-responsive">
-              <table class="table align-middle mb-0">
-                <thead><tr><th>#</th><th data-i18n="name">Name</th><th data-i18n="email">Email</th><th data-i18n="date">Date & Time</th><th data-i18n="people">People</th><th data-i18n="status">Status</th></tr></thead>
-                <tbody id="tbl-bookings"></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
       </main>
+      <!------------------
+         end main
+        ------------------->
+
+      <!----------------
+        start right main 
+      ---------------------->
+    <div class="right">
+
+<div class="top">
+   <button id="menu_bar">
+     <span class="material-symbols-sharp">menu</span>
+   </button>
+
+   <div class="theme-toggler">
+     <span class="material-symbols-sharp active">light_mode</span>
+     <span class="material-symbols-sharp">dark_mode</span>
+   </div>
+    <div class="profile">
+       <div class="info">
+           <p><b>Subodh Admin</b></p>
+           <p>Administrator</p>
+           <small class="text-muted">Online</small>
+       </div>
+       <div class="profile-photo">
+         <img src="../assets/img/usersprofiles/fa29eed8-1427-4ec2-a671-e4e45a399f3c.jpg" alt="Admin Profile"/>
+       </div>
     </div>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
-    <script>
-      document.getElementById('y').textContent = new Date().getFullYear();
-      document.querySelectorAll('.sidebar .nav-link').forEach(l=>{
-        l.addEventListener('click',e=>{e.preventDefault();document.querySelector('.sidebar .nav-link.active')?.classList.remove('active');l.classList.add('active');const pages = document.querySelectorAll('.page');pages.forEach(p=>p.classList.add('d-none'));document.getElementById(l.dataset.page).classList.remove('d-none');});
-      });
+  <div class="recent_updates">
+     <h2>Recent Update</h2>
+   <div class="updates">
+      <div class="update">
+         <div class="profile-photo">
+            <img src="./images/wallpaperflare.com_wallpaper (2).jpg" alt=""/>
+         </div>
+        <div class="message">
+           <p><b>Subodh</b> Recived his order of USB</p>
+        </div>
+      </div>
+      <div class="update">
+        <div class="profile-photo">
+        <img src="./images/depositphotos_59094701-stock-illustration-businessman-profile-icon.jpg" alt=""/>
+        </div>
+       <div class="message">
+          <p><b>Hari</b> Recived his order of USB</p>
+       </div>
+     </div>
+     <div class="update">
+      <div class="profile-photo">
+         <img src="./images/depositphotos_59094701-stock-illustration-businessman-profile-icon.jpg" alt=""/>
+      </div>
+     <div class="message">
+        <p><b>Sita</b> Recived his order of USB</p>
+     </div>
+   </div>
+  </div>
+  </div>
 
-      const i18n = {
-        en: {dashboard:'Dashboard',orders:'Orders',menu:'Menu',customers:'Customers',bookings:'Table Bookings',analytics:'Analytics',settings:'Settings',logout:'Logout',revenue:"Today's Revenue",ordersToday:"Today's Orders",expenses:'Avg. Expense',salesBreakdown:'Sales Breakdown',weeklyOrders:'Weekly Orders',monthlyRevenue:'Monthly Revenue Trend',trending:'Trending Orders',latestOrders:'Latest Orders',recentCustomers:'Recent Customers',viewAll:'View All',manage:'Manage',item:'Item',customer:'Customer',name:'Name',date:'Date & Time',people:'People',status:'Status',actions:'Actions',email:'Email',role:'Role',siteName:'Site Name',defaultLang:'Default Language',save:'Save'},
-        ne: {dashboard:'ड्यासबोर्ड',orders:'अर्डर',menu:'मेनु',customers:'ग्राहक',bookings:'टेबल बुकिंग',analytics:'विश्लेषण',settings:'सेटिङ',logout:'लगआउट',revenue:'आजको आम्दानी',ordersToday:'आजका अर्डर',expenses:'औसत खर्च',salesBreakdown:'बिक्री विवरण',weeklyOrders:'साप्ताहिक अर्डर',monthlyRevenue:'मासिक आम्दानी प्रवृत्ति',trending:'ट्रेन्डिङ अर्डर',latestOrders:'नवीनतम अर्डर',recentCustomers:'हालैका ग्राहक',viewAll:'सबै हेर्नुहोस्',manage:'प्रबन्ध',item:'वस्तु',customer:'ग्राहक',name:'नाम',date:'मिति र समय',people:'मान्छे',status:'स्थिति',actions:'कार्य',email:'इमेल',role:'भूमिका',siteName:'साइट नाम',defaultLang:'पूर्वनिर्धारित भाषा',save:'सेभ'}
-      };
-      function applyLang(lang){document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.getAttribute('data-i18n'); if(i18n[lang][k]) el.textContent=i18n[lang][k];});}
-      document.getElementById('lang').addEventListener('change',e=>applyLang(e.target.value));
-      applyLang('en');
 
-      // Charts
-      const donut = new Chart(document.getElementById('chartDonut'), {type:'doughnut', data:{labels:['Dine-in','Delivery','Takeaway'], datasets:[{data:[40,35,25], backgroundColor:['#7c4dff','#ffb74d','#26a69a'], borderWidth:0}]}, options:{plugins:{legend:{labels:{color:'#c9d1e3'}}}}});
-      const bars = new Chart(document.getElementById('chartBars'), {type:'bar', data:{labels:['Sat','Sun','Mon','Tue','Wed','Thu','Fri'], datasets:[{label:'Orders', data:[120,140,180,265,190,170,130], backgroundColor:'#7c4dff'}]}, options:{scales:{x:{ticks:{color:'#c9d1e3'}}, y:{ticks:{color:'#c9d1e3'}}}}});
-      const revenueChart = new Chart(document.getElementById('chartRevenue'), {type:'line', data:{labels:[], datasets:[{label:'Revenue', data:[], borderColor:'#7c4dff', backgroundColor:'rgba(124, 77, 255, 0.1)', fill:true}]}, options:{scales:{x:{ticks:{color:'#c9d1e3'}}, y:{ticks:{color:'#c9d1e3'}}}}});
+   <div class="sales-analytics">
+     <h2>Sales Analytics</h2>
 
-      // Live stats fetch - updated to refresh every 5 seconds for more real-time updates
-      async function loadStats(){
-        try{
-          const r = await fetch('/Masu%20Ko%20Jhol%28full%29/includes/admin_stats.php');
-          const j = await r.json();
-          document.getElementById('m-revenue').textContent = 'Rs. '+(j.todayRevenue??0);
-          document.getElementById('m-orders').textContent = j.todayOrders??0;
-          document.getElementById('m-customers').textContent = j.customers??0;
-          document.getElementById('m-expense').textContent = 'Rs. '+(j.avgExpense??0);
-          
-          // Update charts with real-time data
-          if (j.weeklyOrders && j.weeklyOrders.length > 0) {
-            const dates = j.weeklyOrders.map(item => item.date);
-            const orderCounts = j.weeklyOrders.map(item => parseInt(item.orders));
-            
-            // Update bar chart
-            bars.data.labels = dates;
-            bars.data.datasets[0].data = orderCounts;
-            bars.update();
-          }
-          
-          // Update monthly revenue chart
-          if (j.monthlyRevenue && j.monthlyRevenue.length > 0) {
-            const months = j.monthlyRevenue.map(item => item.month);
-            const revenues = j.monthlyRevenue.map(item => parseInt(item.revenue));
-            
-            // Update revenue chart
-            revenueChart.data.labels = months;
-            revenueChart.data.datasets[0].data = revenues;
-            revenueChart.update();
-          }
-          
-          // Update trending items
-          const wrap=document.getElementById('trending');
-          wrap.innerHTML='';
-          (j.trending||[]).slice(0,6).forEach(o=>{
-            const col=document.createElement('div'); col.className='col-6 col-lg-2';
-            col.innerHTML=`<div class="card p-2 h-100"><img class="rounded mb-2" src="/${o.image}" style="aspect-ratio:1/1;object-fit:cover;"/><div class="small">${o.menu_name}</div><div class="small text-secondary">Rs. ${o.menu_price}</div><div class="small text-muted">Ordered ${o.qty} times</div></div>`;
-            wrap.appendChild(col);
-          });
-        }catch(e){/* silent */}
-      }
-      
-      // Load stats immediately and then every 5 seconds (instead of 10)
-      loadStats(); 
-      setInterval(loadStats, 5000);
+      <div class="item onlion">
+        <div class="icon">
+          <span class="material-symbols-sharp">shopping_cart</span>
+        </div>
+        <div class="right_text">
+          <div class="info">
+            <h3>Onlion Orders</h3>
+            <small class="text-muted">Last seen 2 Hours</small>
+          </div>
+          <h5 class="danger">-17%</h5>
+          <h3>3849</h3>
+        </div>
+      </div>
+      <div class="item onlion">
+        <div class="icon">
+          <span class="material-symbols-sharp">shopping_cart</span>
+        </div>
+        <div class="right_text">
+          <div class="info">
+            <h3>Onlion Orders</h3>
+            <small class="text-muted">Last seen 2 Hours</small>
+          </div>
+          <h5 class="success">-17%</h5>
+          <h3>3849</h3>
+        </div>
+      </div>
+      <div class="item onlion">
+        <div class="icon">
+          <span class="material-symbols-sharp">shopping_cart</span>
+        </div>
+        <div class="right_text">
+          <div class="info">
+            <h3>Onlion Orders</h3>
+            <small class="text-muted">Last seen 2 Hours</small>
+          </div>
+          <h5 class="danger">-17%</h5>
+          <h3>3849</h3>
+        </div>
+      </div>
+   
+  
 
-      // Lightweight previews for tables/cards (read-only snapshots)
-      async function loadSnapshots(){
-        try{
-          const r = await fetch('/Masu%20Ko%20Jhol%28full%29/includes/admin_stats.php?snap=1');
-          const j = await r.json();
-          
-          // Update latest orders with timestamps
-          const tO=document.getElementById('tbl-orders'); 
-          tO.innerHTML=''; 
-          (j.latestOrders||[]).forEach((o,i)=>{
-            const date = new Date(o.created_at).toLocaleTimeString();
-            // Truncate address if too long
-            const truncatedAddress = o.address.length > 20 ? o.address.substring(0, 20) + '...' : o.address;
-            tO.innerHTML+=`<tr><td>${o.order_id}</td><td>${o.menu_name}</td><td>${o.email}</td><td><span class="badge bg-secondary badge-cat">${o.status}</span></td><td>Rs. ${o.total_price}</td><td>${truncatedAddress}</td><td>${date}</td><td class="text-end"><a href="/Masu%20Ko%20Jhol%28full%29/admin/myorder.php" class="btn btn-sm btn-outline-light">Edit</a></td></tr>`;
-          });
-          
-          // Populate orders page table
-          const tOMain=document.getElementById('tbl-orders-main'); 
-          tOMain.innerHTML=''; 
-          (j.latestOrders||[]).forEach((o,i)=>{
-            // Truncate address if too long
-            const truncatedAddress = o.address.length > 20 ? o.address.substring(0, 20) + '...' : o.address;
-            tOMain.innerHTML+=`<tr><td>${o.order_id}</td><td>${o.menu_name}</td><td>${o.email}</td><td><span class="badge bg-secondary badge-cat">${o.status}</span></td><td>${truncatedAddress}</td><td class="text-end"><a href="/Masu%20Ko%20Jhol%28full%29/admin/myorder.php" class="btn btn-sm btn-outline-light">Edit</a></td></tr>`;
-          });
-          
-          const tC=document.getElementById('tbl-customers'); 
-          tC.innerHTML=''; 
-          (j.customersList||[]).forEach((c,i)=>{
-            const date = new Date(c.created_at).toLocaleDateString();
-            tC.innerHTML+=`<tr><td>${c.id}</td><td>${c.email}</td><td>${c.user_type}</td><td>${date}</td><td class="text-end"><a href="/Masu%20Ko%20Jhol%28full%29/admin/users.php" class="btn btn-sm btn-outline-light">Edit</a></td></tr>`;
-          });
-          
-          const tB=document.getElementById('tbl-bookings'); 
-          tB.innerHTML=''; 
-          (j.bookings||[]).slice(0,5).forEach((b,i)=>{
-            tB.innerHTML+=`<tr><td>${b.id}</td><td>${b.name}</td><td>${b.email}</td><td>${b.booking_date} ${b.booking_time}</td><td>${b.people}</td><td><span class="badge bg-secondary badge-cat">${b.status}</span></td></tr>`;
-          });
-          
-          const mC=document.getElementById('menu-cards'); 
-          mC.innerHTML=''; 
-          (j.menu||[]).slice(0,6).forEach(m=>{
-            mC.innerHTML+=`<div class="col-6 col-lg-4"><div class="card h-100 p-2"><img src="/${m.menu_image}" class="rounded mb-2" style="aspect-ratio:16/9;object-fit:cover;"><div class="d-flex justify-content-between align-items-center"><div class="small">${m.menu_name}</div><span class="badge bg-secondary">Rs. ${m.menu_price}</span></div></div></div>`;
-          });
-        }catch(e){/* silent */}
-      }
-      
-      // Load snapshots immediately and then every 5 seconds
-      loadSnapshots(); 
-      setInterval(loadSnapshots, 5000);
-      
-      // Mobile menu functionality
-      const mobileMenu = document.getElementById('mobile-menu');
-      const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
-      const mobileMenuClose = document.getElementById('mobile-menu-close');
-      
-      // Set current year for copyright
-      document.getElementById('mobile-copyright-year').textContent = new Date().getFullYear();
-      
-      // Toggle mobile menu
-      if (mobileMenuToggle && mobileMenu) {
-        mobileMenuToggle.addEventListener('click', () => {
-          mobileMenu.classList.add('show');
-        });
-      }
-      
-      // Close mobile menu
-      if (mobileMenuClose && mobileMenu) {
-        mobileMenuClose.addEventListener('click', () => {
-          mobileMenu.classList.remove('show');
-        });
-      }
-      
-      // Close mobile menu when clicking outside
-      if (mobileMenu) {
-        mobileMenu.addEventListener('click', (e) => {
-          if (e.target === mobileMenu) {
-            mobileMenu.classList.remove('show');
-          }
-        });
-      }
-      
-      // Mobile menu navigation
-      document.querySelectorAll('#mobile-menu .nav-link').forEach(link => {
-        link.addEventListener('click', function(e) {
-          e.preventDefault();
-          
-          // Remove active class from all links in both menus
-          document.querySelectorAll('.sidebar .nav-link, #mobile-menu .nav-link').forEach(l => {
-            l.classList.remove('active');
-          });
-          
-          // Add active class to clicked link in both menus
-          this.classList.add('active');
-          const page = this.dataset.page;
-          
-          // Also update the desktop menu to match
-          const desktopLink = document.querySelector(`.sidebar .nav-link[data-page="${page}"]`);
-          if (desktopLink) {
-            desktopLink.classList.add('active');
-          }
-          
-          // Show the selected page
-          const pages = document.querySelectorAll('.page');
-          pages.forEach(p => p.classList.add('d-none'));
-          document.getElementById(page).classList.remove('d-none');
-          
-          // Close mobile menu
-          if (mobileMenu) {
-            mobileMenu.classList.remove('show');
-          }
-        });
-      });
-    </script>
-  </body>
+</div>
+
+      <div class="item add_product">
+            <div>
+            <span class="material-symbols-sharp">add</span>
+            </div>
+     </div>
+</div>
+
+
+   </div>
+
+
+
+   <script src="../assets/js/adminscript.js"></script>
+   <script>
+   // Real-time dashboard updates
+   document.addEventListener('DOMContentLoaded', function() {
+       // Update dashboard stats every 30 seconds
+       setInterval(updateDashboardStats, 30000);
+       
+       function updateDashboardStats() {
+           fetch('get_dashboard_stats.php')
+           .then(response => response.json())
+           .then(data => {
+               if (data.success) {
+                   // Update total revenue
+                   const revenueElement = document.querySelector('.total-revenue-display');
+                   if (revenueElement) {
+                       const oldValue = parseFloat(revenueElement.textContent.replace('Rs ', '').replace(/,/g, ''));
+                       const newValue = parseFloat(data.stats.total_revenue);
+                       
+                       if (oldValue !== newValue) {
+                           revenueElement.textContent = 'Rs ' + newValue.toFixed(2);
+                           revenueElement.classList.add('updating');
+                           setTimeout(() => {
+                               revenueElement.classList.remove('updating');
+                           }, 1000);
+                       }
+                   }
+                   
+                   // Update total orders
+                   const ordersElement = document.querySelector('.total-orders-display');
+                   if (ordersElement) {
+                       const oldValue = parseInt(ordersElement.textContent);
+                       const newValue = parseInt(data.stats.total_orders);
+                       
+                       if (oldValue !== newValue) {
+                           ordersElement.textContent = newValue;
+                           ordersElement.classList.add('updating');
+                           setTimeout(() => {
+                               ordersElement.classList.remove('updating');
+                           }, 1000);
+                       }
+                   }
+               }
+           })
+           .catch(error => {
+               console.error('Error updating dashboard:', error);
+           });
+       }
+   });
+   </script>
+</body>
 </html>
-
-

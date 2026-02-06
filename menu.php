@@ -359,8 +359,8 @@ $wantedCats = ['starter','breakfast','lunch','dinner'];
                         <div class="col-md-7">
                             <h4 id="modal-name" class="text-primary fw-bold"></h4>
                             <p id="modal-description" class="text-muted"></p>
-                            <p><strong>Price: ₹<span id="modal-price"></span></strong></p>
-                            <p><strong>Total: ₹<span id="modal-total-price"></span></strong></p>
+                            <p><strong>Price: RS<span id="modal-price"></span></strong></p>
+                            <p><strong>Total: RS<span id="modal-total-price"></span></strong></p>
                             <input type="hidden" name="menu_id" id="input-menu-id" />
                             <input type="hidden" name="menu_name" id="input-menu-name" />
                             <input type="hidden" name="price" id="input-price" />
@@ -418,8 +418,8 @@ $wantedCats = ['starter','breakfast','lunch','dinner'];
         </div>
     </div>
 </div>
+<?php include_once __DIR__ . '/footer.php'; ?>
 
-<?php include __DIR__ . '/footer.php'; ?>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {

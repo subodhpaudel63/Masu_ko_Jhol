@@ -1,3 +1,4 @@
+<?php require_once __DIR__ . '/config/bootstrap.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -314,57 +315,57 @@
               </div>
               <div class="story-content py-5 my-4" data-aos="fade-right">
                 <div>
-                  <p class="text-center"><strong>16.10.2000:</strong>The Begin of Fooday Restaurents</p>
+                  <p class="text-center"><strong>16.10.2000:</strong> Humble Beginnings</p>
                   <p class="text-center">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nosrud lorem exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem.
+                    Masu Ko Jhol started as a small family-run restaurant in the heart of the city. With just a handful of tables and a passion for authentic Nepali flavors, we served our first customers with traditional recipes passed down through generations.
                   </p>
                   <p class="text-center">
-                    Accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.
-                  </p>
-                </div>
-                <div>
-                  <p class="text-center"><strong>16.10.2000:</strong>The Begin of Fooday Restaurents</p>
-                  <p class="text-center">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nosrud lorem exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem.
-                  </p>
-                  <p class="text-center">
-                    Accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.
+                    Our founder, Subodh Paudel, had a vision to bring the authentic taste of Nepali cuisine to food lovers everywhere, starting with his signature spicy meat curry that would become our namesake dish.
                   </p>
                 </div>
                 <div>
-                  <p class="text-center"><strong>16.10.2000:</strong>The Begin of Fooday Restaurents</p>
+                  <p class="text-center"><strong>05.03.2002:</strong> First Expansion</p>
                   <p class="text-center">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nosrud lorem exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem.
+                    Due to overwhelming customer response, we expanded our seating capacity and introduced our now-famous thukpa and momos to the menu. The restaurant became a local favorite among food enthusiasts.
                   </p>
                   <p class="text-center">
-                    Accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.
-                  </p>
-                </div>
-                <div>
-                  <p class="text-center"><strong>16.10.2000:</strong>The Begin of Fooday Restaurents</p>
-                  <p class="text-center">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nosrud lorem exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem.
-                  </p>
-                  <p class="text-center">
-                    Accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.
+                    We also began sourcing ingredients from local farms to ensure the highest quality and freshness in all our dishes, establishing relationships that continue to this day.
                   </p>
                 </div>
                 <div>
-                  <p class="text-center"><strong>16.10.2000:</strong>The Begin of Fooday Restaurents</p>
+                  <p class="text-center"><strong>18.07.2004:</strong> Recognition & Awards</p>
                   <p class="text-center">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nosrud lorem exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem.
+                    Masu Ko Jhol received its first culinary award for "Best Ethnic Cuisine" from the City Food Council. This recognition motivated us to further refine our recipes and service quality.
                   </p>
                   <p class="text-center">
-                    Accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.
+                    We introduced our signature spice blends and began training our chefs in traditional cooking techniques to maintain consistency across all our locations.
                   </p>
                 </div>
                 <div>
-                  <p class="text-center"><strong>16.10.2000:</strong>The Begin of Fooday Restaurents</p>
+                  <p class="text-center"><strong>22.11.2008:</strong> Second Location</p>
                   <p class="text-center">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nosrud lorem exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem.
+                    Growing demand led us to open our second restaurant in the suburban area, bringing our authentic flavors to a new community. Both locations maintained the same quality and hospitality.
                   </p>
                   <p class="text-center">
-                    Accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.
+                    We also launched our catering service, providing Nepali cuisine for special events and celebrations, which became increasingly popular among our customers.
+                  </p>
+                </div>
+                <div>
+                  <p class="text-center"><strong>12.04.2012:</strong> Culinary Innovation</p>
+                  <p class="text-center">
+                    We introduced fusion dishes that combined traditional Nepali flavors with international cooking techniques, creating unique offerings that appealed to diverse palates while preserving authenticity.
+                  </p>
+                  <p class="text-center">
+                    Our third location opened in the city's business district, making our cuisine accessible to working professionals and business travelers seeking a taste of home.
+                  </p>
+                </div>
+                <div>
+                  <p class="text-center"><strong>30.09.2016:</strong> Regional Chain</p>
+                  <p class="text-center">
+                    Masu Ko Jhol had grown to five locations across the region, becoming a recognized name for authentic Nepali cuisine. We established our own spice farm to ensure consistent quality.
+                  </p>
+                  <p class="text-center">
+                    With our growing reputation, we began training programs for aspiring Nepali chefs and started exporting our signature spice blends to international markets.
                   </p>
                 </div>
               </div>
@@ -385,50 +386,50 @@
                 <div class="slider-content pt-5 pb-4 mx-4" data-aos="fade-down-left">
                   <div>
                     <div class="testi-content">
-                      <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Architecto vel ipsa dolore sunt vitae, culpa, dolor reiciendis facilis sed blanditiis repellat incidunt impedit iusto? Odio veniam beatae veritatis adipisci a!</p>
+                      <p>"The authentic flavors of Nepal in every bite! Masu Ko Jhol brings back memories of my grandmother's cooking. Their dal bhat is exactly how I remember it from my childhood in Bangsing."</p>
                     </div>
                     <div class="d-flex justify-content-center mb-3">
                       <img src="./assets/images/testi-signal.png" alt="">
                     </div>
                     <div class="testi-info">
-                      <span class="name">Timothy Doe</span>
-                      <span class="position">Customer</span>
+                      <span class="name">Anil Shah</span>
+                      <span class="position">Regular Customer</span>
                     </div>
                   </div>
                   <div>
                     <div class="testi-content">
-                      <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Architecto vel ipsa dolore sunt vitae, culpa, dolor reiciendis facilis sed blanditiis repellat incidunt impedit iusto? Odio veniam beatae veritatis adipisci a!</p>
+                      <p>"As someone who has never been to Nepal, Masu Ko Jhol gave me an incredible introduction to Nepali cuisine. The atmosphere is warm and welcoming, and the food is absolutely delicious!"</p>
                     </div>
                     <div class="d-flex justify-content-center mb-3">
                       <img src="./assets/images/testi-signal.png" alt="">
                     </div>
                     <div class="testi-info">
-                      <span class="name">Sarah	Ruiz</span>
-                      <span class="position">Director</span>
+                      <span class="name">Priya Sharma</span>
+                      <span class="position">Food Blogger</span>
                     </div>
                   </div>
                   <div>
                     <div class="testi-content">
-                      <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Architecto vel ipsa dolore sunt vitae, culpa, dolor reiciendis facilis sed blanditiis repellat incidunt impedit iusto? Odio veniam beatae veritatis adipisci a!</p>
+                      <p>"I've been coming to Masu Ko Jhol for over five years now, and they never disappoint. Their momos are the best I've had outside of Nepal, and their service is consistently excellent."</p>
                     </div>
                     <div class="d-flex justify-content-center mb-3">
                       <img src="./assets/images/testi-signal.png" alt="">
                     </div>
                     <div class="testi-info">
-                      <span class="name">Tracey Lewis</span>
-                      <span class="position">Designer</span>
+                      <span class="name">Raj KC</span>
+                      <span class="position">Loyal Patron</span>
                     </div>
                   </div>
                   <div>
                     <div class="testi-content">
-                      <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Architecto vel ipsa dolore sunt vitae, culpa, dolor reiciendis facilis sed blanditiis repellat incidunt impedit iusto? Odio veniam beatae veritatis adipisci a!</p>
+                      <p>"The perfect spot for family gatherings! Masu Ko Jhol offers not just great food but an authentic cultural experience. Their thukpa warmed my heart on a cold winter evening."</p>
                     </div>
                     <div class="d-flex justify-content-center mb-3">
                       <img src="./assets/images/testi-signal.png" alt="">
                     </div>
                     <div class="testi-info">
-                      <span class="name">Jamie	Erickson</span>
-                      <span class="position">Manager</span>
+                      <span class="name">Sunita Rai</span>
+                      <span class="position">Event Organizer</span>
                     </div>
                   </div>
                 </div>
@@ -584,97 +585,8 @@
       </section>
       
 
-      <section class="reservation-form my-5 py-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-12">
-                    <h2 data-aos="fade-right" class="text-center display-6 fw-bold">Make Reservation</h2>
-                    <div data-aos="fade-right" class="reservation-line d-flex justify-content-center align-items-center">
-                        <span></span>
-                    </div>
-                    <form action="" class="position-relative">
-                        <p class="text-center" data-aos="fade-up-right">We willing to help you make the reservation online to save your time and money or you can call us directly through the customer service hotline: 225-88888</p>
-                        <div class="row mt-5">
-                            <div class="col-md-6" data-aos="fade-right">
-                                <div class="input-group">
-                                    <div class="icon-wrapper d-flex align-items-center position-relative">
-                                      <i class="fa fa-user py-2 px-3"></i>
-                                    </div>
-                                    <input class="form-control bg-transparent border-0 px-3" type="text" placeholder="Username">
-                                </div>
-                                <div class="input-group">
-                                    <div class="icon-wrapper d-flex align-items-center position-relative">
-                                      <i class="fa fa-phone py-2 px-3"></i>
-                                    </div>
-                                    <input class="form-control bg-transparent border-0 px-3" type="text" placeholder="Phone">
-                                </div>
-                                <div class="input-group">
-                                    <div class="icon-wrapper d-flex align-items-center position-relative">
-                                      <i class="fa fa-calendar py-2 px-3"></i>
-                                    </div>
-                                    <input class="form-control bg-transparent border-0 px-3" type="date" placeholder="Date">
-                                </div>
-                            </div>
-                            <div class="col-md-6" data-aos="fade-left">
-                                <div class="input-group">
-                                    <div class="icon-wrapper d-flex align-items-center position-relative">
-                                      <i class="fa fa-envelope py-2 px-3"></i>
-                                    </div>
-                                    <input class="form-control bg-transparent border-0 px-3" type="email" placeholder="Email">
-                                </div>
-                                <div class="input-group">
-                                    <div class="icon-wrapper d-flex align-items-center position-relative">
-                                        <i class="fa fa-person py-2 px-3"></i>
-                                    </div>
-                                    <select class="form-select bg-transparent border-0 ps-3" name="" id="">
-                                        <option value="">1 Person</option>
-                                        <option value="">2 Person</option>
-                                        <option value="">3 Person</option>
-                                        <option value="">4 Person</option>
-                                        <option value="">5 Person</option>
-                                        <option value="">6 Person</option>
-                                        <option value="">7 Person</option>
-                                        <option value="">8 Person</option>
-                                        <option value="">9 Person</option>
-                                        <option value="">10 Person</option>
-                                    </select>
-                                </div>
-                                <div class="input-group">
-                                    <div class="icon-wrapper d-flex align-items-center position-relative">
-                                        <i class="fa fa-clock py-2 px-3"></i>
-                                    </div>
-                                    <select type="text" placeholder="Time" class="ps-3 form-select bg-transparent border-0">
-                                        <option>7:00 AM</option>
-                                        <option>8:00 AM</option>
-                                        <option>9:00 AM</option>
-                                        <option>10:00 AM</option>
-                                        <option>11:00 AM</option>
-                                        <option>12:00 AM</option>
-                                        <option>1:00 PM</option>
-                                        <option>2:00 PM</option>
-                                        <option>3:00 PM</option>
-                                        <option>4:00 PM</option>
-                                        <option>5:00 PM</option>
-                                        <option>6:00 PM</option>
-                                        <option>7:00 PM</option>
-                                        <option>8:00 PM</option>
-                                        <option>9:00 PM</option>
-                                        <option>10:00 PM</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="text-center" data-aos="fade-up-left">
-                            <div class="book-a-table contact-button">
-                                <div class="anim-layer"></div>
-                                <a href="#">Book Table</a>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-      </section>
+    
+                                 
 
       <section class="subscribe-us pb-5 mb-5">
         <img class="d-none d-lg-block" src="./assets/images/subscribe-us.png" alt="" data-aos="fade-down-right">

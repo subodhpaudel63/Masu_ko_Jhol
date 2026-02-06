@@ -1,25 +1,10 @@
--- phpMyAdmin SQL Dump
--- version 5.2.1
--- https://www.phpmyadmin.net/
---
--- Host: 127.0.0.1:3307
--- Generation Time: Aug 16, 2025 at 06:44 AM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.0.30
+
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
 
 
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
-
---
--- Database: `darshanrestaurant`
---
 
 -- --------------------------------------------------------
 
@@ -53,59 +38,15 @@ INSERT INTO `bookings` (`id`, `name`, `email`, `phone`, `booking_date`, `booking
 -- Table structure for table `feedback`
 --
 
-CREATE TABLE `feedback` (
-  `feedback_id` int(11) NOT NULL,
-  `feedback_name` varchar(100) NOT NULL,
-  `feedback_email` varchar(100) NOT NULL,
-  `feedback_rating` int(11) DEFAULT NULL CHECK (`feedback_rating` between 1 and 5),
-  `feedback_message` text DEFAULT NULL,
-  `created_at` datetime DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `feedback`
---
-
-INSERT INTO `feedback` (`feedback_id`, `feedback_name`, `feedback_email`, `feedback_rating`, `feedback_message`, `created_at`) VALUES
-(15, 'jaefini', 'alice.baker@example.com', 5, 'The pasta was cooked perfectly and the service was excellent!', '2025-06-01 17:21:58'),
-(16, 'kndnv', 'brian.cook@example.com', 4, 'Great ambiance and tasty burgers, will visit again.', '2025-06-01 17:21:58'),
-(17, 'nnn', 'carol.davis@example.com', 3, 'The food was okay, but the wait time was a bit long.', '2025-06-01 17:21:58'),
-(18, 'cndnv', 'daniel.evans@example.com', 5, 'Loved the fresh ingredients and friendly staff. Highly recommend!', '2025-06-01 17:21:58'),
-(19, 'cjd ', 'emma.foster@example.com', 2, 'The pizza was soggy and lacked flavor. Expected better.', '2025-06-01 17:21:58'),
-(20, 'cjdncd', 'frank.garcia@example.com', 4, 'Good portion sizes and delicious desserts.', '2025-06-01 17:21:58'),
-(21, 'nkrfnk', 'grace.hill@example.com', 5, 'Amazing experience! The chef really knows how to impress.', '2025-06-01 17:21:58'),
-(22, 'djncd', 'henry.ian@example.com', 3, 'Decent food but the seating was uncomfortable.', '2025-06-01 17:21:58'),
-(23, 'csnnc', 'isabel.jones@example.com', 1, 'The order was wrong and the staff was rude. Not coming back.', '2025-06-01 17:21:58'),
-(24, 'ckcnek', 'jack.kelly@example.com', 4, 'Nice variety on the menu and great drinks selection.', '2025-06-01 17:21:58'),
-(25, 'Caesar Salad', 'vaibhavgoswami055@gmail.com', 1, 'jdiejieo', '2025-06-02 20:18:33'),
-(26, 'ninide', 'demo@gmail.com', 5, 'jennde', '2025-06-02 22:40:38'),
-(27, 'knkscnkn', 'demo@gmail.com', 4, 'csmlslm', '2025-06-05 00:22:54'),
-(28, 'Vaibhav', 'demo@gmail.com', 4, 'naixxna', '2025-07-06 19:33:10'),
-(29, 'Vaibhav Pari', 'demo@gmail.com', 4, 'wxwiwis', '2025-07-06 20:30:55'),
-(30, 'Vaibhav', 'example@gmail.com', 4, 'sksocje', '2025-07-09 13:03:26'),
-(31, 'knkwnfwk', 'vaibhavgoswami055@gmail.com', 5, 'good cooking...', '2025-08-07 16:40:22');
-
--- --------------------------------------------------------
+------
 
 --
 -- Table structure for table `gallery`
 --
-
-CREATE TABLE `gallery` (
-  `id` int(11) NOT NULL,
-  `file_path` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
 -- Dumping data for table `gallery`
 --
-
-INSERT INTO `gallery` (`id`, `file_path`) VALUES
-(7, '../assets/img/gallery/jay-wennington-N_Y88TWmGwA-unsplash.jpg'),
-(8, '../assets/img/gallery/negley-stockman-8EPt1CSYLTQ-unsplash.jpg'),
-(10, '../assets/img/gallery/andrius-budrikas-kGP7rp2gWbc-unsplash.jpg'),
-(11, '../assets/img/gallery/jay-wennington-N_Y88TWmGwA-unsplash.jpg'),
-(12, '../assets/img/gallery/amin-ramezani-afOvuzIgxPU-unsplash.jpg');
 
 -- --------------------------------------------------------
 
@@ -277,7 +218,3 @@ ALTER TABLE `orders`
 ALTER TABLE `users`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 COMMIT;
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

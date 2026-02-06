@@ -72,11 +72,55 @@ if ($catResult) {
     .menu .card-title { font-weight: 800; color: #d32f2f; }
     .menu .card-text { color:#6c757d; }
     .menu .price { color:#212529; font-weight:700; }
-    .btn-orange { background:#ff6a00; color:#fff; border-radius:10px; border:1px solid #ff6a00; white-space:nowrap; font-weight:600; }
-    .btn-orange:hover { background:#e65f00; color:#fff; border-color:#e65f00; }
+    /* Add to Cart button - larger */
+    .btn-add-to-cart { 
+      background:#ff6a00; 
+      color:#fff; 
+      border-radius:6px; 
+      border:1px solid #ff6a00; 
+      white-space:nowrap; 
+      font-weight:600; 
+      padding: 0.35rem 0.75rem; 
+      font-size: 0.85rem;
+      min-height: auto;
+      line-height: 1.4;
+    }
+    /* Buy Now button - smaller */
+    .btn-buy-now { 
+      background:#ff6a00; 
+      color:#fff; 
+      border-radius:4px; 
+      border:1px solid #ff6a00; 
+      white-space:nowrap; 
+      font-weight:600; 
+      padding: 0.25rem 0.5rem; 
+      font-size: 0.75rem;
+      min-height: auto;
+      line-height: 1.3;
+    }
+    .btn-add-to-cart:hover, .btn-buy-now:hover { background:#e65f00; color:#fff; border-color:#e65f00; }
     /* Enforce orange style against any global .btn overrides */
-    .btn.btn-orange { background:#ff6a00 !important; border-color:#ff6a00 !important; color:#fff !important; }
-    .btn.btn-orange:hover { background:#e65f00 !important; border-color:#e65f00 !important; color:#fff !important; }
+    .btn.btn-orange.btn-add-to-cart { 
+      background:#ff6a00 !important; 
+      border-color:#ff6a00 !important; 
+      color:#fff !important;
+      padding: 0.35rem 0.75rem !important;
+      font-size: 0.85rem !important;
+      border-radius: 6px !important;
+      min-height: auto !important;
+      line-height: 1.4 !important;
+    }
+    .btn.btn-orange.btn-buy-now { 
+      background:#ff6a00 !important; 
+      border-color:#ff6a00 !important; 
+      color:#fff !important;
+      padding: 0.25rem 0.5rem !important;
+      font-size: 0.75rem !important;
+      border-radius: 4px !important;
+      min-height: auto !important;
+      line-height: 1.3 !important;
+    }
+    .btn.btn-orange.btn-add-to-cart:hover, .btn.btn-orange.btn-buy-now:hover { background:#e65f00 !important; border-color:#e65f00 !important; color:#fff !important; }
     
     /* Add padding to prevent content from being hidden under navbar */
     .main-content {
@@ -87,6 +131,52 @@ if ($catResult) {
       .main-content {
         padding-top: 80px;
       }
+      
+      /* Adjust button sizes for mobile */
+      .btn.btn-orange.btn-add-to-cart {
+        padding: 0.3rem 0.65rem !important;
+        font-size: 0.8rem !important;
+        border-radius: 5px !important;
+      }
+      .btn.btn-orange.btn-buy-now {
+        padding: 0.2rem 0.45rem !important;
+        font-size: 0.7rem !important;
+        border-radius: 3px !important;
+      }
+      
+      /* Adjust card padding for mobile */
+      .card.h-100.p-2 {
+        padding: 0.5rem !important;
+      }
+    }
+    
+    /* Ensure buttons don't take too much space */
+    .d-flex.gap-2.mt-3 .btn-add-to-cart, .d-flex.gap-2.mt-3 .btn.btn-orange.btn-add-to-cart {
+      padding: 0.35rem 0.75rem !important;
+      font-size: 0.85rem !important;
+    }
+    .d-flex.gap-2.mt-3 .btn-buy-now, .d-flex.gap-2.mt-3 .btn.btn-orange.btn-buy-now {
+      padding: 0.25rem 0.5rem !important;
+      font-size: 0.75rem !important;
+    }
+    
+    @media (max-width: 576px) {
+      .d-flex.gap-2.mt-3 .btn-add-to-cart, .d-flex.gap-2.mt-3 .btn.btn-orange.btn-add-to-cart {
+        padding: 0.3rem 0.65rem !important;
+        font-size: 0.8rem !important;
+      }
+      .d-flex.gap-2.mt-3 .btn-buy-now, .d-flex.gap-2.mt-3 .btn.btn-orange.btn-buy-now {
+        padding: 0.2rem 0.4rem !important;
+        font-size: 0.7rem !important;
+      }
+    }
+    
+    /* Override any global button styles that might affect size */
+    .card .btn-add-to-cart, .card .btn.btn-orange.btn-add-to-cart,
+    .card .btn-buy-now, .card .btn.btn-orange.btn-buy-now {
+      height: auto !important;
+      min-height: auto !important;
+      line-height: 1.3 !important;
     }
     </style>
 </head>
@@ -165,8 +255,8 @@ if ($catResult) {
               <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileMenu">
                 <li><h6 class="dropdown-header"><?php echo htmlspecialchars($currentUser['email'] ?? ''); ?></h6></li>
                 <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="./update_password.php"><i class="bi bi-key me-2"></i>Update Password</a></li>
-                <li><a class="dropdown-item" href="<?php echo url('./includes/logout.php'); ?>"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+                <li><a class="dropdown-item" href="./update_password.php"><i class="fa fa-key me-2"></i>Update Password</a></li>
+                <li><a class="dropdown-item" href="<?php echo url('./includes/logout.php'); ?>"><i class="fa fa-right-from-bracket me-2"></i>Logout</a></li>
               </ul>
             </div>
           <?php endif; ?>
@@ -280,7 +370,7 @@ if ($catResult) {
                                     <h5 class="card-title"><?= htmlspecialchars($item['menu_name']) ?></h5>
                                     <p class="card-text flex-grow-1"><?= htmlspecialchars($item['menu_description']) ?></p>
                                     <div class="d-flex justify-content-between align-items-center mt-1">
-                                        <span class="price">₹<?= number_format($item['menu_price'], 2) ?></span>
+                                        <span class="price">RS<?= number_format((float)$item['menu_price'], 2) ?></span>
                                     </div>
                                     <div class="d-flex gap-2 mt-3">
                                         <form action="../includes/cart.php?action=add" method="post" class="d-grid flex-grow-1">
@@ -291,10 +381,10 @@ if ($catResult) {
                                             <div class="input-group mb-2">
                                                 <input type="number" name="quantity" class="form-control form-control-sm" value="1" min="1" max="20">
                                             </div>
-                                            <button type="submit" class="btn btn-orange w-100">Add to Cart</button>
+                                            <button type="submit" class="btn btn-orange btn-add-to-cart w-100">Add to Cart</button>
                                         </form>
                                         <button type="button"
-                                            class="btn btn-orange w-100"
+                                            class="btn btn-orange btn-buy-now w-100"
                                             data-bs-toggle="modal"
                                             data-bs-target="#buyModal"
                                             data-id="<?= intval($item['menu_id']) ?>"

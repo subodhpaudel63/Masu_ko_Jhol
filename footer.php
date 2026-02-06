@@ -44,7 +44,7 @@
                   <i class="fa-solid fa-mobile text-white fa-2x border-bottom pb-2"></i>
                   <div class="ps-3">
                     <p class="mb-0">
-                      007-44444 <br>
+                      9748759699 <br>
                   
                       
                     </p>

@@ -818,8 +818,9 @@ header.scrolled {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  /* align-items: center; */
+  align-items: center;
   height: auto;
+  text-align: center;
 }
 
 .banner .banner-img {
@@ -831,12 +832,49 @@ header.scrolled {
    /* height: 550px;  */
   object-fit: contain;
   animation: imgRotate 50s linear infinite;
+  margin: 0 auto; /* Center the image */
 }
 
 @keyframes imgRotate {
   100% {
     transform: rotate(360deg);
   }
+}
+
+/* Center banner image on mobile devices */
+@media (max-width: 768px) {
+  .banner .banner-img {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .banner img {
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+    height: auto;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 576px) {
+  .banner img {
+    max-width: 250px;
+  }
+}
+
+/* Ensure banner image is centered on all devices */
+.banner .banner-img {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.banner-img img {
+  display: block;
+  margin: 0 auto;
 }
 
 /* book-a-table button start*/

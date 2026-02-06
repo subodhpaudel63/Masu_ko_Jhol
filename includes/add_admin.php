@@ -1,13 +1,29 @@
 <?php
+session_start();
 include 'db.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email']);
     $password = password_hash(trim($_POST['password']), PASSWORD_DEFAULT);
+    $user_type = $_POST['user_type'] ?? 'user';
 
+    // Validate input
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $_SESSION['msg'] = ['type' => 'error', 'text' => 'Invalid email.'];
-    header("Location: /Masu%20Ko%20Jhol%28full%29/admin/users.php");
+        $_SESSION['msg'] = ['type' => 'error', 'text' => 'Invalid email address.'];
+        header("Location: /Masu%20Ko%20Jhol%28full%29/admin/users.php");
+        exit;
+    }
+    
+    if (strlen(trim($_POST['password'])) < 6) {
+        $_SESSION['msg'] = ['type' => 'error', 'text' => 'Password must be at least 6 characters long.'];
+        header("Location: /Masu%20Ko%20Jhol%28full%29/admin/users.php");
+        exit;
+    }
+
+    // Validate user type
+    if (!in_array($user_type, ['user', 'admin'])) {
+        $_SESSION['msg'] = ['type' => 'error', 'text' => 'Invalid user type.'];
+        header("Location: /Masu%20Ko%20Jhol%28full%29/admin/users.php");
         exit;
     }
 
@@ -26,13 +42,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     $check_stmt->close();
 
-    $stmt = $conn->prepare("INSERT INTO users (email, password, user_type) VALUES (?, ?, 'admin')");
-    $stmt->bind_param("ss", $email, $password);
+    $stmt = $conn->prepare("INSERT INTO users (email, password, user_type) VALUES (?, ?, ?)");
+    $stmt->bind_param("sss", $email, $password, $user_type);
     
     if ($stmt->execute()) {
-        $_SESSION['msg'] = ['type' => 'success', 'text' => 'Admin added successfully!'];
+        $_SESSION['msg'] = ['type' => 'success', 'text' => ucfirst($user_type) . ' added successfully!'];
     } else {
-        $_SESSION['msg'] = ['type' => 'error', 'text' => 'Failed to add admin.'];
+        $_SESSION['msg'] = ['type' => 'error', 'text' => 'Failed to add user: ' . $stmt->error];
     }
 
     $stmt->close();
@@ -41,4 +57,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header("Location: /Masu%20Ko%20Jhol%28full%29/admin/users.php");
     exit;
 }
+
+// If not POST request, redirect back
+header("Location: /Masu%20Ko%20Jhol%28full%29/admin/users.php");
+exit;
 ?>

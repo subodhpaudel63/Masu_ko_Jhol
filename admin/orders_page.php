@@ -1,24 +1,22 @@
 <?php
-// Start session if not already started
 declare(strict_types=1);
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
 require_once __DIR__ . '/../includes/admin_auth.php';
 require_admin();
 require_once __DIR__ . '/../includes/db.php';
 
-$bookings = [];
-$res = $conn->query("SELECT * FROM bookings ORDER BY booking_date DESC, booking_time ASC");
-if ($res) { while ($row = $res->fetch_assoc()) { $bookings[] = $row; } }
+$orders = [];
+$res = $conn->query("SELECT order_id, menu_id, menu_name, email, mobile, address, quantity, price, total_price, status, order_time FROM orders ORDER BY order_id DESC");
+if ($res) { while ($row = $res->fetch_assoc()) { $orders[] = $row; } }
 
 // Calculate stats
-$pending_bookings = 0;
-$confirmed_bookings = 0;
-$total_people = 0;
-
-foreach($bookings as $booking) {
-    if($booking['status'] === 'pending') $pending_bookings++;
-    if($booking['status'] === 'confirmed') $confirmed_bookings++;
-    $total_people += $booking['people'];
+$total_revenue = 0;
+$confirmed_orders = 0;
+$shipping_orders = 0;
+foreach($orders as $order) {
+    $total_revenue += $order['total_price'];
+    if($order['status'] === 'Confirmed') $confirmed_orders++;
+    if($order['status'] === 'Shipping') $shipping_orders++;
 }
 ?>
 <!DOCTYPE html>
@@ -27,7 +25,7 @@ foreach($bookings as $booking) {
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Table Bookings - Masu Ko Jhol</title>
+  <title>Orders - Masu Ko Jhol</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,0,0" />
   <link rel="stylesheet" href="../assets/css/adminstyle.css">
 </head>
@@ -60,16 +58,16 @@ foreach($bookings as $booking) {
               <span class="material-symbols-sharp">insights </span>
               <h3>Analytics</h3>
            </a>
-           <a href="orders_page.php">
+           <a href="#" class="active">
               <span class="material-symbols-sharp">mail_outline </span>
               <h3>Orders</h3>
-              <span class="msg_count">14</span>
+              <span class="msg_count"><?php echo count($orders); ?></span>
            </a>
            <a href="menu.php">
               <span class="material-symbols-sharp">receipt_long </span>
               <h3>Menu</h3>
            </a>
-           <a href="#" class="active">
+           <a href="bookings.php">
               <span class="material-symbols-sharp">calendar_month </span>
               <h3>Bookings</h3>
            </a>
@@ -97,7 +95,7 @@ foreach($bookings as $booking) {
       --------------- -->
 
       <main>
-           <h1>Table Booking Management</h1>
+           <h1>Orders Management</h1>
 
            <div class="date">
              <input type="date" >
@@ -107,12 +105,12 @@ foreach($bookings as $booking) {
 
            <!-- start seling -->
             <div class="sales">
-               <span class="material-symbols-sharp">event_available</span>
+               <span class="material-symbols-sharp">shopping_cart</span>
                <div class="middle">
 
                  <div class="left">
-                   <h3>Total Bookings</h3>
-                   <h1><?php echo count($bookings); ?></h1>
+                   <h3>Total Revenue</h3>
+                   <h1>Rs. <?php echo number_format($total_revenue, 2); ?></h1>
                  </div>
                   <div class="progress">
                       <svg>
@@ -122,7 +120,7 @@ foreach($bookings as $booking) {
                   </div>
 
                </div>
-               <small>All reservations</small>
+               <small>All time earnings</small>
             </div>
            <!-- end seling -->
               <!-- start expenses -->
@@ -131,89 +129,88 @@ foreach($bookings as $booking) {
                 <div class="middle">
  
                   <div class="left">
-                    <h3>Confirmed</h3>
-                    <h1><?php echo $confirmed_bookings; ?></h1>
+                    <h3>Confirmed Orders</h3>
+                    <h1><?php echo $confirmed_orders; ?></h1>
                   </div>
                    <div class="progress">
                        <svg>
                           <circle  r="30" cy="40" cx="40"></circle>
                        </svg>
-                       <div class="number"><p><?php echo count($bookings) > 0 ? round(($confirmed_bookings/count($bookings))*100, 0) : 0; ?>%</p></div>
+                       <div class="number"><p><?php echo count($orders) > 0 ? round(($confirmed_orders/count($orders))*100, 0) : 0; ?>%</p></div>
                    </div>
  
                 </div>
-                <small>Bookings confirmed</small>
+                <small>Orders confirmed</small>
              </div>
             <!-- end seling -->
                <!-- start seling -->
                <div class="income">
-                <span class="material-symbols-sharp">pending_actions</span>
+                <span class="material-symbols-sharp">local_shipping</span>
                 <div class="middle">
  
                   <div class="left">
-                    <h3>Pending</h3>
-                    <h1><?php echo $pending_bookings; ?></h1>
+                    <h3>Shipping Orders</h3>
+                    <h1><?php echo $shipping_orders; ?></h1>
                   </div>
                    <div class="progress">
                        <svg>
                           <circle  r="30" cy="40" cx="40"></circle>
                        </svg>
-                       <div class="number"><p><?php echo count($bookings) > 0 ? round(($pending_bookings/count($bookings))*100, 0) : 0; ?>%</p></div>
+                       <div class="number"><p><?php echo count($orders) > 0 ? round(($shipping_orders/count($orders))*100, 0) : 0; ?>%</p></div>
                    </div>
  
                 </div>
-                <small>Bookings pending</small>
+                <small>Orders in shipping</small>
              </div>
             <!-- end seling -->
 
         </div>
        <!-- end insights -->
       <div class="recent_order">
-         <h2>All Bookings</h2>
+         <h2>All Orders</h2>
          <table> 
              <thead>
               <tr>
-                <th>ID</th>
-                <th>Name</th>
+                <th>Order ID</th>
+                <th>Item</th>
                 <th>Email</th>
                 <th>Phone</th>
-                <th>Date & Time</th>
-                <th>People</th>
-                <th>Message</th>
+                <th>Address</th>
+                <th>Qty</th>
+                <th>Total</th>
                 <th>Status</th>
                 <th>Actions</th>
               </tr>
              </thead>
               <tbody>
-                <?php if (!$bookings): ?>
-                  <tr><td colspan="9" class="text-center text-muted">No bookings found.</td></tr>
-                <?php else: foreach ($bookings as $b): ?>
+                <?php if (!$orders): ?>
+                  <tr><td colspan="9" class="text-center text-muted">No orders found.</td></tr>
+                <?php else: foreach ($orders as $o): ?>
                   <tr>
-                    <td><?php echo intval($b['id']); ?></td>
-                    <td><?php echo htmlspecialchars($b['name']); ?></td>
-                    <td><?php echo htmlspecialchars($b['email']); ?></td>
-                    <td><?php echo htmlspecialchars($b['phone']); ?></td>
-                    <td><?php echo htmlspecialchars($b['booking_date']); ?> <?php echo htmlspecialchars($b['booking_time']); ?></td>
-                    <td><?php echo intval($b['people']); ?></td>
-                    <td><?php echo htmlspecialchars(substr($b['message'], 0, 30)) . (strlen($b['message']) > 30 ? '...' : ''); ?></td>
+                    <td><?php echo intval($o['order_id']); ?></td>
+                    <td><?php echo htmlspecialchars($o['menu_name']); ?></td>
+                    <td><?php echo htmlspecialchars($o['email']); ?></td>
+                    <td><?php echo htmlspecialchars($o['mobile']); ?></td>
+                    <td><?php echo htmlspecialchars(substr($o['address'], 0, 20)) . (strlen($o['address']) > 20 ? '...' : ''); ?></td>
+                    <td><?php echo intval($o['quantity']); ?></td>
+                    <td>Rs. <?php echo number_format((float)$o['total_price'], 2); ?></td>
                     <td>
                       <div class="booking-actions">
-                        <select name="status" class="booking-status-select" id="status-<?php echo intval($b['id']); ?>">
-                          <?php foreach (["pending","confirmed","rejected"] as $st): ?>
-                            <option value="<?php echo $st; ?>" <?php echo $b['status']===$st?'selected':''; ?>><?php echo ucfirst($st); ?></option>
+                        <select name="status" class="booking-status-select" id="status-<?php echo intval($o['order_id']); ?>">
+                          <?php foreach (["Confirmed","Shipping","Ongoing","Delivering","Cancelled"] as $st): ?>
+                            <option value="<?php echo $st; ?>" <?php echo $o['status']===$st?'selected':''; ?>><?php echo $st; ?></option>
                           <?php endforeach; ?>
                         </select>
-                        <button type="button" class="btn-update btn-booking-update" onclick="handleUpdate(<?php echo intval($b['id']); ?>)">Update</button>
+                        <button type="button" class="btn-update btn-booking-update" onclick="handleOrderUpdate(<?php echo intval($o['order_id']); ?>)">Update</button>
                       </div>
                     </td>
                     <td>
-                      <button type="button" class="btn-delete btn-booking-delete" onclick="handleDelete(<?php echo intval($b['id']); ?>)">Delete</button>
+                      <button type="button" class="btn-delete btn-booking-delete" onclick="handleOrderDelete(<?php echo intval($o['order_id']); ?>)">Delete</button>
                     </td>
                   </tr>
                 <?php endforeach; endif; ?>
               </tbody>
          </table>
-         
          <a href="index.php">Back to Dashboard</a>
       </div>
 
@@ -224,7 +221,8 @@ foreach($bookings as $booking) {
 
       <!----------------
         start right main 
-      ---------------------->    <div class="right">
+      ---------------------->
+    <div class="right">
 
 <div class="top">
    <button id="menu_bar">
@@ -255,7 +253,7 @@ foreach($bookings as $booking) {
             <img src="../assets/img/user-avatar.png" alt=""/>
          </div>
         <div class="message">
-           <p><b>New Booking</b> received successfully</p>
+           <p><b>New Order</b> received successfully</p>
         </div>
       </div>
       <div class="update">
@@ -263,7 +261,7 @@ foreach($bookings as $booking) {
         <img src="../assets/img/order-icon.png" alt=""/>
         </div>
        <div class="message">
-          <p><b>Booking Status</b> updated to confirmed</p>
+          <p><b>Order Status</b> updated to shipped</p>
        </div>
      </div>
      <div class="update">
@@ -271,7 +269,7 @@ foreach($bookings as $booking) {
          <img src="../assets/img/menu-icon.png" alt=""/>
       </div>
      <div class="message">
-        <p><b>Reservation</b> confirmed for customer</p>
+        <p><b>Payment</b> confirmed for order</p>
      </div>
    </div>
   </div>
@@ -279,54 +277,57 @@ foreach($bookings as $booking) {
 
 
    <div class="sales-analytics">
-     <h2>Booking Statistics</h2>
+     <h2>Order Statistics</h2>
 
       <div class="item">
         <div class="icon">
-          <span class="material-symbols-sharp">groups</span>
+          <span class="material-symbols-sharp">receipt</span>
         </div>
         <div class="right">
           <div class="info">
-            <h3>Total People</h3>
-            <small class="text-muted">All bookings</small>
+            <h3>Total Orders</h3>
+            <small class="text-muted">All time</small>
           </div>
-          <h5 class="success">+<?php echo $total_people; ?></h5>
-          <h3><?php echo $total_people; ?></h3>
+          <h5 class="success">+<?php echo count($orders); ?></h5>
+          <h3><?php echo count($orders); ?></h3>
         </div>
       </div>
       <div class="item">
         <div class="icon">
-          <span class="material-symbols-sharp">today</span>
+          <span class="material-symbols-sharp">paid</span>
         </div>
         <div class="right">
           <div class="info">
-            <h3>Today's Bookings</h3>
-            <small class="text-muted">Upcoming</small>
+            <h3>Avg Order Value</h3>
+            <small class="text-muted">Per order</small>
           </div>
-          <?php 
-          $today_bookings = 0;
-          foreach($bookings as $booking) {
-              if(date('Y-m-d', strtotime($booking['booking_date'])) === date('Y-m-d')) $today_bookings++;
-          }
-          ?>
-          <h5 class="success">+<?php echo $today_bookings; ?></h5>
-          <h3><?php echo $today_bookings; ?></h3>
+          <h5 class="success">+15%</h5>
+          <h3>Rs. <?php echo count($orders) > 0 ? number_format($total_revenue/count($orders), 2) : '0.00'; ?></h3>
         </div>
       </div>
       <div class="item">
         <div class="icon">
-          <span class="material-symbols-sharp">calendar_month</span>
+          <span class="material-symbols-sharp">inventory</span>
         </div>
         <div class="right">
           <div class="info">
-            <h3>Pending Bookings</h3>
+            <h3>Pending Orders</h3>
             <small class="text-muted">Need attention</small>
           </div>
-          <h5 class="danger">-<?php echo $pending_bookings; ?></h5>
-          <h3><?php echo $pending_bookings; ?></h3>
+          <?php 
+          $pending_count = 0;
+          foreach($orders as $order) {
+              if($order['status'] === 'Confirmed') $pending_count++;
+          }
+          ?>
+          <h5 class="danger">-<?php echo $pending_count; ?></h5>
+          <h3><?php echo $pending_count; ?></h3>
         </div>
       </div>
-   </div>
+   
+   
+  
+</div>
 
       <div class="add_product">
             <div>
@@ -337,10 +338,11 @@ foreach($bookings as $booking) {
 
    </div>
 
+<script src="../assets/js/adminscript.js"></script>
 <script>
-// Direct handler functions
-function handleUpdate(bookingId) {
-    const statusSelect = document.getElementById('status-' + bookingId);
+// AJAX Order Status Update
+function handleOrderUpdate(orderId) {
+    const statusSelect = document.getElementById('status-' + orderId);
     const newStatus = statusSelect.value;
     const button = event.target;
     
@@ -350,28 +352,47 @@ function handleUpdate(bookingId) {
     button.textContent = 'Updating...';
     
     // Simple AJAX call
-    fetch('../includes/update_booking_status.php', {
+    fetch('update_order_status_ajax.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'X-Requested-With': 'XMLHttpRequest'
         },
         body: JSON.stringify({
-            id: parseInt(bookingId),
+            order_id: parseInt(orderId),
             status: newStatus
         })
     })
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            alert('Booking status updated successfully!');
+            alert('Order status updated successfully!');
+            // Update dashboard stats if they exist
+            const totalRevenueElement = document.querySelector('.total-revenue-display');
+            const totalOrdersElement = document.querySelector('.total-orders-display');
+            
+            if (totalRevenueElement && data.stats) {
+                totalRevenueElement.textContent = 'Rs. ' + parseFloat(data.stats.total_revenue).toFixed(2);
+                totalRevenueElement.classList.add('updating');
+                setTimeout(() => {
+                    totalRevenueElement.classList.remove('updating');
+                }, 500);
+            }
+            
+            if (totalOrdersElement && data.stats) {
+                totalOrdersElement.textContent = data.stats.total_orders;
+                totalOrdersElement.classList.add('updating');
+                setTimeout(() => {
+                    totalOrdersElement.classList.remove('updating');
+                }, 500);
+            }
         } else {
             alert('Error: ' + data.message);
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Error updating booking status');
+        alert('Error updating order status');
     })
     .finally(() => {
         // Re-enable button
@@ -380,8 +401,8 @@ function handleUpdate(bookingId) {
     });
 }
 
-function handleDelete(bookingId) {
-    if (!confirm('Are you sure you want to delete booking #' + bookingId + '? This action cannot be undone.')) {
+function handleOrderDelete(orderId) {
+    if (!confirm('Are you sure you want to delete order #' + orderId + '? This action cannot be undone.')) {
         return;
     }
     
@@ -393,20 +414,20 @@ function handleDelete(bookingId) {
     button.textContent = 'Deleting...';
     
     // Simple AJAX call
-    fetch('../includes/delete_booking.php', {
+    fetch('../includes/delete_order.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'X-Requested-With': 'XMLHttpRequest'
         },
         body: JSON.stringify({
-            id: parseInt(bookingId)
+            order_id: parseInt(orderId)
         })
     })
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            alert('Booking deleted successfully!');
+            alert('Order deleted successfully!');
             // Remove the row
             const row = button.closest('tr');
             row.style.opacity = '0';
@@ -420,7 +441,7 @@ function handleDelete(bookingId) {
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Error deleting booking');
+        alert('Error deleting order');
     })
     .finally(() => {
         // Re-enable button
@@ -431,46 +452,14 @@ function handleDelete(bookingId) {
 
 // Debug: Check if script is loading
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Booking page loaded');
-    
-    // Test button debug
-    const testButton = document.getElementById('testButton');
-    if (testButton) {
-        testButton.addEventListener('click', function() {
-            alert('Test button is working!');
-            console.log('Test button clicked');
-        });
-        console.log('Test button found and listener added');
-    } else {
-        console.log('Test button NOT found');
-    }
+    console.log('Orders page loaded');
     
     // Debug: Check if buttons exist
     const updateButtons = document.querySelectorAll('.btn-booking-update');
     const deleteButtons = document.querySelectorAll('.btn-booking-delete');
     console.log('Update buttons found:', updateButtons.length);
     console.log('Delete buttons found:', deleteButtons.length);
-    
-    // Add direct event listeners for debugging
-    updateButtons.forEach((button, index) => {
-        console.log('Adding listener to update button', index);
-        button.addEventListener('click', function(e) {
-            e.preventDefault();
-            console.log('Update button clicked!');
-            alert('Update button clicked! Booking ID: ' + this.getAttribute('data-booking-id'));
-        });
-    });
-    
-    deleteButtons.forEach((button, index) => {
-        console.log('Adding listener to delete button', index);
-        button.addEventListener('click', function(e) {
-            e.preventDefault();
-            console.log('Delete button clicked!');
-            alert('Delete button clicked! Booking ID: ' + this.getAttribute('data-booking-id'));
-        });
-    });
 });
 </script>
-<script src="../assets/js/adminscript.js"></script>
 </body>
 </html>
