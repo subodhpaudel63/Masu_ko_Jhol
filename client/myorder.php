@@ -53,6 +53,12 @@ if (isset($_COOKIE['user_img'])) {
     <link rel="stylesheet" href="<?php echo asset('css/style.css'); ?>" />
     <style>
         .status-badge { border-radius: 999px; padding:.25rem .6rem; font-weight:600; }
+        .status-confirmed { background:#e3f2fd; color:#0d47a1; }
+        .status-shipping { background:#fff3cd; color:#8a6d3b; }
+        .status-ongoing { background:#e8f5e9; color:#1b5e20; }
+        .status-delivering { background:#fdecea; color:#b71c1c; }
+        .status-cancelled { background:#ffebee; color:#c62828; }
+        /* Legacy support for capitalized versions */
         .status-Confirmed { background:#e3f2fd; color:#0d47a1; }
         .status-Shipping { background:#fff3cd; color:#8a6d3b; }
         .status-Ongoing { background:#e8f5e9; color:#1b5e20; }
@@ -92,9 +98,17 @@ if (isset($_COOKIE['user_img'])) {
                         <td>₹${Number(o.price).toFixed(2)}</td>
                         <td>${o.quantity}</td>
                         <td>₹${Number(o.total_price).toFixed(2)}</td>
-                        <td><span class="status-badge status-${o.status}">${o.status}</span></td>
+                        <td><span class="status-badge status-${o.status.toLowerCase()}" data-status="${o.status}">${o.status}</span></td>
                     </tr>
                 `).join('');
+                
+                // Additional handling for status badges
+                document.querySelectorAll('[data-status]').forEach(badge => {
+                    const status = badge.getAttribute('data-status');
+                    if (status === 'Cancelled') {
+                        badge.className = 'status-badge status-cancelled';
+                    }
+                });
             } catch (e) {
                 console.error(e);
             }

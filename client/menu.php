@@ -72,55 +72,12 @@ if ($catResult) {
     .menu .card-title { font-weight: 800; color: #d32f2f; }
     .menu .card-text { color:#6c757d; }
     .menu .price { color:#212529; font-weight:700; }
-    /* Add to Cart button - larger */
-    .btn-add-to-cart { 
-      background:#ff6a00; 
-      color:#fff; 
-      border-radius:6px; 
-      border:1px solid #ff6a00; 
-      white-space:nowrap; 
-      font-weight:600; 
-      padding: 0.35rem 0.75rem; 
-      font-size: 0.85rem;
-      min-height: auto;
-      line-height: 1.4;
-    }
-    /* Buy Now button - smaller */
-    .btn-buy-now { 
-      background:#ff6a00; 
-      color:#fff; 
-      border-radius:4px; 
-      border:1px solid #ff6a00; 
-      white-space:nowrap; 
-      font-weight:600; 
-      padding: 0.25rem 0.5rem; 
-      font-size: 0.75rem;
-      min-height: auto;
-      line-height: 1.3;
-    }
-    .btn-add-to-cart:hover, .btn-buy-now:hover { background:#e65f00; color:#fff; border-color:#e65f00; }
-    /* Enforce orange style against any global .btn overrides */
-    .btn.btn-orange.btn-add-to-cart { 
-      background:#ff6a00 !important; 
-      border-color:#ff6a00 !important; 
-      color:#fff !important;
-      padding: 0.35rem 0.75rem !important;
-      font-size: 0.85rem !important;
-      border-radius: 6px !important;
-      min-height: auto !important;
-      line-height: 1.4 !important;
-    }
-    .btn.btn-orange.btn-buy-now { 
-      background:#ff6a00 !important; 
-      border-color:#ff6a00 !important; 
-      color:#fff !important;
-      padding: 0.25rem 0.5rem !important;
-      font-size: 0.75rem !important;
-      border-radius: 4px !important;
-      min-height: auto !important;
-      line-height: 1.3 !important;
-    }
-    .btn.btn-orange.btn-add-to-cart:hover, .btn.btn-orange.btn-buy-now:hover { background:#e65f00 !important; border-color:#e65f00 !important; color:#fff !important; }
+    /* Button styling to match main menu.php */
+    .btn-orange { background:#ff6a00; color:#fff; border-radius:10px; border:1px solid #ff6a00; white-space:nowrap; font-weight:600; }
+    .btn-orange:hover { background:#e65f00; color:#fff; border-color:#e65f00; }
+    .btn.btn-orange { background:#ff6a00 !important; border-color:#ff6a00 !important; color:#fff !important; }
+    .btn.btn-orange:hover { background:#e65f00 !important; border-color:#e65f00 !important; color:#fff !important; }
+    .btn-orange:hover { background:#e65f00; color:#fff; border-color:#e65f00; }
     
     /* Add padding to prevent content from being hidden under navbar */
     .main-content {
@@ -132,51 +89,10 @@ if ($catResult) {
         padding-top: 80px;
       }
       
-      /* Adjust button sizes for mobile */
-      .btn.btn-orange.btn-add-to-cart {
-        padding: 0.3rem 0.65rem !important;
-        font-size: 0.8rem !important;
-        border-radius: 5px !important;
-      }
-      .btn.btn-orange.btn-buy-now {
-        padding: 0.2rem 0.45rem !important;
-        font-size: 0.7rem !important;
-        border-radius: 3px !important;
-      }
-      
       /* Adjust card padding for mobile */
       .card.h-100.p-2 {
         padding: 0.5rem !important;
       }
-    }
-    
-    /* Ensure buttons don't take too much space */
-    .d-flex.gap-2.mt-3 .btn-add-to-cart, .d-flex.gap-2.mt-3 .btn.btn-orange.btn-add-to-cart {
-      padding: 0.35rem 0.75rem !important;
-      font-size: 0.85rem !important;
-    }
-    .d-flex.gap-2.mt-3 .btn-buy-now, .d-flex.gap-2.mt-3 .btn.btn-orange.btn-buy-now {
-      padding: 0.25rem 0.5rem !important;
-      font-size: 0.75rem !important;
-    }
-    
-    @media (max-width: 576px) {
-      .d-flex.gap-2.mt-3 .btn-add-to-cart, .d-flex.gap-2.mt-3 .btn.btn-orange.btn-add-to-cart {
-        padding: 0.3rem 0.65rem !important;
-        font-size: 0.8rem !important;
-      }
-      .d-flex.gap-2.mt-3 .btn-buy-now, .d-flex.gap-2.mt-3 .btn.btn-orange.btn-buy-now {
-        padding: 0.2rem 0.4rem !important;
-        font-size: 0.7rem !important;
-      }
-    }
-    
-    /* Override any global button styles that might affect size */
-    .card .btn-add-to-cart, .card .btn.btn-orange.btn-add-to-cart,
-    .card .btn-buy-now, .card .btn.btn-orange.btn-buy-now {
-      height: auto !important;
-      min-height: auto !important;
-      line-height: 1.3 !important;
     }
     </style>
 </head>
@@ -370,7 +286,7 @@ if ($catResult) {
                                     <h5 class="card-title"><?= htmlspecialchars($item['menu_name']) ?></h5>
                                     <p class="card-text flex-grow-1"><?= htmlspecialchars($item['menu_description']) ?></p>
                                     <div class="d-flex justify-content-between align-items-center mt-1">
-                                        <span class="price">RS<?= number_format((float)$item['menu_price'], 2) ?></span>
+                                        <span class="price">रु<?= number_format((float)$item['menu_price'], 2) ?></span>
                                     </div>
                                     <div class="d-flex gap-2 mt-3">
                                         <form action="../includes/cart.php?action=add" method="post" class="d-grid flex-grow-1">
@@ -378,15 +294,13 @@ if ($catResult) {
                                             <input type="hidden" name="menu_name" value="<?= htmlspecialchars($item['menu_name']) ?>">
                                             <input type="hidden" name="price" value="<?= htmlspecialchars($item['menu_price']) ?>">
                                             <input type="hidden" name="image" value="<?= htmlspecialchars($img) ?>">
-                                            <div class="input-group mb-2">
-                                                <input type="number" name="quantity" class="form-control form-control-sm" value="1" min="1" max="20">
-                                            </div>
-                                            <button type="submit" class="btn btn-orange btn-add-to-cart w-100">Add to Cart</button>
+                                            <button type="submit" class="btn btn-orange w-100 <?php echo !$currentUser ? 'require-login' : ''; ?>" <?php echo !$currentUser ? 'data-action="add_to_cart"' : ''; ?>>Add to Cart</button>
                                         </form>
                                         <button type="button"
-                                            class="btn btn-orange btn-buy-now w-100"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#buyModal"
+                                            class="btn btn-orange w-100 <?php echo !$currentUser ? 'require-login' : ''; ?>"
+                                            <?php echo !$currentUser ? 'data-action="buy_now"' : ''; ?>
+                                            data-bs-toggle="<?php echo $currentUser ? 'modal' : ''; ?>"
+                                            data-bs-target="<?php echo $currentUser ? '#buyModal' : ''; ?>"
                                             data-id="<?= intval($item['menu_id']) ?>"
                                             data-name="<?= htmlspecialchars($item['menu_name']) ?>"
                                             data-description="<?= htmlspecialchars($item['menu_description']) ?>"
@@ -427,8 +341,8 @@ if ($catResult) {
                         <div class="col-md-7">
                             <h4 id="modal-name" class="text-primary fw-bold"></h4>
                             <p id="modal-description" class="text-muted"></p>
-                            <p><strong>Price: ₹<span id="modal-price"></span></strong></p>
-                            <p><strong>Total: ₹<span id="modal-total-price"></span></strong></p>
+                            <p><strong>Price: रु<span id="modal-price"></span></strong></p>
+                            <p><strong>Total: रु<span id="modal-total-price"></span></strong></p>
                             <input type="hidden" name="menu_id" id="input-menu-id" />
                             <input type="hidden" name="menu_name" id="input-menu-name" />
                             <input type="hidden" name="price" id="input-price" />
@@ -463,6 +377,29 @@ if ($catResult) {
         </div>
     </div>
 </div>
+
+<!-- Login Required Modal -->
+<div class="modal fade login-modal" id="loginRequiredModal" tabindex="-1" aria-labelledby="loginRequiredModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="loginRequiredModalLabel">Login Required</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <div class="mb-3">
+                    <i class="bi bi-shield-lock text-danger" style="font-size: 3rem;"></i>
+                </div>
+                <h5 class="mb-3">Please login to continue</h5>
+                <p class="text-muted">You need to be logged in to add items to cart or purchase items.</p>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancel</button>
+                <a href="/Masu%20Ko%20Jhol%28full%29/login.php" class="btn btn-login">Login Now</a>
+            </div>
+        </div>
+    </div>
+</div>
 <?php include_once __DIR__ . '/../footer.php'; ?>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
@@ -483,6 +420,17 @@ if ($catResult) {
             delay: 5000
           });
           bsToast.show();
+        });
+        
+        // Handle login required buttons
+        const loginRequiredButtons = document.querySelectorAll('.require-login');
+        const loginRequiredModal = new bootstrap.Modal(document.getElementById('loginRequiredModal'));
+        
+        loginRequiredButtons.forEach(function(button) {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                loginRequiredModal.show();
+            });
         });
         
         // Handle Buy Now modal functionality

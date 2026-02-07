@@ -195,7 +195,7 @@ foreach($bookings as $booking) {
                     <td><?php echo htmlspecialchars($b['phone']); ?></td>
                     <td><?php echo htmlspecialchars($b['booking_date']); ?> <?php echo htmlspecialchars($b['booking_time']); ?></td>
                     <td><?php echo intval($b['people']); ?></td>
-                    <td><?php echo htmlspecialchars(substr($b['message'], 0, 30)) . (strlen($b['message']) > 30 ? '...' : ''); ?></td>
+                    <td><a href="#" class="booking-message-link" data-message="<?php echo addslashes(htmlspecialchars($b['message'])); ?>" data-name="<?php echo addslashes(htmlspecialchars($b['name'])); ?>" onclick="showFullMessage(event, this); return false;"><?php echo htmlspecialchars(substr($b['message'], 0, 30)) . (strlen($b['message']) > 30 ? '...' : ''); ?></a></td>
                     <td>
                       <div class="booking-actions">
                         <select name="status" class="booking-status-select" id="status-<?php echo intval($b['id']); ?>">
@@ -469,6 +469,77 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Delete button clicked! Booking ID: ' + this.getAttribute('data-booking-id'));
         });
     });
+});
+
+// Show full booking message in a modal
+function showFullMessage(event, element) {
+    event.preventDefault();
+    const message = element.getAttribute('data-message');
+    const name = element.getAttribute('data-name');
+    
+    // Create modal HTML
+    const modalHtml = `
+        <div id="messageModal" class="message-modal-overlay" style="
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        ">
+            <div class="message-modal-content" style="
+                background: white;
+                padding: 20px;
+                border-radius: 8px;
+                max-width: 500px;
+                width: 80%;
+                max-height: 80vh;
+                overflow-y: auto;
+                position: relative;
+            ">
+                <h3 style="margin-top: 0; color: #333;">Booking Message from: ${name}</h3>
+                <p style="white-space: pre-wrap;">${message}
+                </p>
+                <button onclick="closeMessageModal()" style="
+                    margin-top: 15px;
+                    padding: 8px 16px;
+                    background: #007bff;
+                    color: white;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                ">Close</button>
+            </div>
+        </div>
+    `;
+    
+    // Remove any existing modal
+    const existingModal = document.getElementById('messageModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+    
+    // Add modal to body
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+}
+
+function closeMessageModal() {
+    const modal = document.getElementById('messageModal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+// Close modal when clicking outside the content
+document.addEventListener('click', function(event) {
+    const modalOverlay = document.getElementById('messageModal');
+    if (modalOverlay && event.target === modalOverlay) {
+        closeMessageModal();
+    }
 });
 </script>
 <script src="../assets/js/adminscript.js"></script>

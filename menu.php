@@ -186,7 +186,7 @@ $wantedCats = ['starter','breakfast','lunch','dinner'];
           <a class="text-decoration-none" id="searchBtn" href="#">
             <i class="fa fa-search me-3 text-dark"></i>
           </a>
-          <a class="text-decoration-none" id="shoppingbutton" href="#">
+          <a class="text-decoration-none" id="shoppingbutton" href="./client/cart.php">
             <i class="fa fa-shopping-bag me-3 text-dark"></i>
           </a>
           <!-- Login and Signup buttons -->
@@ -216,7 +216,7 @@ $wantedCats = ['starter','breakfast','lunch','dinner'];
             <a class="text-decoration-none" id="searchBtnMobile" href="#">
               <i class="fa fa-search me-3 text-dark"></i>
             </a>
-            <a class="text-decoration-none" id="shoppingbuttonMobile" href="#">
+            <a class="text-decoration-none" id="shoppingbuttonMobile" href="./client/cart.php">
               <i class="fa fa-shopping-bag me-3 text-dark"></i>
             </a>
           </div>
@@ -306,7 +306,7 @@ $wantedCats = ['starter','breakfast','lunch','dinner'];
                                     <h5 class="card-title"><?= htmlspecialchars($item['menu_name']) ?></h5>
                                     <p class="card-text flex-grow-1"><?= htmlspecialchars($item['menu_description']) ?></p>
                                     <div class="d-flex justify-content-between align-items-center mt-1">
-                                        <span class="price">₹<?= number_format($item['menu_price'], 2) ?></span>
+                                        <span class="price">रु<?= number_format($item['menu_price'], 2) ?></span>
                                     </div>
                                     <div class="d-flex gap-2 mt-3">
                                         <form action="includes/cart.php?action=add" method="post" class="d-grid flex-grow-1">
@@ -359,8 +359,8 @@ $wantedCats = ['starter','breakfast','lunch','dinner'];
                         <div class="col-md-7">
                             <h4 id="modal-name" class="text-primary fw-bold"></h4>
                             <p id="modal-description" class="text-muted"></p>
-                            <p><strong>Price: RS<span id="modal-price"></span></strong></p>
-                            <p><strong>Total: RS<span id="modal-total-price"></span></strong></p>
+                            <p><strong>Price: रु<span id="modal-price"></span></strong></p>
+                            <p><strong>Total: रु<span id="modal-total-price"></span></strong></p>
                             <input type="hidden" name="menu_id" id="input-menu-id" />
                             <input type="hidden" name="menu_name" id="input-menu-name" />
                             <input type="hidden" name="price" id="input-price" />

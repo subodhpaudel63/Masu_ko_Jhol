@@ -24,8 +24,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->bind_param("si", $status, $order_id);
         
         if ($stmt->execute()) {
+            // Log the update for debugging
+            error_log("Order status updated: order_id=$order_id, new_status=$status");
+            
             // Get updated order data
-            $order_stmt = $conn->prepare("SELECT * FROM orders WHERE order_id = ?");
+            $order_stmt = $conn->prepare("SELECT order_id, menu_name, price, quantity, total_price, status, order_time FROM orders WHERE order_id = ?");
             $order_stmt->bind_param("i", $order_id);
             $order_stmt->execute();
             $result = $order_stmt->get_result();
@@ -48,13 +51,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ]
             ];
         } else {
+            error_log("Failed to update order status: " . $stmt->error);
             $response = [
                 'success' => false,
-                'message' => 'Failed to update order status.'
+                'message' => 'Failed to update order status: ' . $stmt->error
             ];
         }
         $stmt->close();
     } else {
+        error_log("Invalid order ID or status. order_id: $order_id, status: $status, allowed: " . implode(',', $allowed_status));
         $response = [
             'success' => false,
             'message' => 'Invalid order ID or status.'

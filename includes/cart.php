@@ -30,12 +30,15 @@ if ($action === 'add' && $_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['cart'][$menuId] = [
                 'menu_id' => $menuId,
                 'menu_name' => $name,
+                'name' => $name,
                 'price' => $price,
                 'quantity' => $qty,
                 'image' => $image,
+                'total' => $price * $qty,
             ];
         } else {
             $_SESSION['cart'][$menuId]['quantity'] += $qty;
+            $_SESSION['cart'][$menuId]['total'] = $_SESSION['cart'][$menuId]['price'] * $_SESSION['cart'][$menuId]['quantity'];
         }
         $_SESSION['msg'] = ['type' => 'success', 'text' => 'Item added to cart.'];
         header('Location: ../client/cart.php');
@@ -51,7 +54,10 @@ if ($action === 'update' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         $id = intval($id); $q = max(0, intval($q));
         if (isset($_SESSION['cart'][$id])) {
             if ($q === 0) unset($_SESSION['cart'][$id]);
-            else $_SESSION['cart'][$id]['quantity'] = $q;
+            else {
+                $_SESSION['cart'][$id]['quantity'] = $q;
+                $_SESSION['cart'][$id]['total'] = $_SESSION['cart'][$id]['price'] * $q;
+            }
         }
     }
     $_SESSION['msg'] = ['type' => 'success', 'text' => 'Cart updated.'];
@@ -85,8 +91,8 @@ if ($action === 'checkout' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     $stmt = $conn->prepare("INSERT INTO orders (menu_id, menu_name, price, quantity, total_price, email, mobile, address, order_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())");
     foreach ($_SESSION['cart'] as $item) {
-        $total = floatval($item['price']) * intval($item['quantity']);
-        $stmt->bind_param("isdidsss", $item['menu_id'], $item['menu_name'], $item['price'], $item['quantity'], $total, $email, $mobile, $address);
+        $total = isset($item['total']) ? floatval($item['total']) : (floatval($item['price']) * intval($item['quantity']));
+        $stmt->bind_param("isdidsss", $item['menu_id'], $item['menu_name'] ?? $item['name'], $item['price'], $item['quantity'], $total, $email, $mobile, $address);
         $stmt->execute();
     }
     $stmt->close();

@@ -191,7 +191,7 @@ foreach($orders as $order) {
                     <td><?php echo htmlspecialchars($o['menu_name']); ?></td>
                     <td><?php echo htmlspecialchars($o['email']); ?></td>
                     <td><?php echo htmlspecialchars($o['mobile']); ?></td>
-                    <td><?php echo htmlspecialchars(substr($o['address'], 0, 20)) . (strlen($o['address']) > 20 ? '...' : ''); ?></td>
+                    <td><a href="#" class="address-link" data-address="<?php echo addslashes(htmlspecialchars($o['address'])); ?>" data-order-id="<?php echo intval($o['order_id']); ?>" onclick="showFullAddress(event, this); return false;"><?php echo htmlspecialchars(substr($o['address'], 0, 20)) . (strlen($o['address']) > 20 ? '...' : ''); ?></a></td>
                     <td><?php echo intval($o['quantity']); ?></td>
                     <td>Rs. <?php echo number_format((float)$o['total_price'], 2); ?></td>
                     <td>
@@ -367,25 +367,9 @@ function handleOrderUpdate(orderId) {
     .then(data => {
         if (data.success) {
             alert('Order status updated successfully!');
-            // Update dashboard stats if they exist
-            const totalRevenueElement = document.querySelector('.total-revenue-display');
-            const totalOrdersElement = document.querySelector('.total-orders-display');
-            
-            if (totalRevenueElement && data.stats) {
-                totalRevenueElement.textContent = 'Rs. ' + parseFloat(data.stats.total_revenue).toFixed(2);
-                totalRevenueElement.classList.add('updating');
-                setTimeout(() => {
-                    totalRevenueElement.classList.remove('updating');
-                }, 500);
-            }
-            
-            if (totalOrdersElement && data.stats) {
-                totalOrdersElement.textContent = data.stats.total_orders;
-                totalOrdersElement.classList.add('updating');
-                setTimeout(() => {
-                    totalOrdersElement.classList.remove('updating');
-                }, 500);
-            }
+            // Update the status in the UI immediately
+            // Update the select dropdown to reflect the new status
+            document.getElementById(`status-${orderId}`).value = newStatus;
         } else {
             alert('Error: ' + data.message);
         }
@@ -449,6 +433,78 @@ function handleOrderDelete(orderId) {
         button.textContent = originalText;
     });
 }
+
+// Show full address in a modal
+function showFullAddress(event, element) {
+    event.preventDefault();
+    const address = element.getAttribute('data-address');
+    const orderId = element.getAttribute('data-order-id');
+    
+    // Create modal HTML
+    const modalHtml = `
+        <div id="addressModal" class="address-modal-overlay" style="
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        ">
+            <div class="address-modal-content" style="
+                background: white;
+                padding: 20px;
+                border-radius: 8px;
+                max-width: 500px;
+                width: 80%;
+                max-height: 80vh;
+                overflow-y: auto;
+                position: relative;
+            ">
+                <h3 style="margin-top: 0; color: #333;">Full Address for Order #${orderId}</h3>
+                <p style="white-space: pre-wrap; word-break: break-word; font-size: 16px; line-height: 1.5;">
+                    ${address}
+                </p>
+                <button onclick="closeAddressModal()" style="
+                    margin-top: 15px;
+                    padding: 8px 16px;
+                    background: #007bff;
+                    color: white;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                ">Close</button>
+            </div>
+        </div>
+    `;
+    
+    // Remove any existing modal
+    const existingModal = document.getElementById('addressModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+    
+    // Add modal to body
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+}
+
+function closeAddressModal() {
+    const modal = document.getElementById('addressModal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+// Close modal when clicking outside the content
+document.addEventListener('click', function(event) {
+    const modalOverlay = document.getElementById('addressModal');
+    if (modalOverlay && event.target === modalOverlay) {
+        closeAddressModal();
+    }
+});
 
 // Debug: Check if script is loading
 document.addEventListener('DOMContentLoaded', function() {
