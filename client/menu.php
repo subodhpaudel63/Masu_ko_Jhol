@@ -349,7 +349,7 @@ if ($catResult) {
                             <input type="hidden" name="total_price" id="input-total-price" />
                             <div class="mb-3">
                                 <label for="email" class="form-label">Email</label>
-                                <input type="email" id="email" name="email" class="form-control" value="<?php echo $_SESSION['email'] ?? '' ?>" required>
+                                <input type="email" id="email" name="email" class="form-control" value="<?php echo $currentUser['email'] ?? '' ?>" required>
                             </div>
                             <div class="mb-3">
                                 <label for="quantity" class="form-label">Quantity</label>

@@ -154,10 +154,7 @@ ALTER TABLE `feedback`
   ADD PRIMARY KEY (`feedback_id`);
 
 --
--- Indexes for table `gallery`
---
-ALTER TABLE `gallery`
-  ADD PRIMARY KEY (`id`);
+-- 
 
 --
 -- Indexes for table `menu`
@@ -195,11 +192,7 @@ ALTER TABLE `feedback`
   MODIFY `feedback_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 --
--- AUTO_INCREMENT for table `gallery`
 --
-ALTER TABLE `gallery`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
-
 --
 -- AUTO_INCREMENT for table `menu`
 --

@@ -2,6 +2,8 @@
 session_start();
 include_once "db.php";
 require_once __DIR__ . '/auth_check.php';
+// Use the authenticated user's email instead of POST email
+$email = $_SESSION['user_email']; // Assuming the user's email is stored in the session
 
 // Check if user is logged in
 $user = getUserFromCookie();
@@ -52,4 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Location: ../client/index.php');
     exit;
 }
+// Redirect to myorder.php instead of index.php
+header('Location: myorder.php');
+exit();
 ?>

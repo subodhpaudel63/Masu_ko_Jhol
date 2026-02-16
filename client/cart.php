@@ -92,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_action'])) {
         case 'checkout':
             if (!empty($_SESSION['cart'])) {
                 // Process checkout - create orders for each cart item
-                $email = $_SESSION['email'] ?? '';
+                $email = $user['email'] ?? '';
                 $mobile = trim($_POST['mobile'] ?? '');
                 $address = trim($_POST['address'] ?? '');
                 
@@ -118,7 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_action'])) {
                         continue;
                     }
                     
-                    $stmt = $conn->prepare("INSERT INTO orders (menu_id, email, menu_name, quantity, price, total_price, mobile, address, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending')");
+                    $stmt = $conn->prepare("INSERT INTO orders (menu_id, email, menu_name, quantity, price, total_price, mobile, address, status, order_time, order_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Confirmed', NOW(), CURDATE())");
                     
                     if (!$stmt) {
                         error_log('Prepare statement failed: ' . $conn->error);
@@ -157,6 +157,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_action'])) {
                     $_SESSION['cart'] = []; // Clear cart after successful checkout
                     $response['success'] = true;
                     $response['message'] = 'Order placed successfully!';
+                    $response['redirect'] = 'myorder.php'; // Add redirect URL
+                    
+                    // Log successful cart orders
+                    error_log("Cart Order placed successfully - Success count: " . $success_count . ", Email: " . $email);
                 } else {
                     $response['message'] = 'Error placing order' . ($error_occurred ? ': Database error occurred' : '');
                 }
@@ -609,8 +613,9 @@ if (isset($_POST['ajax_action']) && $_POST['ajax_action'] === 'checkout') {
             .then(data => {
                 if (data.success) {
                     showToast(data.message, 'success');
+                    const redirectUrl = data.redirect || 'myorder.php';
                     setTimeout(() => {
-                        window.location.href = 'myorder.php';
+                        window.location.href = redirectUrl;
                     }, 1500); // Wait 1.5 seconds before redirecting to let user see the toast
                 } else {
                     showToast('Error: ' + data.message, 'error');

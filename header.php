@@ -1,74 +1,31 @@
-<?php
-require_once __DIR__ . '/includes/auth_check.php';
-
-$userType = null;
-$currentUser = null;
-
-if (isset($_COOKIE['user_type'])) {
-    $userType = decrypt($_COOKIE['user_type'], SECRET_KEY);
-}
-
-// Get current user if logged in
-if (isset($_COOKIE['user_email'])) {
-    $currentUser = ['email' => decrypt($_COOKIE['user_email'], SECRET_KEY)];
-}
-
-// Only redirect from the public root landing page (index.php),
-// not from inner pages like client/menu.php, login.php, or other auth pages.
-$scriptName = basename($_SERVER['SCRIPT_NAME'] ?? '');
-if ($scriptName === 'index.php') {
-    if ($userType === 'admin') {
-        header('Location: /Masu%20Ko%20Jhol%28full%29/admin/index.php');
-        exit();
+<style>
+    body { background:#fff; }
+    .menu .card { border-radius: 16px; overflow: hidden; border: 0; background: #fff; box-shadow: 0 8px 24px rgba(0,0,0,.08); transition: transform .2s ease, box-shadow .2s ease; }
+    .menu .card:hover { transform: translateY(-4px); box-shadow: 0 16px 36px rgba(0,0,0,.12); }
+    .menu .card-img-top { height: 220px; object-fit: cover; }
+    .menu .card-title { font-weight: 800; color: #d32f2f; }
+    .menu .card-text { color:#6c757d; }
+    .menu .price { color:#212529; font-weight:700; }
+    .btn-orange { background:#ff6a00; color:#fff; border-radius:10px; border:1px solid #ff6a00; white-space:nowrap; font-weight:600; }
+    .btn-orange:hover { background:#e65f00; color:#fff; border-color:#e65f00; }
+    .btn.btn-orange { background:#ff6a00 !important; border-color:#ff6a00 !important; color:#fff !important; }
+    .btn.btn-orange:hover { background:#e65f00 !important; border-color:#e65f00 !important; color:#fff !important; }
+    
+    /* Toast styling for better visibility */
+    .toast-success {
+        background-color: #0f5132 !important; /* Dark green */
+        border-color: #0f5132 !important;
+        color: white !important;
     }
-    if ($userType === 'user') {
-        header('Location: /Masu%20Ko%20Jhol%28full%29/client/index.php');
-        exit();
+    
+    .toast-error {
+        background-color: #842029 !important; /* Dark red */
+        border-color: #842029 !important;
+        color: white !important;
     }
-}
-
-// Profile image
-$defaultImg = 'assets/images/profile.jpg';
-$profileImg = $defaultImg;
-if (isset($_COOKIE['user_img'])) {
-    $dec = decrypt($_COOKIE['user_img'], SECRET_KEY);
-    if ($dec) { 
-        $candidate = ltrim($dec, '/'); 
-        if (file_exists(__DIR__ . '/' . $candidate)) {
-            $profileImg = $candidate; 
-        }
-    }
-}
-?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Masu Ko Jhol - About</title>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
-      integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    />
-    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css"/>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65"
-      crossorigin="anonymous"
-    />
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"
-    />
-    <link rel="stylesheet" href="./assets/css/style.css" />
-    <style>
-      /* Custom button styles */
-      .nav-button {
+    
+    /* Custom button styles */
+    .nav-button {
         background-color: #ff0000;
         color: white;
         border: none;
@@ -79,15 +36,15 @@ if (isset($_COOKIE['user_img'])) {
         text-decoration: none;
         display: inline-block;
         margin-left: 10px;
-      }
-      
-      .nav-button:hover {
+    }
+    
+    .nav-button:hover {
         background-color: #cc0000;
         color: white;
         text-decoration: none;
-      }
-      
-      .nav-button-outline {
+    }
+    
+    .nav-button-outline {
         background-color: transparent;
         color: #ff0000;
         border: 2px solid #ff0000;
@@ -98,26 +55,64 @@ if (isset($_COOKIE['user_img'])) {
         text-decoration: none;
         display: inline-block;
         margin-left: 10px;
-      }
-      
-      .nav-button-outline:hover {
+    }
+    
+    .nav-button-outline:hover {
         background-color: #ff0000;
         color: white;
         text-decoration: none;
-      }
+    }
+    
+    /* Modal styling */
+    .login-modal .modal-content {
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+    
+    .login-modal .modal-header {
+        background: linear-gradient(135deg, #ff6a00, #d32f2f);
+        color: white;
+        border-top-left-radius: 15px;
+        border-top-right-radius: 15px;
+        border: none;
+    }
+    
+    .login-modal .btn-login {
+        background: linear-gradient(135deg, #ff6a00, #d32f2f);
+        border: none;
+        color: white;
+        padding: 10px;
+        font-weight: 600;
+    }
+    
+    .login-modal .btn-login:hover {
+        background: linear-gradient(135deg, #e65f00, #c62828);
+        color: white;
+    }
     </style>
-  </head>
+    <!-- Favicons -->
+    <link href="assets/img/logo.png" rel="icon">
+    <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
 
-<body>
-    <div class="loader">
-      <i class="fas fa-utensils loader-icone"></i>
-      <p>Masu Ko Jhol</p>
-      <div class="loader-ellipses">
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
-    </div>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Amatic+SC:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- Vendor CSS Files -->
+    <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+    <link href="assets/vendor/aos/aos.css" rel="stylesheet">
+    <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+    <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+
+    <?php require_once __DIR__ . '/config/bootstrap.php'; ?>
+    <link rel="stylesheet" href="<?php echo asset('css/style.css'); ?>" />
+    
     <header class="bg-white">
       <div class="container header my-3 d-none d-lg-flex">
         <div class="logo">
@@ -142,19 +137,12 @@ if (isset($_COOKIE['user_img'])) {
                 >About</a
               >
             </li>
-            
+           
             <li class="list-unstyled py-2">
               <a
                 class="text-decoration-none text-uppercase p-4 text-dark"
                 href="./menu.php"
                 >Menu</a
-              >
-            </li>
-            <li class="list-unstyled py-2">
-              <a
-                class="text-decoration-none text-uppercase p-4 text-dark"
-                href="./myorder.php"
-                >My Order</a
               >
             </li>
             <li class="list-unstyled py-2">
@@ -170,33 +158,14 @@ if (isset($_COOKIE['user_img'])) {
           <a class="text-decoration-none" id="searchBtn" href="#">
             <i class="fa fa-search me-3 text-dark"></i>
           </a>
-          <a class="text-decoration-none" id="shoppingbutton" href="#">
+          <a class="text-decoration-none" id="shoppingbutton" href="./client/cart.php">
             <i class="fa fa-shopping-bag me-3 text-dark"></i>
           </a>
-          <?php if ($currentUser): ?>
-            <div class="dropdown">
-              <a class="d-flex align-items-center text-decoration-none dropdown-toggle" href="#" role="button" id="profileMenu" data-bs-toggle="dropdown" aria-expanded="false">
-                <img src="/<?php echo $profileImg; ?>" alt="profile" class="rounded-circle" style="width:36px;height:36px;object-fit:cover;">
-              </a>
-              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileMenu">
-                <li><h6 class="dropdown-header"><?php echo htmlspecialchars($currentUser['email'] ?? ''); ?></h6></li>
-                <li><hr class="dropdown-divider"></li>
-                <?php if ($userType === 'user'): ?>
-                  <li><a class="dropdown-item" href="/Masu%20Ko%20Jhol%28full%29/client/update_password.php"><i class="bi bi-key me-2"></i>Update Password</a></li>
-                  <li><a class="dropdown-item" href="/Masu%20Ko%20Jhol%28full%29/includes/logout.php"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
-                <?php elseif ($userType === 'admin'): ?>
-                  <li><a class="dropdown-item" href="/Masu%20Ko%20Jhol%28full%29/admin/index.php"><i class="bi bi-person me-2"></i>Dashboard</a></li>
-                  <li><a class="dropdown-item" href="/Masu%20Ko%20Jhol%28full%29/includes/logout.php"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
-                <?php endif; ?>
-              </ul>
-            </div>
-          <?php else: ?>
-            <!-- Login and Signup buttons -->
-            <div class="d-flex align-items-center">
-              <a href="./login.php" class="nav-button">Login</a>
-              <a href="./register.php" class="nav-button-outline">Sign Up</a>
-            </div>
-          <?php endif; ?>
+          <!-- Login and Signup buttons -->
+          <div class="d-flex align-items-center">
+            <a href="./login.php" class="nav-button">Login</a>
+            <a href="./register.php" class="nav-button-outline">Sign Up</a>
+          </div>
         </div>
       </div>
 
@@ -214,38 +183,15 @@ if (isset($_COOKIE['user_img'])) {
             </a>
           </div>
         </div>
-        <div class="mobile-nav-icons d-flex align-items-center">
+        <div class="mobile-nav-icons">
           <div class="icons">
             <a class="text-decoration-none" id="searchBtnMobile" href="#">
               <i class="fa fa-search me-3 text-dark"></i>
             </a>
-            <a class="text-decoration-none" id="shoppingbuttonMobile" href="#">
+            <a class="text-decoration-none" id="shoppingbuttonMobile" href="./client/cart.php">
               <i class="fa fa-shopping-bag me-3 text-dark"></i>
             </a>
           </div>
-          <?php if ($currentUser): ?>
-            <div class="dropdown">
-              <a class="d-flex align-items-center text-decoration-none dropdown-toggle" href="#" role="button" id="profileMenuMobile" data-bs-toggle="dropdown" aria-expanded="false">
-                <img src="/<?php echo $profileImg; ?>" alt="profile" class="rounded-circle" style="width:32px;height:32px;object-fit:cover;">
-              </a>
-              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileMenuMobile">
-                <li><h6 class="dropdown-header"><?php echo htmlspecialchars($currentUser['email'] ?? ''); ?></h6></li>
-                <li><hr class="dropdown-divider"></li>
-                <?php if ($userType === 'user'): ?>
-                  <li><a class="dropdown-item" href="/Masu%20Ko%20Jhol%28full%29/client/update_password.php"><i class="bi bi-key me-2"></i>Update Password</a></li>
-                  <li><a class="dropdown-item" href="/Masu%20Ko%20Jhol%28full%29/includes/logout.php"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
-                <?php elseif ($userType === 'admin'): ?>
-                  <li><a class="dropdown-item" href="/Masu%20Ko%20Jhol%28full%29/admin/index.php"><i class="bi bi-person me-2"></i>Dashboard</a></li>
-                  <li><a class="dropdown-item" href="/Masu%20Ko%20Jhol%28full%29/includes/logout.php"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
-                <?php endif; ?>
-              </ul>
-            </div>
-          <?php else: ?>
-            <div class="d-flex align-items-center">
-              <a href="./login.php" class="nav-button" style="padding: 4px 12px; font-size: 0.8rem;">Login</a>
-              <a href="./register.php" class="nav-button-outline" style="padding: 4px 12px; font-size: 0.8rem;">Sign Up</a>
-            </div>
-          <?php endif; ?>
         </div>
         <div
           class="position-fixed w-75 bg-white h-100 top-0 start-0"
@@ -274,18 +220,12 @@ if (isset($_COOKIE['user_img'])) {
                 >
               </li>
               
+              </li>
               <li class="list-unstyled py-2">
                 <a
                   class="text-dark text-decoration-none text-uppercase p-4"
                   href="./menu.php"
                   >Menu</a
-                >
-              </li>
-              <li class="list-unstyled py-2">
-                <a
-                  class="text-dark text-decoration-none text-uppercase p-4"
-                  href="./myorder.php"
-                  >My Order</a
                 >
               </li>
               <li class="list-unstyled py-2">

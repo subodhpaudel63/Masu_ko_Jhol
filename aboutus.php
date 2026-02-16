@@ -379,7 +379,8 @@
         <div class="container my-2 py-2 mt-lg-4 pt-lg-4 mb-lg-0 pb-lg-0">
           <div class="row">
             <div class="col-lg-4 d-none d-lg-block">
-              <img src="./assets/images/ab_team_01.png" alt="" data-aos="fade-right">
+              <img src="./assets/images/ab_team_01.png" alt="" data-aos="fade-right">  
+              <!-- chef like -->
             </div>
             <div class="col-12 col-lg-8">
               <div class="testimonial-slider-wrapper">

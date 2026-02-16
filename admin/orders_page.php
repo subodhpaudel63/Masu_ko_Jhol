@@ -366,12 +366,29 @@ function handleOrderUpdate(orderId) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            alert('Order status updated successfully!');
+            // Show success message
+            showToast('Order status updated to ' + newStatus, 'success');
+            
             // Update the status in the UI immediately
-            // Update the select dropdown to reflect the new status
             document.getElementById(`status-${orderId}`).value = newStatus;
+            
+            // Update the status badge display
+            const statusBadge = document.querySelector(`#status-${orderId}`).closest('td').querySelector('.status-badge');
+            if (statusBadge) {
+                // Remove old status classes
+                statusBadge.className = statusBadge.className.replace(/status-\w+/g, '');
+                // Add new status class
+                statusBadge.classList.add('status-badge', `status-${newStatus.toLowerCase()}`);
+                statusBadge.textContent = newStatus;
+                
+                // Add visual feedback
+                statusBadge.classList.add('status-updated');
+                setTimeout(() => {
+                    statusBadge.classList.remove('status-updated');
+                }, 2000);
+            }
         } else {
-            alert('Error: ' + data.message);
+            showToast('Error: ' + data.message, 'error');
         }
     })
     .catch(error => {
@@ -516,6 +533,45 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('Update buttons found:', updateButtons.length);
     console.log('Delete buttons found:', deleteButtons.length);
 });
+</script>
+
+<!-- Toast notification container -->
+<div id="toast-container" style="position: fixed; top: 20px; right: 20px; z-index: 9999;"></div>
+
+<script>
+// Simple toast function
+function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.style.cssText = `
+        padding: 12px 20px;
+        margin: 10px 0;
+        border-radius: 4px;
+        color: white;
+        font-weight: 500;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+        ${type === 'success' ? 'background: #28a745;' : ''}
+        ${type === 'error' ? 'background: #dc3545;' : ''}
+        ${type === 'info' ? 'background: #17a2b8;' : ''}
+    `;
+    toast.textContent = message;
+    
+    document.getElementById('toast-container').appendChild(toast);
+    
+    // Animate in
+    setTimeout(() => {
+        toast.style.transform = 'translateX(0)';
+    }, 10);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        toast.style.transform = 'translateX(100%)'
+        setTimeout(() => {
+            toast.remove();
+        }, 300);
+    }, 3000);
+}
 </script>
 </body>
 </html>

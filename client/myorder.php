@@ -52,18 +52,76 @@ if (isset($_COOKIE['user_img'])) {
     <?php require_once __DIR__ . '/../config/bootstrap.php'; ?>
     <link rel="stylesheet" href="<?php echo asset('css/style.css'); ?>" />
     <style>
-        .status-badge { border-radius: 999px; padding:.25rem .6rem; font-weight:600; }
+        .status-badge { 
+            border-radius: 999px; 
+            padding: .25rem .6rem; 
+            font-weight: 600; 
+            font-size: 0.85rem; 
+            display: inline-block;
+            margin-bottom: 5px;
+        }
         .status-confirmed { background:#e3f2fd; color:#0d47a1; }
         .status-shipping { background:#fff3cd; color:#8a6d3b; }
         .status-ongoing { background:#e8f5e9; color:#1b5e20; }
         .status-delivering { background:#fdecea; color:#b71c1c; }
         .status-cancelled { background:#ffebee; color:#c62828; }
-        /* Legacy support for capitalized versions */
-        .status-Confirmed { background:#e3f2fd; color:#0d47a1; }
-        .status-Shipping { background:#fff3cd; color:#8a6d3b; }
-        .status-Ongoing { background:#e8f5e9; color:#1b5e20; }
-        .status-Delivering { background:#fdecea; color:#b71c1c; }
-        .status-Cancelled { background:#ffebee; color:#c62828; }
+        
+        .order-date {
+            font-size: 0.75rem;
+            margin-top: 3px;
+            display: block;
+            clear: both;
+        }
+        
+        .status-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        /* Order status timeline styling */
+        .order-timeline {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            position: relative;
+        }
+        .order-timeline::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #e0e0e0;
+            z-index: 1;
+        }
+        .timeline-step {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            z-index: 2;
+            position: relative;
+        }
+        .timeline-step.active {
+            background: #0d47a1;
+        }
+        .timeline-step.completed {
+            background: #4caf50;
+        }
+        
+        /* Status update animation */
+        .status-updated {
+            animation: statusChange 2s ease-in-out;
+            box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+        }
+        
+        @keyframes statusChange {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); box-shadow: 0 0 15px rgba(0, 123, 255, 0.8); }
+            100% { transform: scale(1); }
+        }
         
         /* Add padding to prevent content from being hidden under navbar */
         .main-content {
@@ -77,7 +135,9 @@ if (isset($_COOKIE['user_img'])) {
         }
     </style>
     <script>
-        const POLL_MS = 5000;
+        const POLL_MS = 3000; // Poll every 3 seconds for faster updates
+        let previousOrders = {};
+        
         async function fetchOrders() {
             try {
                 const res = await fetch('../includes/orders_fetch.php', { credentials: 'same-origin' });
@@ -89,24 +149,67 @@ if (isset($_COOKIE['user_img'])) {
                 const tbody = document.getElementById('orders-body');
                 if (!data.orders || data.orders.length === 0) {
                     tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted">No orders found.</td></tr>`;
+                    previousOrders = {};
                     return;
                 }
-                tbody.innerHTML = data.orders.map(o => `
+                
+                // Check for status changes and create visual feedback
+                const currentOrders = {};
+                data.orders.forEach(order => {
+                    currentOrders[order.order_id] = order.status;
+                });
+                
+                tbody.innerHTML = data.orders.map(o => {
+                    const previousStatus = previousOrders[o.order_id];
+                    const statusChanged = previousStatus && previousStatus !== o.status;
+                    const statusClass = `status-${o.status.toLowerCase()}`;
+                    
+                    return `
                     <tr>
                         <td>#${o.order_id}</td>
                         <td>${o.menu_name}</td>
-                        <td>₹${Number(o.price).toFixed(2)}</td>
+                        <td>Rs. ${Number(o.price).toFixed(2)}</td>
                         <td>${o.quantity}</td>
-                        <td>₹${Number(o.total_price).toFixed(2)}</td>
-                        <td><span class="status-badge status-${o.status.toLowerCase()}" data-status="${o.status}">${o.status}</span></td>
+                        <td>Rs. ${Number(o.total_price).toFixed(2)}</td>
+                        <td>
+                            <div class="status-container">
+                                <span class="status-badge ${statusClass}" data-status="${o.status}" data-order-id="${o.order_id}" ${statusChanged ? 'data-status-changed="true"' : ''}>${o.status}</span>
+                                <span class="order-date text-muted">Ordered: ${new Date(o.order_date).toLocaleDateString()}</span>
+                            </div>
+                        </td>
                     </tr>
-                `).join('');
+                `;
+                }).join('');
                 
-                // Additional handling for status badges
+                // Update previous orders for next comparison
+                previousOrders = currentOrders;
+                
+                // Add visual feedback for status changes
+                document.querySelectorAll('[data-status-changed="true"]').forEach(badge => {
+                    badge.classList.add('status-updated');
+                    setTimeout(() => {
+                        badge.classList.remove('status-updated');
+                    }, 2000);
+                });
+                
+                // Status classes are now handled during HTML generation
+                // Only do cleanup if needed
                 document.querySelectorAll('[data-status]').forEach(badge => {
                     const status = badge.getAttribute('data-status');
-                    if (status === 'Cancelled') {
-                        badge.className = 'status-badge status-cancelled';
+                    const statusLower = status.toLowerCase();
+                    
+                    // Ensure status badge class is present
+                    if (!badge.classList.contains('status-badge')) {
+                        badge.classList.add('status-badge');
+                    }
+                    
+                    // Update status class if needed
+                    const expectedClass = `status-${statusLower}`;
+                    if (!badge.classList.contains(expectedClass)) {
+                        // Remove old status classes
+                        badge.className = badge.className.replace(/status-\w+/g, '');
+                        // Add correct status class
+                        badge.classList.add('status-badge', expectedClass);
                     }
                 });
             } catch (e) {
@@ -269,18 +372,18 @@ if (isset($_COOKIE['user_img'])) {
         </div>
         <div class="table-responsive bg-light p-3 rounded shadow-sm">
             <table class="table align-middle">
-                <thead>
+<thead>
                     <tr>
                         <th>Order #</th>
                         <th>Item</th>
                         <th>Price</th>
                         <th>Qty</th>
                         <th>Total</th>
-                        <th>Status</th>
+                        <th>Status & Date</th>
                     </tr>
                 </thead>
-                <tbody id="orders-body">
-                    <tr><td colspan="6" class="text-center text-muted">Loading...</td></tr>
+<tbody id="orders-body">
+                    <tr><td colspan="6" class="text-center text-muted">Loading orders...</td></tr>
                 </tbody>
             </table>
         </div>

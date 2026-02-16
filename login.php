@@ -6,15 +6,20 @@ if (isset($_GET['session_expired']) && $_GET['session_expired'] == 1) {
     $showExpiredAlert = true;
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
-
+<?php include_once __DIR__ . '/header.php'; ?>
 <head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>Masu Ko Jhol | Login</title>
-    <meta name="description" content="">
-    <meta name="keywords" content="">
+   <div class="loader">
+      <i class="fas fa-utensils loader-icone"></i>
+      <p>Masu Ko Jhol</p>
+      <div class="loader-ellipses">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
 
     <!-- Favicons -->
     <link href="assets/img/logo.png" rel="icon">

@@ -89,7 +89,7 @@ if ($action === 'checkout' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         header('Location: ../client/cart.php');
         exit;
     }
-    $stmt = $conn->prepare("INSERT INTO orders (menu_id, menu_name, price, quantity, total_price, email, mobile, address, order_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())");
+    $stmt = $conn->prepare("INSERT INTO orders (menu_id, menu_name, price, quantity, total_price, email, mobile, address, status, order_time, order_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Confirmed', NOW(), CURDATE())");
     foreach ($_SESSION['cart'] as $item) {
         $total = isset($item['total']) ? floatval($item['total']) : (floatval($item['price']) * intval($item['quantity']));
         $stmt->bind_param("isdidsss", $item['menu_id'], $item['menu_name'] ?? $item['name'], $item['price'], $item['quantity'], $total, $email, $mobile, $address);

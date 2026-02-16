@@ -444,9 +444,7 @@ Want to explore that next?
         </div>
       </section>
 
-             
 
-      
 
       <section class="testimonials py-5 my-5">
         <div class="container py-5">
@@ -499,16 +497,16 @@ Want to explore that next?
               <div class="slider-nav-wrapper mx-5">
                 <div class="slider-nav">
                   <div class="slider-nav-img active">
-                     <img src="./assets/images/testi-1.jpg" alt="">
+                    <img src="./assets/images/testi-1.jpg" alt="">
                   </div>
                   <div class="slider-nav-img">
-                     <img src="./assets/images/testi-2.jpg" alt="">
+                    <img src="./assets/images/testi-2.jpg" alt="">
                   </div>
                   <div class="slider-nav-img">
-                     <img src="./assets/images/testi-3.jpg" alt="">
+                    <img src="./assets/images/testi-3.jpg" alt="">
                   </div>
                   <div class="slider-nav-img">
-                     <img src="./assets/images/testi-4.jpg" alt="">
+                    <img src="./assets/images/testi-4.jpg" alt="">
                   </div>
                 </div>
               </div>
@@ -516,6 +514,11 @@ Want to explore that next?
           </div>
         </div>
       </section>
+
+
+             
+
+      
 
       <section class="our-chefs py-5">
         <div class="container">
@@ -526,13 +529,13 @@ Want to explore that next?
             </div>
           </div>
 
-          <div class="row pt-5">
+          <div class="row our-chef-slider-wrapper py-5" data-aos="fade-left">
             <div class="col-lg-4">
               <div class="our-chef-slider d-flex flex-column align-items-center gap-4">
                 <img width="200px" src="./assets/images/team-1.png" alt="">
                 <div class="chef-slider-content">
-                  <h5 class="text-center d-block">John Doe</h5>
-                  <p class="text-center mb-0">Master Chef</p>
+                  <h5 class="text-center d-block">Teresa Doe</h5>
+                  <p class="text-center mb-0">Head Chef</p>
                   <div class="d-flex justify-content-center">
                     <hr class="w-25 my-2">
                   </div> 
@@ -565,8 +568,8 @@ Want to explore that next?
               <div class="our-chef-slider d-flex flex-column align-items-center gap-4">
                 <img width="200px" src="./assets/images/team-2.png" alt="">
                 <div class="chef-slider-content">
-                  <h5 class="text-center d-block">Jane Smith</h5>
-                  <p class="text-center mb-0">Master Chef</p>
+                  <h5 class="text-center d-block">Teresa Doe</h5>
+                  <p class="text-center mb-0">Head Chef</p>
                   <div class="d-flex justify-content-center">
                     <hr class="w-25 my-2">
                   </div> 
@@ -595,6 +598,7 @@ Want to explore that next?
                 </div>
               </div>
             </div>
+            
             <div class="col-lg-4">
               <div class="our-chef-slider d-flex flex-column align-items-center gap-4">
                 <img width="200px" src="./assets/images/team-4.png" alt="">
@@ -630,10 +634,10 @@ Want to explore that next?
               </div>
             </div>
           </div>
-          
-
         </div>
       </section>
+
+
       <section class="reservation" id="book-table-section">
          <img class="d-md-none d-lg-block" src="./assets/images/find-a-table.png" alt="">
         <div class="container-fluid">

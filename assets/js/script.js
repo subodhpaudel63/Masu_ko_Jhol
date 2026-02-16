@@ -149,18 +149,63 @@ checkScroll(); // Initial check
 // Update copyright year
 document.getElementById('copyrightCurrentYear').textContent = new Date().getFullYear();
 
-
 $('.testimonials .slider-content').slick({
   slidesToShow: 1,
   slidesToScroll: 1,
   arrows: false,
+  fade: false,
+  speed: 300,
   asNavFor: '.testimonials .slider-nav',
+  draggable: true,
+  swipe: true,
 });
 
+// Navigation Slider for Testimonials
 $('.testimonials .slider-nav').slick({
   slidesToShow: 3,
   slidesToScroll: 1,
   asNavFor: '.testimonials .slider-content',
+  dots: false,
   focusOnSelect: true,
-  centerMode: true,
+  centerMode: true, // Center the active slide
+  centerPadding: '0px',
+  draggable: true,
+  swipe: true,
+  arrows: false, // Disable navigation arrows
+  infinite: true,
+});
+
+$('.slider-nav').slick({
+    slidesToShow: 3,
+    slidesToScroll: 1,
+    asNavFor: '.slider-content',
+    dots: false,
+    focusOnSelect: true,
+    centerMode: true,
+    centerPadding: '0px', // Prevents side images from overlapping the center
+    arrows: false,
+    infinite: true
+});
+
+$('.our-chefs .our-chef-slider-wrapper').slick({
+  slidesToShow: 3,
+  slidesToScroll: 1,
+  arrows: true,
+  focusOnSelect: true,
+  centerMode: true, // Center the active slide
+  centerPadding: '0px',
+  fade: false,
+  speed: 300,
+  draggable: false,
+  swipe: false,
+  prevArrow: '<button class="slide-arrow prev-arrow"><i class="fas fa-chevron-left"></i></button>',
+  nextArrow: '<button class="slide-arrow next-arrow"><i class="fas fa-chevron-right"></i></button>', // <-- comma added here
+  responsive: [
+    {
+      breakpoint: 990,
+      settings: {
+        slidesToShow: 1,
+      }
+    }
+  ]
 });

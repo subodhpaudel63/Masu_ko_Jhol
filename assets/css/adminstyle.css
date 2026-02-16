@@ -1256,6 +1256,11 @@ MEDIA QUERY PHONE
   color: #721c24;
 }
 
+.status-cancelled {
+  background: #f8d7da;
+  color: #721c24;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .add-user-form {

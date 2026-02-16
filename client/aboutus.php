@@ -413,6 +413,7 @@ if (isset($_COOKIE['user_img'])) {
       </section>
 
 
+      
       <section class="testimonials py-2 my-2 mt-lg-4 pt-lg-4 mb-lg-0 pb-lg-0">
         <div class="container my-2 py-2 mt-lg-4 pt-lg-4 mb-lg-0 pb-lg-0">
           <div class="row">
@@ -474,7 +475,7 @@ if (isset($_COOKIE['user_img'])) {
                 <div class="slider-nav-wrapper mx-5" data-aos="fade-up-right">
                   <div class="slider-nav">
                     <div class="slider-nav-img active">
-                      <img src="./assets/images/testi-1.jpg" alt="">
+                      <img src="./assets/images/male.jpg" alt="">
                     </div>
                     <div class="slider-nav-img">
                       <img src="./assets/images/testi-2.jpg" alt="">
@@ -492,6 +493,8 @@ if (isset($_COOKIE['user_img'])) {
           </div>
         </div>
       </section>
+
+
 
       <section class="our-special my-5 py-5">
         <div class="container">

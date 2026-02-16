@@ -15,123 +15,188 @@ if (isset($_COOKIE['user_type'])) {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>Admin Login • Masu Ko Jhol</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" />
-    <style>
-        :root {
-            --bg: #0f1115;
-            --panel: #161a22;
-            --muted: #8b95a7;
-            --text: #e8edf3;
-            --brand: #ffb74d;
-            --accent: #7c4dff;
-            --danger: #ff6b6b;
-            --success: #4caf50;
-        }
-        
-        html, body {
-            height: 100%;
-            background: var(--bg);
-            color: var(--text);
-        }
-        
-        .login-container {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .login-card {
-            background: var(--panel);
-            border: 1px solid #1f2330;
-            border-radius: 16px;
-            width: 100%;
-            max-width: 400px;
-        }
-        
-        .btn-gradient {
-            background: linear-gradient(135deg, #ff7a18 0%, #af002d 74%);
-            border: none;
-            color: #fff;
-        }
-        
-        .form-control {
-            background: #0f131b;
-            color: var(--text);
-            border: 1px solid #273044;
-        }
-        
-        .form-control:focus {
-            background: #0f131b;
-            color: var(--text);
-            border-color: var(--accent);
-            box-shadow: 0 0 0 0.25rem rgba(124, 77, 255, 0.25);
-        }
-        
-        .form-label {
-            color: var(--muted);
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Login | Masu Ko Jhol</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins', sans-serif;
+}
+
+body{
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:linear-gradient(135deg,#1e1e1e,#2c3e50,#8e2de2,#ff512f);
+    background-size:400% 400%;
+    animation:gradientMove 12s ease infinite;
+}
+
+@keyframes gradientMove{
+    0%{background-position:0% 50%;}
+    50%{background-position:100% 50%;}
+    100%{background-position:0% 50%;}
+}
+
+.login-box{
+    width:400px;
+    padding:45px;
+    border-radius:20px;
+    backdrop-filter:blur(18px);
+    background:rgba(0,0,0,0.55);
+    border:1px solid rgba(255,255,255,0.1);
+    box-shadow:0 0 40px rgba(255,140,0,0.4);
+    color:#fff;
+    text-align:center;
+    position:relative;
+}
+
+.logo img{
+    width:70px;
+    margin-bottom:10px;
+}
+
+.logo h2{
+    font-weight:600;
+    letter-spacing:1px;
+    color:#ffb347;
+}
+
+.welcome{
+    margin:15px 0 30px;
+}
+
+.welcome h3{
+    font-weight:600;
+    color:#fff;
+}
+
+.welcome p{
+    font-size:13px;
+    color:#ccc;
+}
+
+.form-group{
+    position:relative;
+    margin-bottom:28px;
+}
+
+.form-group input{
+    width:100%;
+    padding:12px;
+    background:transparent;
+    border:none;
+    border-bottom:2px solid rgba(255,255,255,0.5);
+    outline:none;
+    color:#fff;
+    font-size:14px;
+}
+
+.form-group label{
+    position:absolute;
+    left:0;
+    top:12px;
+    font-size:14px;
+    color:#aaa;
+    transition:0.3s;
+    pointer-events:none;
+}
+
+.form-group input:focus + label,
+.form-group input:valid + label{
+    top:-10px;
+    font-size:11px;
+    color:#ffb347;
+}
+
+.login-btn{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:30px;
+    background:linear-gradient(to right,#ff512f,#ffb347);
+    color:#fff;
+    font-weight:600;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.login-btn:hover{
+    transform:translateY(-3px);
+    box-shadow:0 8px 20px rgba(255,165,0,0.4);
+}
+
+.footer-text{
+    margin-top:20px;
+    font-size:12px;
+    color:#aaa;
+}
+
+.alert{
+    margin-bottom:20px;
+    padding:10px;
+    border-radius:5px;
+}
+.alert-success{
+    background-color:#4caf50;
+    color:#fff;
+}
+.alert-danger{
+    background-color:#ff6b6b;
+    color:#fff;
+}
+</style>
 </head>
+
 <body>
-    <div class="login-container">
-        <div class="login-card shadow">
-            <div class="card-body p-5">
-                <div class="text-center mb-4">
-                    <i class="bi bi-shield-lock text-warning" style="font-size: 3rem;"></i>
-                    <h2 class="mt-3">Admin Login</h2>
-                    <p class="text-muted">Masu Ko Jhol Administration</p>
-                </div>
-                
-                <?php if (isset($_SESSION['msg'])): ?>
-                    <div class="alert alert-<?php echo $_SESSION['msg']['type'] === 'success' ? 'success' : 'danger'; ?> alert-dismissible fade show" role="alert">
-                        <?php echo htmlspecialchars($_SESSION['msg']['text']); ?>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                    <?php unset($_SESSION['msg']); ?>
-                <?php endif; ?>
-                
-                <form action="admin_login_process.php" method="post">
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email Address</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-dark border-secondary">
-                                <i class="bi bi-envelope"></i>
-                            </span>
-                            <input type="email" class="form-control" id="email" name="email" placeholder="admin@example.com" required>
-                        </div>
-                    </div>
-                    
-                    <div class="mb-4">
-                        <label for="password" class="form-label">Password</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-dark border-secondary">
-                                <i class="bi bi-lock"></i>
-                            </span>
-                            <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" required>
-                        </div>
-                    </div>
-                    
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-gradient py-2">
-                            <i class="bi bi-box-arrow-in-right me-2"></i>Login to Dashboard
-                        </button>
-                    </div>
-                </form>
-                
-                <div class="text-center mt-4">
-                    <a href="/Masu%20Ko%20Jhol%28full%29/" class="text-decoration-none">
-                        <i class="bi bi-arrow-left me-1"></i>Back to Main Site
-                    </a>
-                </div>
-            </div>
-        </div>
+
+<div class="login-box">
+
+    <div class="logo">
+        <!-- <img src="../assets/images/logo.png" alt="Masu Ko Jhol Logo"> -->
+        <h2>Masu Ko Jhol</h2>
     </div>
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+
+    <div class="welcome">
+        <h3>Welcome Back, Admin </h3>
+        <p>Please login to access the dashboard</p>
+    </div>
+
+    <?php if (isset($_SESSION['msg'])): ?>
+        <div class="alert <?php echo $_SESSION['msg']['type'] === 'success' ? 'alert-success' : 'alert-danger'; ?>">
+            <?php echo htmlspecialchars($_SESSION['msg']['text']); ?>
+        </div>
+        <?php unset($_SESSION['msg']); ?>
+    <?php endif; ?>
+
+    <form action="admin_login_process.php" method="POST">
+
+        <div class="form-group">
+            <input type="email" name="email" required>
+            <label>Admin Email</label>
+        </div>
+
+        <div class="form-group">
+            <input type="password" name="password" required>
+            <label>Password</label>
+        </div>
+
+        <button type="submit" class="login-btn">Login to Dashboard</button>
+
+        <div class="footer-text">
+            © 2026 Masu Ko Jhol | Admin Panel
+        </div>
+
+    </form>
+
+</div>
+
 </body>
 </html>
