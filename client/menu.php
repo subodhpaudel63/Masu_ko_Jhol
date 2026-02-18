@@ -63,36 +63,278 @@ if ($catResult) {
     <?php require_once __DIR__ . '/../config/bootstrap.php'; ?>
     <link rel="stylesheet" href="<?php echo asset('css/style.css'); ?>" />
     <style>
-    /* Clean white background */
-    body { background:#fff; }
-    /* Card styling */
-    .menu .card { border-radius: 16px; overflow: hidden; border: 0; background: #fff; box-shadow: 0 8px 24px rgba(0,0,0,.08); transition: transform .2s ease, box-shadow .2s ease; }
-    .menu .card:hover { transform: translateY(-4px); box-shadow: 0 16px 36px rgba(0,0,0,.12); }
-    .menu .card-img-top { height: 220px; object-fit: cover; }
-    .menu .card-title { font-weight: 800; color: #d32f2f; }
-    .menu .card-text { color:#6c757d; }
-    .menu .price { color:#212529; font-weight:700; }
-    /* Button styling to match main menu.php */
-    .btn-orange { background:#ff6a00; color:#fff; border-radius:10px; border:1px solid #ff6a00; white-space:nowrap; font-weight:600; }
-    .btn-orange:hover { background:#e65f00; color:#fff; border-color:#e65f00; }
-    .btn.btn-orange { background:#ff6a00 !important; border-color:#ff6a00 !important; color:#fff !important; }
-    .btn.btn-orange:hover { background:#e65f00 !important; border-color:#e65f00 !important; color:#fff !important; }
-    .btn-orange:hover { background:#e65f00; color:#fff; border-color:#e65f00; }
-    
-    /* Add padding to prevent content from being hidden under navbar */
-    .main-content {
-      padding-top: 100px;
+    /* ── Base ── */
+    :root {
+      --orange:      #ff6a00;
+      --orange-dark: #e55a00;
+      --orange-glow: rgba(255,106,0,.22);
+      --ease-out:    cubic-bezier(.25,.8,.25,1);
+      --ease-spring: cubic-bezier(.34,1.56,.64,1);
     }
-    
+    body { background: #f8f8f6; }
+
+    /* ── Section title subtle underline ── */
+    .section-title h2 {
+      position: relative;
+      display: inline-block;
+    }
+    .section-title h2::after {
+      content: '';
+      position: absolute;
+      bottom: -6px; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--orange), transparent);
+      border-radius: 2px;
+      transform: scaleX(0);
+      transform-origin: left;
+      animation: titleLine .6s var(--ease-out) .3s forwards;
+    }
+    @keyframes titleLine {
+      to { transform: scaleX(1); }
+    }
+
+    /* ── Live Search Bar ── */
+    .menu-search-wrap {
+      display: flex;
+      justify-content: center;
+      margin: 0 0 28px;
+      padding: 0 16px;
+    }
+    .menu-search-bar {
+      width: 100%; max-width: 480px;
+      display: flex; align-items: center;
+      background: #fff;
+      border-radius: 50px;
+      box-shadow: 0 4px 20px rgba(0,0,0,.09);
+      padding: 7px 7px 7px 18px;
+      gap: 8px;
+      border: 2px solid transparent;
+      transition: border-color .25s ease, box-shadow .25s ease;
+    }
+    .menu-search-bar:focus-within {
+      border-color: var(--orange);
+      box-shadow: 0 4px 20px var(--orange-glow);
+    }
+    .menu-search-bar i { color: #bbb; font-size: .9rem; flex-shrink: 0; }
+    .menu-search-bar input {
+      border: none; outline: none; background: transparent;
+      flex: 1; font-size: .93rem; color: #333;
+    }
+    .menu-search-bar input::placeholder { color: #c0c0c0; }
+    .menu-search-clear {
+      display: none; border: none; border-radius: 50px;
+      background: #f0f0f0; color: #888;
+      padding: 7px 14px; font-size: .8rem; font-weight: 600;
+      cursor: pointer; flex-shrink: 0;
+      transition: background .2s, color .2s;
+    }
+    .menu-search-clear.visible { display: block; }
+    .menu-search-clear:hover { background: var(--orange); color: #fff; }
+
+    /* ── Tab bar ── */
+    .menu-tabs-wrapper {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 32px;
+    }
+    #menuTab {
+      border-bottom: none;
+      gap: 4px;
+      flex-wrap: wrap;
+      padding: 5px;
+      background: #fff;
+      border-radius: 50px;
+      display: inline-flex !important;
+      box-shadow: 0 3px 16px rgba(0,0,0,.08);
+    }
+    #menuTab .nav-item { margin: 0; }
+    #menuTab .nav-link {
+      border: none;
+      border-radius: 50px;
+      padding: 10px 24px;
+      font-weight: 600;
+      font-size: .92rem;
+      color: #666;
+      background: transparent;
+      transition: background .28s var(--ease-out),
+                  color .28s var(--ease-out),
+                  box-shadow .28s var(--ease-out),
+                  transform .2s var(--ease-out);
+      white-space: nowrap;
+    }
+    #menuTab .nav-link:hover {
+      background: rgba(255,106,0,.08);
+      color: var(--orange);
+      transform: translateY(-1px);
+    }
+    #menuTab .nav-link.active {
+      background: var(--orange);
+      color: #fff !important;
+      box-shadow: 0 5px 18px var(--orange-glow);
+      transform: translateY(-1px);
+    }
+
+    /* ── Tab content transition ── */
+    .tab-content { position: relative; }
+    .tab-pane {
+      transition: opacity .38s var(--ease-out), transform .38s var(--ease-out);
+      opacity: 0;
+      transform: translateY(14px);
+      pointer-events: none;
+    }
+    .tab-pane.show.active {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    /* ── Cards ── */
+    .menu .card {
+      border-radius: 18px;
+      overflow: hidden;
+      border: 0;
+      background: #fff;
+      box-shadow: 0 4px 18px rgba(0,0,0,.07);
+      transition: transform .32s var(--ease-out),
+                  box-shadow .32s var(--ease-out);
+      position: relative;
+    }
+    /* Subtle orange top-border slide-in on hover */
+    .menu .card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--orange), #ff8c00);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform .32s var(--ease-out);
+      z-index: 2;
+    }
+    .menu .card:hover::before { transform: scaleX(1); }
+    .menu .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 40px rgba(0,0,0,.11);
+    }
+
+    /* ── Card image ── */
+    .card-img-wrapper {
+      position: relative; overflow: hidden; height: 220px;
+    }
+    .menu .card-img-top {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform .45s var(--ease-out);
+    }
+    .menu .card:hover .card-img-top { transform: scale(1.06); }
+
+    /* ── Card text (original colors kept) ── */
+    .menu .card-title { font-weight: 800; color: #d32f2f; }
+    .menu .card-text  { color: #6c757d; font-size: .87rem; line-height: 1.55; }
+    .menu .price      { color: #212529; font-weight: 700; font-size: 1.05rem; }
+
+    /* ── Wishlist heart (subtle, non-intrusive) ── */
+    .wishlist-btn {
+      background: none; border: none; padding: 0;
+      color: #e0e0e0; font-size: 1rem; cursor: pointer; line-height: 1;
+      transition: color .22s ease, transform .22s var(--ease-spring);
+    }
+    .wishlist-btn.liked { color: #e53935; }
+    .wishlist-btn:hover { transform: scale(1.25); color: #e53935; }
+
+    /* ── Buttons ── */
+    .btn-orange {
+      background: var(--orange);
+      color: #fff;
+      border-radius: 10px;
+      border: 1px solid var(--orange);
+      white-space: nowrap;
+      font-weight: 600;
+      transition: background .22s ease,
+                  transform .18s var(--ease-out),
+                  box-shadow .22s ease;
+      position: relative; overflow: hidden;
+    }
+    .btn-orange:hover {
+      background: var(--orange-dark);
+      color: #fff;
+      border-color: var(--orange-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px var(--orange-glow);
+    }
+    .btn-orange:active { transform: translateY(0); }
+    .btn.btn-orange         { background: var(--orange)      !important; border-color: var(--orange)      !important; color: #fff !important; }
+    .btn.btn-orange:hover   { background: var(--orange-dark) !important; border-color: var(--orange-dark) !important; }
+
+    /* ── Staggered card entrance ── */
+    @keyframes cardRise {
+      from { opacity: 0; transform: translateY(22px) scale(.97); }
+      to   { opacity: 1; transform: translateY(0)    scale(1); }
+    }
+    .tab-pane.show.active .col {
+      animation: cardRise .45s var(--ease-out) both;
+    }
+    .tab-pane.show.active .col:nth-child(1)  { animation-delay: .03s; }
+    .tab-pane.show.active .col:nth-child(2)  { animation-delay: .08s; }
+    .tab-pane.show.active .col:nth-child(3)  { animation-delay: .13s; }
+    .tab-pane.show.active .col:nth-child(4)  { animation-delay: .18s; }
+    .tab-pane.show.active .col:nth-child(5)  { animation-delay: .23s; }
+    .tab-pane.show.active .col:nth-child(6)  { animation-delay: .28s; }
+    .tab-pane.show.active .col:nth-child(7)  { animation-delay: .33s; }
+    .tab-pane.show.active .col:nth-child(n+8){ animation-delay: .38s; }
+    .col.search-hidden { display: none !important; }
+
+    /* ── Qty stepper in modal ── */
+    .qty-stepper {
+      display: flex; align-items: center;
+      border: 2px solid #e8e8e8; border-radius: 12px; overflow: hidden;
+    }
+    .qty-stepper button {
+      background: #f5f5f5; border: none;
+      width: 38px; height: 38px;
+      font-size: 1.15rem; font-weight: 700; color: #555;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: background .18s, color .18s;
+    }
+    .qty-stepper button:hover { background: var(--orange); color: #fff; }
+    .qty-stepper input {
+      width: 50px; text-align: center;
+      border: none; outline: none; background: transparent;
+      font-size: .95rem; font-weight: 700; color: #212529;
+    }
+
+    /* ── Modal polish ── */
+    #buyModal .modal-content { border-radius: 20px; overflow: hidden; border: none; box-shadow: 0 24px 60px rgba(0,0,0,.18); }
+    #buyModal .modal-header  { border-bottom: 1px solid #f0f0f0; }
+    #buyModal .modal-footer  { border-top: 1px solid #f0f0f0; }
+    #buyModal #modal-image   { border-radius: 14px; width: 100%; height: 200px; object-fit: cover; }
+    #buyModal .btn-success   { border-radius: 10px; font-weight: 700; padding: 10px 24px; transition: transform .2s, box-shadow .2s; }
+    #buyModal .btn-success:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(46,125,50,.35); }
+
+    /* ── Button row: both buttons equal size & perfectly aligned ── */
+    .card-body .d-flex.gap-2.mt-3 {
+      align-items: stretch;
+    }
+    .card-body .d-flex.gap-2.mt-3 form,
+    .card-body .d-flex.gap-2.mt-3 > .btn {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+    }
+    .card-body .d-flex.gap-2.mt-3 form .btn {
+      width: 100%;
+      justify-content: center;
+      align-items: center;
+    }
+    .card-body .d-flex.gap-2.mt-3 > .btn {
+      justify-content: center;
+      align-items: center;
+      white-space: nowrap;
+    }
+
+    /* ── Navbar padding ── */
+    .main-content { padding-top: 100px; }
     @media (max-width: 991px) {
-      .main-content {
-        padding-top: 80px;
-      }
-      
-      /* Adjust card padding for mobile */
-      .card.h-100.p-2 {
-        padding: 0.5rem !important;
-      }
+      .main-content { padding-top: 80px; }
+      .card.h-100.p-2 { padding: .5rem !important; }
+      #menuTab .nav-link { padding: 9px 16px; font-size: .85rem; }
     }
     </style>
 </head>
@@ -248,12 +490,22 @@ if ($catResult) {
         <h2>Our Menu</h2>
         <p><span>Check Our</span> <span class="description-title">Yummy Menu</span></p>
     </div>
-    <!-- Tabs: starter, breakfast, lunch, dinner -->
+
+    <!-- Search bar -->
+    <div class="menu-search-wrap">
+      <div class="menu-search-bar">
+        <i class="fa fa-search"></i>
+        <input type="text" id="menuSearchInput" placeholder="Search menu…" autocomplete="off">
+        <button class="menu-search-clear" id="menuSearchClear" type="button">✕ Clear</button>
+      </div>
+    </div>
+
     <?php
     // Ensure we have exactly these categories in order
     $wantedCats = ['starter','breakfast','lunch','dinner'];
     ?>
-    <ul class="nav nav-tabs d-flex align-content-center justify-content-center" id="menuTab" role="tablist">
+    <div class="menu-tabs-wrapper">
+    <ul class="nav nav-tabs" id="menuTab" role="tablist">
         <?php foreach ($wantedCats as $index => $cat): ?>
             <li class="nav-item" role="presentation">
                 <button class="nav-link <?= $index === 0 ? 'active' : '' ?>" id="tab-<?= md5($cat) ?>" data-bs-toggle="tab" data-bs-target="#content-<?= md5($cat) ?>" type="button" role="tab" aria-controls="content-<?= md5($cat) ?>" aria-selected="<?= $index === 0 ? 'true' : 'false' ?>">
@@ -262,6 +514,7 @@ if ($catResult) {
             </li>
         <?php endforeach; ?>
     </ul>
+    </div>
 
     <div class="tab-content mt-5" id="menuTabContent">
         <?php foreach ($wantedCats as $index => $cat): ?>
@@ -280,16 +533,20 @@ if ($catResult) {
                         ?>
                         <div class="col">
                             <div class="card h-100 p-2">
-                                <!-- To change images, place files under assets/images/menu/ and update DB menu_image accordingly. -->
-                                <img src="<?= htmlspecialchars($img) ?>" class="card-img-top" alt="<?= htmlspecialchars($item['menu_name']) ?>">
+                                <div class="card-img-wrapper">
+                                    <img src="<?= htmlspecialchars($img) ?>" class="card-img-top" alt="<?= htmlspecialchars($item['menu_name']) ?>">
+                                </div>
                                 <div class="card-body d-flex flex-column">
-                                    <h5 class="card-title"><?= htmlspecialchars($item['menu_name']) ?></h5>
+                                    <div class="d-flex justify-content-between align-items-start mb-1">
+                                        <h5 class="card-title mb-0"><?= htmlspecialchars($item['menu_name']) ?></h5>
+                                        <button class="wishlist-btn ms-2 flex-shrink-0" title="Wishlist" data-id="<?= intval($item['menu_id']) ?>"><i class="fa fa-heart"></i></button>
+                                    </div>
                                     <p class="card-text flex-grow-1"><?= htmlspecialchars($item['menu_description']) ?></p>
                                     <div class="d-flex justify-content-between align-items-center mt-1">
                                         <span class="price">रु<?= number_format((float)$item['menu_price'], 2) ?></span>
                                     </div>
                                     <div class="d-flex gap-2 mt-3">
-                                        <form action="../includes/cart.php?action=add" method="post" class="d-grid flex-grow-1">
+                                        <form action="../includes/cart.php?action=add" method="post" style="flex:1;min-width:0;">
                                             <input type="hidden" name="menu_id" value="<?= intval($item['menu_id']) ?>">
                                             <input type="hidden" name="menu_name" value="<?= htmlspecialchars($item['menu_name']) ?>">
                                             <input type="hidden" name="price" value="<?= htmlspecialchars($item['menu_price']) ?>">
@@ -297,7 +554,8 @@ if ($catResult) {
                                             <button type="submit" class="btn btn-orange w-100 <?php echo !$currentUser ? 'require-login' : ''; ?>" <?php echo !$currentUser ? 'data-action="add_to_cart"' : ''; ?>>Add to Cart</button>
                                         </form>
                                         <button type="button"
-                                            class="btn btn-orange w-100 <?php echo !$currentUser ? 'require-login' : ''; ?>"
+                                            style="flex:1;min-width:0;"
+                                            class="btn btn-orange <?php echo !$currentUser ? 'require-login' : ''; ?>"
                                             <?php echo !$currentUser ? 'data-action="buy_now"' : ''; ?>
                                             data-bs-toggle="<?php echo $currentUser ? 'modal' : ''; ?>"
                                             data-bs-target="<?php echo $currentUser ? '#buyModal' : ''; ?>"
@@ -335,8 +593,7 @@ if ($catResult) {
                 <div class="modal-body">
                     <div class="row g-4">
                         <div class="col-md-5 text-center">
-                            <!-- Replace with your image from assets/images/menu/ when available -->
-                            <img id="modal-image" src="" alt="" class="img-fluid rounded shadow-sm" />
+                            <img id="modal-image" src="" alt="" class="img-fluid" style="border-radius:14px;width:100%;height:200px;object-fit:cover;" />
                         </div>
                         <div class="col-md-7">
                             <h4 id="modal-name" class="text-primary fw-bold"></h4>
@@ -353,7 +610,11 @@ if ($catResult) {
                             </div>
                             <div class="mb-3">
                                 <label for="quantity" class="form-label">Quantity</label>
-                                <input type="number" id="quantity" name="quantity" class="form-control" min="1" value="1" required>
+                                <div class="qty-stepper">
+                                    <button type="button" id="qty-minus">−</button>
+                                    <input type="number" id="quantity" name="quantity" min="1" value="1" required>
+                                    <button type="button" id="qty-plus">+</button>
+                                </div>
                                 <div class="invalid-feedback">Please enter valid quantity</div>
                             </div>
                             <div class="mb-3">
@@ -413,60 +674,121 @@ if ($catResult) {
     <script src="<?php echo asset('js/script.js'); ?>"></script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // Auto hide toast notifications after 5 seconds
-        var toasts = document.querySelectorAll('.toast');
-        toasts.forEach(function(toast) {
-          var bsToast = new bootstrap.Toast(toast, {
-            delay: 5000
-          });
-          bsToast.show();
-        });
-        
-        // Handle login required buttons
-        const loginRequiredButtons = document.querySelectorAll('.require-login');
-        const loginRequiredModal = new bootstrap.Modal(document.getElementById('loginRequiredModal'));
-        
-        loginRequiredButtons.forEach(function(button) {
-            button.addEventListener('click', function(e) {
-                e.preventDefault();
-                loginRequiredModal.show();
+
+        /* ── Toasts ── */
+        document.querySelectorAll('.toast').forEach(t =>
+            new bootstrap.Toast(t, { delay: 5000 }).show()
+        );
+
+        /* ── Login-required modal ── */
+        const loginModal = new bootstrap.Modal(document.getElementById('loginRequiredModal'));
+        document.querySelectorAll('.require-login').forEach(btn =>
+            btn.addEventListener('click', e => { e.preventDefault(); loginModal.show(); })
+        );
+
+        /* ── Live search ── */
+        const searchInput = document.getElementById('menuSearchInput');
+        const searchClear = document.getElementById('menuSearchClear');
+        if (searchInput) {
+            searchInput.addEventListener('input', function () {
+                const q = this.value.trim().toLowerCase();
+                searchClear.classList.toggle('visible', q.length > 0);
+                document.querySelectorAll('#menuTabContent .col').forEach(col => {
+                    const name = col.querySelector('.card-title')?.textContent.toLowerCase() || '';
+                    const desc = col.querySelector('.card-text')?.textContent.toLowerCase() || '';
+                    col.classList.toggle('search-hidden', q.length > 0 && !name.includes(q) && !desc.includes(q));
+                });
+                // Show all panes while searching so results aren't hidden behind tabs
+                document.querySelectorAll('#menuTabContent .tab-pane').forEach(p => {
+                    if (q.length > 0) {
+                        p.style.cssText = 'display:block;opacity:1;transform:none;pointer-events:auto;';
+                    } else {
+                        p.style.cssText = '';
+                    }
+                });
+                document.getElementById('menuTab').style.opacity = q.length > 0 ? '0.5' : '1';
             });
-        });
-        
-        // Handle Buy Now modal functionality
-        const buyModal = document.getElementById('buyModal');
-        const modalName = document.getElementById('modal-name');
-        const modalPrice = document.getElementById('modal-price');
-        const modalTotalPrice = document.getElementById('modal-total-price');
-        const inputMenuId = document.getElementById('input-menu-id');
-        const inputMenuName = document.getElementById('input-menu-name');
-        const inputPrice = document.getElementById('input-price');
-        const inputTotalPrice = document.getElementById('input-total-price');
-        const quantityInput = document.getElementById('quantity');
-        
-        function updateTotalPrice() {
-            const price = parseFloat(modalPrice.textContent) || 0;
-            const quantity = parseInt(quantityInput.value) || 1;
-            const total = price * quantity;
-            modalTotalPrice.textContent = total.toFixed(2);
-            inputPrice.value = price.toFixed(2);
-            inputTotalPrice.value = total.toFixed(2);
+            searchClear.addEventListener('click', () => {
+                searchInput.value = '';
+                searchInput.dispatchEvent(new Event('input'));
+                searchInput.focus();
+            });
         }
-        
-        quantityInput.addEventListener('input', updateTotalPrice);
-        
-        buyModal.addEventListener('show.bs.modal', function (event) {
-            const button = event.relatedTarget;
-            inputMenuId.value = button.getAttribute('data-id');
-            modalName.textContent = button.getAttribute('data-name');
-            modalPrice.textContent = parseFloat(button.getAttribute('data-price')).toFixed(2);
-            modalTotalPrice.textContent = parseFloat(button.getAttribute('data-price')).toFixed(2);
-            inputMenuName.value = button.getAttribute('data-name');
-            inputPrice.value = parseFloat(button.getAttribute('data-price')).toFixed(2);
-            inputTotalPrice.value = parseFloat(button.getAttribute('data-price')).toFixed(2);
-            document.getElementById('modal-description').textContent = button.getAttribute('data-description');
-            document.getElementById('modal-image').src = button.getAttribute('data-image');
-            quantityInput.value = 1;
+
+        /* ── Tab switch — re-trigger card entrance ── */
+        const menuTabEl = document.getElementById('menuTab');
+        if (menuTabEl) {
+            menuTabEl.addEventListener('shown.bs.tab', e => {
+                const pane = document.querySelector(e.target.getAttribute('data-bs-target'));
+                if (!pane) return;
+                pane.querySelectorAll('.col').forEach(col => {
+                    col.style.animation = 'none';
+                    col.offsetHeight; // force reflow
+                    col.style.animation = '';
+                });
+            });
+        }
+
+        /* ── Wishlist heart ── */
+        const wishlist = JSON.parse(localStorage.getItem('mkj_wishlist') || '[]');
+        function refreshHearts() {
+            document.querySelectorAll('.wishlist-btn').forEach(btn => {
+                btn.classList.toggle('liked', wishlist.includes(btn.dataset.id));
+            });
+        }
+        refreshHearts();
+        document.addEventListener('click', e => {
+            const btn = e.target.closest('.wishlist-btn');
+            if (!btn) return;
+            const id = btn.dataset.id;
+            const idx = wishlist.indexOf(id);
+            idx === -1 ? wishlist.push(id) : wishlist.splice(idx, 1);
+            localStorage.setItem('mkj_wishlist', JSON.stringify(wishlist));
+            btn.classList.toggle('liked', wishlist.includes(id));
+            btn.style.transform = 'scale(1.5)';
+            setTimeout(() => btn.style.transform = '', 250);
+        });
+
+        /* ── Buy Now modal ── */
+        const buyModal      = document.getElementById('buyModal');
+        const modalPrice    = document.getElementById('modal-price');
+        const modalTotal    = document.getElementById('modal-total-price');
+        const inputMenuId   = document.getElementById('input-menu-id');
+        const inputMenuName = document.getElementById('input-menu-name');
+        const inputPrice    = document.getElementById('input-price');
+        const inputTotal    = document.getElementById('input-total-price');
+        const quantityInput = document.getElementById('quantity');
+
+        function recalc() {
+            const price = parseFloat(modalPrice.textContent) || 0;
+            const qty   = Math.max(1, parseInt(quantityInput.value) || 1);
+            quantityInput.value = qty;
+            const total = (price * qty).toFixed(2);
+            modalTotal.textContent = total;
+            inputPrice.value = price.toFixed(2);
+            inputTotal.value = total;
+        }
+
+        document.getElementById('qty-minus')?.addEventListener('click', () => {
+            quantityInput.value = Math.max(1, (parseInt(quantityInput.value) || 1) - 1);
+            recalc();
+        });
+        document.getElementById('qty-plus')?.addEventListener('click', () => {
+            quantityInput.value = (parseInt(quantityInput.value) || 1) + 1;
+            recalc();
+        });
+        quantityInput?.addEventListener('input', recalc);
+
+        buyModal?.addEventListener('show.bs.modal', e => {
+            const btn = e.relatedTarget;
+            inputMenuId.value              = btn.getAttribute('data-id');
+            inputMenuName.value            = btn.getAttribute('data-name');
+            document.getElementById('modal-name').textContent        = btn.getAttribute('data-name');
+            document.getElementById('modal-description').textContent = btn.getAttribute('data-description');
+            document.getElementById('modal-image').src               = btn.getAttribute('data-image');
+            modalPrice.textContent = parseFloat(btn.getAttribute('data-price')).toFixed(2);
+            quantityInput.value    = 1;
+            recalc();
         });
     });
 </script>

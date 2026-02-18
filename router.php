@@ -60,3 +60,5 @@ switch ($request_uri) {
         require __DIR__ . '/404.php';
         break;
 }
+
+        

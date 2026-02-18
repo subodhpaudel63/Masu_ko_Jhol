@@ -550,40 +550,7 @@ Want to explore that next?
                 </div>
               </div>
             </div>
-            <div class="col-lg-4">
-              <div class="our-chef-slider d-flex flex-column align-items-center gap-4">
-                <img width="200px" src="<?php echo asset('images/team-3.png'); ?>" alt="">
-                <div class="chef-slider-content">
-                  <h5 class="text-center d-block"></h5>
-                  <p class="text-center mb-0">Head Chef</p>
-                  <div class="d-flex justify-content-center">
-                    <hr class="w-25 my-2">
-                  </div> 
-                  <ul class="list-unstyled d-flex justify-content-center">
-                    <li class="mx-2">
-                      <a href="https://www.facebook.com" target="_blank" class="text-white">
-                        <i class="fab fa-facebook-f"></i>
-                      </a>
-                    </li>
-                    <li class="mx-2">
-                      <a href="https://www.instagram.com" target="_blank" class="text-white">
-                        <i class="fab fa-instagram"></i>
-                      </a>
-                    </li>
-                    <li class="mx-2">
-                      <a href="https://www.twitter.com" target="_blank" class="text-white">
-                        <i class="fab fa-twitter"></i>
-                      </a>
-                    </li>
-                    <li class="mx-2">
-                      <a href="https://www.linkedin.com" target="_blank" class="text-white">
-                        <i class="fab fa-linkedin-in"></i>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
+            
             <div class="col-lg-4">
               <div class="our-chef-slider d-flex flex-column align-items-center gap-4">
                 <img width="200px" src="<?php echo asset('images/team-4.png'); ?>" alt="">
@@ -697,6 +664,7 @@ Want to explore that next?
           </div>
         </div>
       </section>
+      
       <section class="our-services py-5 my-5">
         <div class="container">
           <div class="row">
