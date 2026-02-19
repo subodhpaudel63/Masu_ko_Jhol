@@ -431,7 +431,7 @@ if (isset($_GET['session_expired']) && $_GET['session_expired'] == 1) {
                 </div>
 
                 <h2 class="text-center mb-2 auth-title">Login to Your Account</h2>
-                 <h6 class="text-center mb-2 auth-title">Welcom back to Masu ko jhol</h4>
+                 <h6 class="text-center mb-2 auth-title">Welcome back to Masu ko jhol</h4>
                 <!-- <p class="text-center mb-4 auth-sub" style="font-size:.95rem;color:#333;font-weight:500;">
                   Welcome back to Masu Ko Jhol
                 </p> -->

@@ -168,7 +168,7 @@ $('.testimonials .slider-content').slick({
   swipe: true,
 });
 
-alert("JS FILE CONNECTED");
+
 
 
 // Navigation Slider for Testimonials
