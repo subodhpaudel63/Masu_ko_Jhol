@@ -7,8 +7,16 @@ require_once __DIR__ . '/includes/auth_check.php';
 // Check if user is logged in
 $user = getUserFromCookie();
 
-// Remove the immediate redirect for contact page and show buttons instead
-// If user is not logged in, we'll show the buttons and handle access through UI
+// If user is not logged in, redirect to login page
+if (!$user) {
+    $_SESSION['msg'] = [
+        'type' => 'error',
+        'text' => 'You must be logged in to send feedback.'
+    ];
+    header('Location: ./login.php');
+    exit();
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">

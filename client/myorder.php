@@ -51,6 +51,8 @@ if (isset($_COOKIE['user_img'])) {
     <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
     <?php require_once __DIR__ . '/../config/bootstrap.php'; ?>
     <link rel="stylesheet" href="<?php echo asset('css/style.css'); ?>" />
+    <!-- Include toast styles -->
+    <link rel="stylesheet" href="<?php echo asset('css/toast_styles.css'); ?>" />
     <style>
         .status-badge { 
             border-radius: 999px; 
@@ -219,16 +221,7 @@ if (isset($_COOKIE['user_img'])) {
     </script>
 </head>
 <body>
-    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index:2000;">
-      <?php if (isset($_SESSION['msg'])): $m=$_SESSION['msg']; unset($_SESSION['msg']); ?>
-        <div class="toast show align-items-center border-0 <?php echo $m['type']==='success'?'text-bg-success':'text-bg-danger'; ?>" role="alert" aria-live="assertive" aria-atomic="true" style="<?php echo $m['type']==='success'?'background:#0f5132;':''; ?>" data-bs-delay="5000">
-          <div class="d-flex">
-            <div class="toast-body small fw-semibold"><?php echo htmlspecialchars($m['text']); ?></div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-          </div>
-        </div>
-      <?php endif; ?>
-    </div>
+    
 
     <div class="loader">
       <i class="fas fa-utensils loader-icone"></i>
@@ -399,19 +392,23 @@ if (isset($_COOKIE['user_img'])) {
     <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
     <?php require_once __DIR__ . '/../config/bootstrap.php'; ?>
     <script src="<?php echo asset('js/script.js'); ?>"></script>
+    <script src="<?php echo asset('js/toast_notifications.js'); ?>"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             fetchOrders();
             setInterval(fetchOrders, POLL_MS);
             
-            // Auto hide toast notifications after 5 seconds
-            var toasts = document.querySelectorAll('.toast');
-            toasts.forEach(function(toast) {
-              var bsToast = new bootstrap.Toast(toast, {
-                delay: 5000
-              });
-              bsToast.show();
-            });
+            // Check for session messages and show toast
+            <?php if (isset($_SESSION['msg'])): $m = $_SESSION['msg']; unset($_SESSION['msg']); ?>
+              const messageType = '<?php echo $m['type']; ?>';
+              const messageText = <?php echo json_encode(htmlspecialchars($m['text'])); ?>;
+              
+              if (messageType === 'success') {
+                ToastNotifications.success(messageText);
+              } else {
+                ToastNotifications.error(messageText);
+              }
+            <?php endif; ?>
         });
     </script>
 </body>

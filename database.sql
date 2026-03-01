@@ -30,7 +30,7 @@ CREATE TABLE `bookings` (
 --
 
 INSERT INTO `bookings` (`id`, `name`, `email`, `phone`, `booking_date`, `booking_time`, `people`, `message`, `created_at`, `status`) VALUES
-(4, 'pari', 'vaibhavgoswami055@gmail.com', '8799064890', '2025-08-15', '16:36:00', 10, 'hi i am coming at 4 50 pm', '2025-08-07 11:07:09', 'pending');
+(4, 'pari', 'sample@gmail.com', '8799064890', '2025-08-15', '16:36:00', 10, 'hi i am coming at 4 50 pm', '2025-08-07 11:07:09', 'pending');
 
 -- --------------------------------------------------------
 
@@ -69,12 +69,6 @@ CREATE TABLE `menu` (
 --
 
 INSERT INTO `menu` (`menu_id`, `menu_name`, `menu_description`, `menu_price`, `menu_category`, `menu_image`, `created_at`) VALUES
-(4, 'Pancake Stackgff', 'Fluffy pancakes served with syrup, butter, and seasonal fruits.', 100, 'dinner', 'assets/img/menu/6.jpeg', '2025-05-27 11:38:48'),
-(5, 'Tomato Soup', 'Rich and creamy tomato soup with fresh basil and a breadstick.', 50, 'dinner', 'assets/img/menu/panirtikka.jpeg', '2025-05-27 11:38:48'),
-(6, 'Club Sandwich', 'Triple-layered sandwich with turkey, bacon, lettuce, and tomato.', 9, 'lunch', 'assets/img/menu/9.png', '2025-05-27 11:38:48'),
-(32, 'khaman', 'mkdwl', 200, 'starter', 'assets/img/menu/menu_683b40b0b1c5f.jpeg', '2025-05-31 17:47:28'),
-(49, 'ebbhw', 'cdvdyvcd', 70, 'breakfast', 'assets/img/menu/menu_683c27574d88a.png', '2025-06-01 10:11:35'),
-(52, 'Masala Dosa', 'cskncskcis jncikscsn', 150, 'lunch', 'assets/img/menu/menu_683d4b43df29c.png', '2025-06-02 06:57:07');
 
 -- --------------------------------------------------------
 
@@ -104,13 +98,6 @@ CREATE TABLE `orders` (
 
 INSERT INTO `orders` (`order_id`, `menu_id`, `email`, `menu_name`, `quantity`, `price`, `total_price`, `mobile`, `address`, `status`, `order_time`, `order_date`, `created_at`) VALUES
 (2, 102, 'jaysukh.rabari@yahoo.com', 'Ringna No Oro', 1, 0, 150, '9876512345', 'Bhavnagar, Gujarat', 'Shipping', '0000-00-00 00:00:00', '2025-06-07', '2025-06-07 14:40:00'),
-(3, 103, 'kirit.solanki@gmail.com', 'Bajri Rotla & Lasan Chutney', 3, 0, 270, '9898989898', 'Amreli, Gujarat', 'Confirmed', '0000-00-00 00:00:00', '2025-06-06', '2025-06-06 11:30:00'),
-(4, 104, 'mahesh.gohil@gmail.com', 'Undhiyu', 2, 0, 400, '9845123456', 'Junagadh, Gujarat', 'Delivering', '0000-00-00 00:00:00', '2025-06-05', '2025-06-05 13:20:00'),
-(5, 105, 'haribhai.vala@yahoo.com', 'Kadhi Khichdi', 1, 0, 180, '9823456789', 'Jamnagar, Gujarat', 'Confirmed', '0000-00-00 00:00:00', '2025-06-04', '2025-06-04 10:45:00'),
-(6, 106, 'bhupat.jadeja@rediffmail.com', 'Khichu & Chhas', 2, 0, 240, '9812345678', 'Morbi, Gujarat', 'Shipping', '0000-00-00 00:00:00', '2025-06-03', '2025-06-03 15:10:00'),
-(8, 108, 'vallabh.zala@gmail.com', 'Bhindi Masala', 2, 0, 260, '9823123456', 'Surendranagar, Gujarat', 'Confirmed', '0000-00-00 00:00:00', '2025-06-01', '2025-06-01 12:30:00'),
-(9, 109, 'karsan.koli@gmail.com', 'Gathiya Jalebi', 4, 0, 360, '9800000000', 'Porbandar, Gujarat', 'Delivering', '0000-00-00 00:00:00', '2025-05-31', '2025-05-31 14:00:00'),
-(10, 110, 'devji.vekaria@gmail.com', 'Fafda & Chutney', 2, 0, 240, '9855555555', 'Bhuj, Gujarat', 'Delivering', '0000-00-00 00:00:00', '2025-05-30', '2025-05-30 13:10:00');
 
 -- --------------------------------------------------------
 
@@ -137,7 +124,14 @@ INSERT INTO `users` (`id`, `email`, `password`, `user_type`, `created_at`, `user
 (14, 'example@gmail.com', '$2y$10$.E8e9Rf/9JHsZzXthtn9FefOXM2Stm3Em0msHKdwRAAO9hU9omY8C', 'user', '2025-07-04 09:33:27', '../assets/img/usersprofiles/profilepic.jpg'),
 (19, 'fake@gmail.com', '$2y$10$I5LVWlRA2BXMeZJSnDsyCerCsMSue1EChffupcxf.9ZCYc6aRevVy', 'user', '2025-07-23 10:10:07', 'assets/img/usersprofiles/uid0-1753265418f8b7a26c.jpeg');
 
---
+
+
+-- Suscribe table starts
+CREATE TABLE subscribers (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    subscribed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 -- Indexes for dumped tables
 --
 

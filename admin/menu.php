@@ -146,6 +146,7 @@ $categories = ['starter', 'breakfast', 'lunch', 'dinner'];
   <title>Menu Management - Masu Ko Jhol</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,0,0" />
   <link rel="stylesheet" href="../assets/css/adminstyle.css">
+  <link rel="stylesheet" href="../assets/css/toast_styles.css">
   <style>
     .menu-sections {
         display: grid;
@@ -458,6 +459,7 @@ $categories = ['starter', 'breakfast', 'lunch', 'dinner'];
   </style>
 </head>
 <body>
+<div id="toastContainer" class="toast-container"></div>
    <div class="container">
       <aside>
          <div class="top">
@@ -493,6 +495,12 @@ $categories = ['starter', 'breakfast', 'lunch', 'dinner'];
               <span class="material-symbols-sharp">calendar_month </span>
               <h3>Bookings</h3>
            </a>
+
+           <a href="feedback.php">
+              <span class="material-symbols-sharp">Feedback </span>
+              <h3>Feedback</h3>
+           </a>
+           
            <a href="#">
               <span class="material-symbols-sharp">settings </span>
               <h3>settings</h3>
@@ -512,9 +520,15 @@ $categories = ['starter', 'breakfast', 'lunch', 'dinner'];
            <h1>Menu Management</h1>
 
            <?php if ($message): ?>
-           <div class="message <?php echo $message_type; ?>">
-               <?php echo htmlspecialchars($message); ?>
-           </div>
+           <script>
+               document.addEventListener('DOMContentLoaded', function() {
+                   <?php if ($message_type === 'success'): ?>
+                   ToastNotifications.success('<?php echo addslashes(htmlspecialchars($message)); ?>');
+                   <?php else: ?>
+                   ToastNotifications.error('<?php echo addslashes(htmlspecialchars($message)); ?>');
+                   <?php endif; ?>
+               });
+           </script>
            <?php endif; ?>
 
            <!-- Quick Links Section -->
@@ -663,7 +677,7 @@ $categories = ['starter', 'breakfast', 'lunch', 'dinner'];
                       <small class="text-muted">Online</small>
                   </div>
                   <div class="profile-photo">
-                      <img src="../assets/img/usersprofiles/fa29eed8-1427-4ec2-a671-e4e45a399f3c.jpg" alt="Admin Profile"/>
+                      <img src="../assets/img/usersprofiles/adminpic.jpg" alt="Admin Profile"/>
                   </div>
               </div>
           </div>
@@ -768,8 +782,85 @@ $categories = ['starter', 'breakfast', 'lunch', 'dinner'];
            });
        }
        
+       // Create confirmation modal for delete operations
+       function showDeleteConfirmation(itemName, onDeleteCallback) {
+           // Remove any existing modal
+           const existingModal = document.getElementById('deleteConfirmModal');
+           if (existingModal) existingModal.remove();
+           
+           // Create modal HTML
+           const modalHtml = `
+               <div id="deleteConfirmModal" class="delete-confirm-overlay" style="
+                   position: fixed;
+                   top: 0;
+                   left: 0;
+                   width: 100%;
+                   height: 100%;
+                   background: rgba(0, 0, 0, 0.6);
+                   backdrop-filter: blur(5px);
+                   z-index: 5000;
+                   display: flex;
+                   justify-content: center;
+                   align-items: center;
+                   animation: fadeIn 0.3s ease;
+               ">
+                   <div class="delete-confirm-modal" style="
+                       background: var(--clr-white);
+                       padding: 2rem;
+                       border-radius: var(--border-radius-2);
+                       width: 90%;
+                       max-width: 450px;
+                       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+                       position: relative;
+                       animation: modalSlideIn 0.3s ease;
+                   ">
+                       <h3 style="
+                           color: var(--clr-danger);
+                           margin-top: 0;
+                           margin-bottom: 1rem;
+                           font-size: 1.3rem;
+                           display: flex;
+                           align-items: center;
+                           gap: 0.5rem;
+                       "><span class="material-symbols-sharp">warning</span> Confirm Deletion</h3>
+                       <p style="margin: 1rem 0; color: var(--clr-dark);">Are you sure you want to delete <strong>${itemName}</strong>? This action cannot be undone.</p>
+                       <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem;">
+                           <button id="cancelDeleteBtn" class="btn-warning" style="
+                               padding: 0.6rem 1.2rem;
+                               border-radius: var(--border-radius-1);
+                               border: none;
+                               cursor: pointer;
+                               font-weight: 500;
+                               transition: all 0.2s ease;
+                           ">Cancel</button>
+                           <button id="confirmDeleteBtn" class="btn-danger" style="
+                               padding: 0.6rem 1.2rem;
+                               border-radius: var(--border-radius-1);
+                               border: none;
+                               cursor: pointer;
+                               font-weight: 500;
+                               transition: all 0.2s ease;
+                           ">Delete</button>
+                       </div>
+                   </div>
+               </div>
+           `;
+           
+           document.body.insertAdjacentHTML('beforeend', modalHtml);
+           
+           // Add event listeners
+           document.getElementById('cancelDeleteBtn').addEventListener('click', function() {
+               document.getElementById('deleteConfirmModal').remove();
+           });
+           
+           document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+               document.getElementById('deleteConfirmModal').remove();
+               onDeleteCallback();
+           });
+       }
+
        function deleteMenuItem(menuId, itemName) {
-           if (confirm(`Are you sure you want to delete "${itemName}"? This action cannot be undone.`)) {
+           showDeleteConfirmation(itemName, function() {
                fetch('menu_ajax.php', {
                    method: 'POST',
                    headers: {
@@ -780,17 +871,19 @@ $categories = ['starter', 'breakfast', 'lunch', 'dinner'];
                .then(response => response.json())
                .then(data => {
                    if (data.success) {
-                       alert(data.message);
-                       location.reload(); // Refresh to show updated data
+                       ToastNotifications.success(data.message);
+                       setTimeout(() => {
+                           location.reload(); // Refresh to show updated data
+                       }, 1500);
                    } else {
-                       alert('Error: ' + data.message);
+                       ToastNotifications.error('Error: ' + data.message);
                    }
                })
                .catch(error => {
                    console.error('Error:', error);
-                   alert('Error deleting menu item');
+                   ToastNotifications.error('Error deleting menu item');
                });
-           }
+           });
        }
        
        // Image preview functionality
@@ -827,16 +920,18 @@ $categories = ['starter', 'breakfast', 'lunch', 'dinner'];
            .then(response => response.json())
            .then(data => {
                if (data.success) {
-                   alert(data.message);
-                   closeModal();
-                   location.reload(); // Refresh to show updated data
+                   ToastNotifications.success(data.message);
+                   setTimeout(() => {
+                       closeModal();
+                       location.reload(); // Refresh to show updated data
+                   }, 1500);
                } else {
-                   alert('Error: ' + data.message);
+                   ToastNotifications.error('Error: ' + data.message);
                }
            })
            .catch(error => {
                console.error('Error:', error);
-               alert('Error saving menu item');
+               ToastNotifications.error('Error saving menu item');
            })
            .finally(() => {
                // Reset button
@@ -852,6 +947,7 @@ $categories = ['starter', 'breakfast', 'lunch', 'dinner'];
            }
        });
    </script>
+   <script src="../assets/js/toast_notifications.js"></script>
    <script src="../assets/js/adminscript.js"></script>
 </body>
 </html>

@@ -66,53 +66,6 @@ function updateBookingStatus(bookingId, newStatus, button) {
     });
 }
 
-// Delete booking
-function deleteBooking(bookingId, button) {
-    if (!confirm('Are you sure you want to delete this booking? This action cannot be undone.')) {
-        return;
-    }
-    
-    // Disable button during processing
-    const originalText = button.textContent;
-    button.disabled = true;
-    button.textContent = 'Deleting...';
-    
-    fetch('../includes/delete_booking.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest'
-        },
-        body: JSON.stringify({
-            id: parseInt(bookingId)
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showBookingToast('Booking deleted successfully!', 'success');
-            // Remove the row from the table
-            const row = button.closest('tr');
-            row.style.opacity = '0';
-            row.style.transform = 'translateX(100px)';
-            setTimeout(() => {
-                row.remove();
-            }, 300);
-        } else {
-            showBookingToast('Error: ' + data.message, 'error');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showBookingToast('Error deleting booking', 'error');
-    })
-    .finally(() => {
-        // Re-enable button
-        button.disabled = false;
-        button.textContent = originalText;
-    });
-}
-
 // Initialize booking page functionality
 document.addEventListener('DOMContentLoaded', function() {
     // Handle booking update buttons
@@ -127,14 +80,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Handle booking delete buttons
-    const deleteButtons = document.querySelectorAll('.btn-booking-delete');
-    deleteButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const bookingId = this.getAttribute('data-booking-id');
-            deleteBooking(bookingId, this);
-        });
-    });
+    // Delete buttons are handled by the custom animated modal in bookings.php
+    // Do NOT add event listeners here - it would create conflicts
 });
 
 // Admin Dashboard JavaScript

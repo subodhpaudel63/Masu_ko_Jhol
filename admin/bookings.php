@@ -30,8 +30,188 @@ foreach($bookings as $booking) {
   <title>Table Bookings - Masu Ko Jhol</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,0,0" />
   <link rel="stylesheet" href="../assets/css/adminstyle.css">
+  <style>
+    :root {
+      /* Success Palette (Dark Green) */
+      --success-bg: #062016;
+      --success-border: #14532d;
+      --success-accent: #22c55e;
+      /* Error Palette (Dark Red) */
+      --error-bg: #1c0707;
+      --error-border: #7f1d1d;
+      --error-accent: #ef4444;
+    }
+
+    /* Toast Container Animation */
+    .toast {
+      animation: slideIn 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      pointer-events: auto;
+    }
+
+    .toast-success { 
+      background-color: var(--success-bg); 
+      border: 1px solid var(--success-border); 
+    }
+    .toast-error { 
+      background-color: var(--error-bg); 
+      border: 1px solid var(--error-border);
+      animation: slideIn 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards, shake 0.4s ease-in-out 0.5s;
+    }
+
+    .toast.hiding { 
+      animation: slideOut 0.4s ease-in forwards; 
+    }
+
+    /* Progress Bar */
+    .progress-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 3px;
+      width: 100%;
+      transform-origin: left;
+      animation: progress 5s linear forwards;
+    }
+    .toast-success .progress-bar { 
+      background-color: var(--success-accent); 
+    }
+    .toast-error .progress-bar { 
+      background-color: var(--error-accent); 
+    }
+
+    @keyframes progress { 
+      from { transform: scaleX(1); } 
+      to { transform: scaleX(0); } 
+    }
+    @keyframes slideIn { 
+      from { transform: translateX(120%); opacity: 0; } 
+      to { transform: translateX(0); opacity: 1; } 
+    }
+    @keyframes slideOut { 
+      from { transform: translateX(0); opacity: 1; } 
+      to { transform: translateX(120%); opacity: 0; } 
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-4px); }
+      75% { transform: translateX(4px); }
+    }
+
+    /* SVG Icon Animations */
+    .icon-circle {
+      stroke-dasharray: 166; 
+      stroke-dashoffset: 166; 
+      stroke-width: 2;
+      fill: none; 
+      animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+    }
+    .icon-path {
+      stroke-dasharray: 48; 
+      stroke-dashoffset: 48;
+      animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+    }
+    .icon-fill-success { 
+      animation: fillSuccess .4s ease-in-out .4s forwards; 
+    }
+    .icon-fill-error { 
+      animation: fillError .4s ease-in-out .4s forwards; 
+    }
+
+    @keyframes stroke { 
+      100% { stroke-dashoffset: 0; } 
+    }
+    @keyframes fillSuccess { 
+      100% { box-shadow: inset 0px 0px 0px 30px var(--success-accent); } 
+    }
+    @keyframes fillError { 
+      100% { box-shadow: inset 0px 0px 0px 30px var(--error-accent); } 
+    }
+
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+
+    .icon-container {
+      width: 44px; 
+      height: 44px; 
+      border-radius: 50%; 
+      display: block;
+      stroke-width: 2; 
+      stroke: #fff; 
+      flex-shrink: 0;
+    }
+
+    /* Toast container positioning */
+    #toastContainer {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      z-index: 9999;
+      pointer-events: none;
+    }
+
+    .toast {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      padding-bottom: 20px;
+      border-radius: 12px;
+      min-width: 320px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    .toast h4 {
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: rgba(255, 255, 255, 0.5);
+      margin: 0;
+    }
+
+    .toast p {
+      font-size: 14px;
+      color: white;
+      font-weight: 500;
+      margin: 4px 0 0 0;
+    }
+
+    .close-btn {
+      opacity: 0.5;
+      transition: opacity 0.3s ease;
+      padding: 8px;
+      color: white;
+      background: none;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .close-btn:hover {
+      opacity: 1;
+    }
+
+    .close-btn svg {
+      width: 18px;
+      height: 18px;
+    }
+  </style>
 </head>
 <body>
+   <!-- Container for Toast Notifications -->
+   <div id="toastContainer"></div>
+
    <div class="container">
       <aside>
            
@@ -72,6 +252,11 @@ foreach($bookings as $booking) {
            <a href="#" class="active">
               <span class="material-symbols-sharp">calendar_month </span>
               <h3>Bookings</h3>
+           </a>
+           
+           <a href="feedback.php">
+              <span class="material-symbols-sharp">Feedback </span>
+              <h3>Feedback</h3>
            </a>
            <a href="#">
               <span class="material-symbols-sharp">settings </span>
@@ -242,7 +427,7 @@ foreach($bookings as $booking) {
            <small class="text-muted">Online</small>
        </div>
        <div class="profile-photo">
-         <img src="../assets/img/usersprofiles/fa29eed8-1427-4ec2-a671-e4e45a399f3c.jpg" alt="Admin Profile"/>
+         <img src="../assets/img/usersprofiles/adminpic.jpg" alt="Admin Profile"/>
        </div>
     </div>
 </div>
@@ -252,7 +437,7 @@ foreach($bookings as $booking) {
    <div class="updates">
       <div class="update">
          <div class="profile-photo">
-            <img src="../assets/img/user-avatar.png" alt=""/>
+            <img src="../assets/img/usersprofiles/profilepic.jpg" alt=""/>
          </div>
         <div class="message">
            <p><b>New Booking</b> received successfully</p>
@@ -260,7 +445,7 @@ foreach($bookings as $booking) {
       </div>
       <div class="update">
         <div class="profile-photo">
-        <img src="../assets/img/order-icon.png" alt=""/>
+        <img src="../assets/img/usersprofiles/profilepic.jpg" alt=""/>
         </div>
        <div class="message">
           <p><b>Booking Status</b> updated to confirmed</p>
@@ -268,7 +453,7 @@ foreach($bookings as $booking) {
      </div>
      <div class="update">
       <div class="profile-photo">
-         <img src="../assets/img/menu-icon.png" alt=""/>
+         <img src="../assets/img/usersprofiles/profilepic.jpg" alt=""/>
       </div>
      <div class="message">
         <p><b>Reservation</b> confirmed for customer</p>
@@ -357,21 +542,22 @@ function handleUpdate(bookingId) {
             'X-Requested-With': 'XMLHttpRequest'
         },
         body: JSON.stringify({
-            id: parseInt(bookingId),
+            order_id: parseInt(bookingId),
             status: newStatus
         })
     })
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            alert('Booking status updated successfully!');
+            ToastNotifications.success('Booking status updated successfully!');
+            document.getElementById(`status-${bookingId}`).value = newStatus;
         } else {
-            alert('Error: ' + data.message);
+            ToastNotifications.error('Error: ' + data.message)
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Error updating booking status');
+        ToastNotifications.error('Error updating booking status');
     })
     .finally(() => {
         // Re-enable button
@@ -381,17 +567,179 @@ function handleUpdate(bookingId) {
 }
 
 function handleDelete(bookingId) {
-    if (!confirm('Are you sure you want to delete booking #' + bookingId + '? This action cannot be undone.')) {
-        return;
+    // Prevent any default behavior
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    showDeleteConfirmation(bookingId);
+}
+
+function showDeleteConfirmation(bookingId) {
+    // Create modal HTML with animations
+    const modalHtml = `
+        <div id="deleteConfirmModal" class="delete-confirm-overlay" style="
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            animation: fadeIn 0.3s ease-in-out;
+        ">
+            <div class="delete-confirm-modal" style="
+                background: white;
+                padding: 30px;
+                border-radius: 12px;
+                max-width: 400px;
+                width: 90%;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            ">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <div style="
+                        width: 60px;
+                        height: 60px;
+                        margin: 0 auto 15px;
+                        background: #fee2e2;
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        animation: scaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+                    ">
+                        <svg width="30" height="30" fill="none" stroke="#dc2626" viewBox="0 0 24 24" style="stroke-width: 2;">
+                            <path d="M12 9v6M9 12h6M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path>
+                        </svg>
+                    </div>
+                    <h3 style="margin: 0 0 10px 0; color: #1f2937; font-size: 18px; font-weight: 600;">Delete Booking?</h3>
+                    <p style="margin: 0; color: #6b7280; font-size: 14px;">Are you sure you want to delete booking #${bookingId}? This action cannot be undone.</p>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 25px;">
+                    <button onclick="closeDeleteConfirmation()" style="
+                        flex: 1;
+                        padding: 10px 15px;
+                        background: #f3f4f6;
+                        color: #1f2937;
+                        border: none;
+                        border-radius: 6px;
+                        cursor: pointer;
+                        font-weight: 500;
+                        transition: all 0.2s ease;
+                        font-size: 14px;
+                    " onmouseover="this.style.background='#e5e7eb'" onmouseout="this.style.background='#f3f4f6'">
+                        Cancel
+                    </button>
+                    <button onclick="confirmDelete(${bookingId})" style="
+                        flex: 1;
+                        padding: 10px 15px;
+                        background: #dc2626;
+                        color: white;
+                        border: none;
+                        border-radius: 6px;
+                        cursor: pointer;
+                        font-weight: 500;
+                        transition: all 0.2s ease;
+                        font-size: 14px;
+                    " onmouseover="this.style.background='#b91c1c'" onmouseout="this.style.background='#dc2626'">
+                        Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <style>
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+            @keyframes slideUp {
+                from { 
+                    transform: translateY(30px);
+                    opacity: 0;
+                }
+                to { 
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+            }
+            @keyframes scaleIn {
+                from {
+                    transform: scale(0.8);
+                    opacity: 0;
+                }
+                to {
+                    transform: scale(1);
+                    opacity: 1;
+                }
+            }
+        </style>
+    `;
+
+    // Remove any existing modal
+    const existingModal = document.getElementById('deleteConfirmModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+
+    // Add modal to body
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+}
+
+function closeDeleteConfirmation() {
+    const modal = document.getElementById('deleteConfirmModal');
+    if (modal) {
+        modal.style.animation = 'fadeOut 0.3s ease-in-out forwards';
+        setTimeout(() => modal.remove(), 300);
+    }
+}
+
+function confirmDelete(bookingId) {
+    const modal = document.getElementById('deleteConfirmModal');
+    if (modal) {
+        modal.style.animation = 'fadeOut 0.3s ease-in-out forwards';
+        setTimeout(() => modal.remove(), 300);
+    }
+
+    // Find the delete button for this booking
+    const buttons = document.querySelectorAll('.btn-booking-delete');
+    let button = null;
+    for (let btn of buttons) {
+        if (btn.onclick && btn.onclick.toString().includes(bookingId)) {
+            button = btn;
+            break;
+        }
     }
     
-    const button = event.target;
-    
+    // If button not found, find it by closest tr
+    if (!button) {
+        buttons.forEach(btn => {
+            const row = btn.closest('tr');
+            if (row) {
+                const idCell = row.querySelector('td:first-child');
+                if (idCell && idCell.textContent.trim() == bookingId) {
+                    button = btn;
+                }
+            }
+        });
+    }
+
+    if (!button) {
+        button = document.querySelector('.btn-booking-delete');
+    }
+
     // Disable button during processing
-    const originalText = button.textContent;
-    button.disabled = true;
-    button.textContent = 'Deleting...';
-    
+    const originalText = button ? button.textContent : 'Delete';
+    if (button) {
+        button.disabled = true;
+        button.textContent = 'Deleting...';
+    }
+
     // Simple AJAX call
     fetch('../includes/delete_booking.php', {
         method: 'POST',
@@ -406,28 +754,48 @@ function handleDelete(bookingId) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            alert('Booking deleted successfully!');
-            // Remove the row
-            const row = button.closest('tr');
-            row.style.opacity = '0';
-            row.style.transform = 'translateX(100px)';
-            setTimeout(() => {
-                row.remove();
-            }, 300);
+            ToastNotifications.success('Booking deleted successfully!');
+            // Find and remove the row
+            let row = null;
+            const rows = document.querySelectorAll('table tbody tr');
+            for (let r of rows) {
+                const idCell = r.querySelector('td:first-child');
+                if (idCell && idCell.textContent.trim() == bookingId) {
+                    row = r;
+                    break;
+                }
+            }
+            if (row) {
+                row.style.opacity = '0';
+                row.style.transform = 'translateX(100px)';
+                setTimeout(() => {
+                    row.remove();
+                }, 300);
+            }
         } else {
-            alert('Error: ' + data.message);
+            ToastNotifications.error('Error: ' + data.message)
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Error deleting booking');
+        ToastNotifications.error('Error deleting booking');
     })
     .finally(() => {
         // Re-enable button
-        button.disabled = false;
-        button.textContent = originalText;
+        if (button) {
+            button.disabled = false;
+            button.textContent = originalText;
+        }
     });
 }
+
+// Close modal when clicking outside
+document.addEventListener('click', function(event) {
+    const modalOverlay = document.getElementById('deleteConfirmModal');
+    if (modalOverlay && event.target === modalOverlay) {
+        closeDeleteConfirmation();
+    }
+});
 
 // Debug: Check if script is loading
 document.addEventListener('DOMContentLoaded', function() {
@@ -437,7 +805,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const testButton = document.getElementById('testButton');
     if (testButton) {
         testButton.addEventListener('click', function() {
-            alert('Test button is working!');
+            ToastNotifications.success('Test button is working!');
             console.log('Test button clicked');
         });
         console.log('Test button found and listener added');
@@ -457,7 +825,6 @@ document.addEventListener('DOMContentLoaded', function() {
         button.addEventListener('click', function(e) {
             e.preventDefault();
             console.log('Update button clicked!');
-            alert('Update button clicked! Booking ID: ' + this.getAttribute('data-booking-id'));
         });
     });
     
@@ -466,7 +833,6 @@ document.addEventListener('DOMContentLoaded', function() {
         button.addEventListener('click', function(e) {
             e.preventDefault();
             console.log('Delete button clicked!');
-            alert('Delete button clicked! Booking ID: ' + this.getAttribute('data-booking-id'));
         });
     });
 });
@@ -542,6 +908,8 @@ document.addEventListener('click', function(event) {
     }
 });
 </script>
+<!-- Note: adminscript.js removed to avoid conflicts with custom delete confirmation -->
+<script src="../assets/js/toast_notifications.js"></script>
 <script src="../assets/js/adminscript.js"></script>
 </body>
 </html>

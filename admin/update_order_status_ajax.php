@@ -1,6 +1,8 @@
 <?php
 header('Content-Type: application/json');
-session_start();
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
+
+// Include database - this file is in /admin/ folder
 require_once __DIR__ . '/../includes/db.php';
 
 // Handle both form data and JSON requests
@@ -21,49 +23,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     if ($order_id > 0 && in_array($status, $allowed_status)) {
         $stmt = $conn->prepare("UPDATE orders SET status = ? WHERE order_id = ?");
-        $stmt->bind_param("si", $status, $order_id);
-        
-        if ($stmt->execute()) {
-            // Get updated order data
-            $order_stmt = $conn->prepare("SELECT order_id, menu_name, price, quantity, total_price, status, order_time FROM orders WHERE order_id = ?");
-            $order_stmt->bind_param("i", $order_id);
-            $order_stmt->execute();
-            $result = $order_stmt->get_result();
-            $updated_order = $result->fetch_assoc();
-            
-            // Calculate new totals
-            $total_orders_query = $conn->query("SELECT COUNT(*) as total FROM orders");
-            $total_orders = $total_orders_query->fetch_assoc()['total'];
-            
-            $total_revenue_query = $conn->query("SELECT SUM(total_price) as revenue FROM orders");
-            $total_revenue = $total_revenue_query->fetch_assoc()['revenue'] ?? 0;
-            
-            $response = [
-                'success' => true,
-                'message' => 'Order status updated successfully.',
-                'order' => $updated_order,
-                'stats' => [
-                    'total_orders' => $total_orders,
-                    'total_revenue' => (float)$total_revenue
-                ]
-            ];
-        } else {
+        if (!$stmt) {
             $response = [
                 'success' => false,
-                'message' => 'Failed to update order status: ' . $stmt->error
+                'message' => 'Database error: ' . $conn->error
             ];
+        } else {
+            $stmt->bind_param("si", $status, $order_id);
+            
+            if ($stmt->execute()) {
+                $response = [
+                    'success' => true,
+                    'message' => 'Order status updated successfully'
+                ];
+            } else {
+                $response = [
+                    'success' => false,
+                    'message' => 'Failed to update: ' . $stmt->error
+                ];
+            }
+            $stmt->close();
         }
-        $stmt->close();
     } else {
         $response = [
             'success' => false,
-            'message' => 'Invalid order ID or status. Order ID: ' . $order_id . ', Status: ' . $status
+            'message' => 'Invalid order ID or status'
         ];
     }
 } else {
     $response = [
         'success' => false,
-        'message' => 'Invalid request method.'
+        'message' => 'Invalid request method'
     ];
 }
 

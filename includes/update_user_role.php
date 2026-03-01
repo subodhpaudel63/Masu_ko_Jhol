@@ -1,4 +1,5 @@
 <?php
+header('Content-Type: application/json');
 session_start();
 include_once "db.php";
 
@@ -8,9 +9,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Validate role
     if (!in_array($role, ['user', 'admin'])) {
-        $_SESSION['msg'] = ['type' => 'error', 'text' => 'Invalid role.'];
-        header("Location: /Masu%20Ko%20Jhol%28full%29/admin/users.php");
-        exit;
+        $response = ['success' => false, 'message' => 'Invalid role.'];
+        
+        // Check if this is an AJAX request
+        if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+            echo json_encode($response);
+            exit;
+        } else {
+            $_SESSION['msg'] = ['type' => 'error', 'text' => 'Invalid role.'];
+            header("Location: /Masu%20Ko%20Jhol%28full%29/admin/users.php");
+            exit;
+        }
     }
 
     if ($user_id > 0) {
@@ -18,18 +27,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->bind_param("si", $role, $user_id);
         
         if ($stmt->execute()) {
-            $_SESSION['msg'] = ['type' => 'success', 'text' => 'User role updated successfully.'];
+            $response = ['success' => true, 'message' => 'User role updated successfully.'];
+            
+            // Check if this is an AJAX request
+            if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+                echo json_encode($response);
+                exit;
+            } else {
+                $_SESSION['msg'] = ['type' => 'success', 'text' => 'User role updated successfully.'];
+                header("Location: /Masu%20Ko%20Jhol%28full%29/admin/users.php");
+                exit;
+            }
         } else {
-            $_SESSION['msg'] = ['type' => 'error', 'text' => 'Failed to update user role.'];
+            $response = ['success' => false, 'message' => 'Failed to update user role.'];
+            
+            // Check if this is an AJAX request
+            if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+                echo json_encode($response);
+                exit;
+            } else {
+                $_SESSION['msg'] = ['type' => 'error', 'text' => 'Failed to update user role.'];
+                header("Location: /Masu%20Ko%20Jhol%28full%29/admin/users.php");
+                exit;
+            }
         }
         $stmt->close();
     } else {
-        $_SESSION['msg'] = ['type' => 'error', 'text' => 'Invalid user ID.'];
+        $response = ['success' => false, 'message' => 'Invalid user ID.'];
+        
+        // Check if this is an AJAX request
+        if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+            echo json_encode($response);
+            exit;
+        } else {
+            $_SESSION['msg'] = ['type' => 'error', 'text' => 'Invalid user ID.'];
+            header("Location: /Masu%20Ko%20Jhol%28full%29/admin/users.php");
+            exit;
+        }
     }
 } else {
-    $_SESSION['msg'] = ['type' => 'error', 'text' => 'Invalid request method.'];
+    $response = ['success' => false, 'message' => 'Invalid request method.'];
+    
+    // Check if this is an AJAX request
+    if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+        echo json_encode($response);
+        exit;
+    } else {
+        $_SESSION['msg'] = ['type' => 'error', 'text' => 'Invalid request method.'];
+        header("Location: /Masu%20Ko%20Jhol%28full%29/admin/users.php");
+        exit;
+    }
 }
-
-header("Location: /Masu%20Ko%20Jhol%28full%29/admin/users.php");
-exit;
 ?>

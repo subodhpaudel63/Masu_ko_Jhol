@@ -43,6 +43,8 @@ if (isset($_COOKIE['user_img'])) {
     <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
     <?php require_once __DIR__ . '/../config/bootstrap.php'; ?>
     <link rel="stylesheet" href="<?php echo asset('css/style.css'); ?>" />
+    <!-- Include toast styles -->
+    <link rel="stylesheet" href="<?php echo asset('css/toast_styles.css'); ?>" />
     <style>
         .btn-orange { background:#ff6a00; color:#fff; border-radius:10px; border:1px solid #ff6a00; }
         .btn-orange:hover { background:#e65f00; color:#fff; border-color:#e65f00; }
@@ -62,23 +64,7 @@ if (isset($_COOKIE['user_img'])) {
     </style>
 </head>
 <body class="bg-white">
-    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index:2000;">
-      <?php if (!empty($_SESSION['msg'])): $m=$_SESSION['msg']; unset($_SESSION['msg']); if ($m['type']==='success'): ?>
-        <div class="toast show align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true" style="background:#0f5132;">
-          <div class="d-flex">
-            <div class="toast-body small fw-semibold">✔ <?php echo htmlspecialchars($m['text']); ?></div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-          </div>
-        </div>
-      <?php elseif ($m['type']==='error'): ?>
-        <div class="toast show align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
-          <div class="d-flex">
-            <div class="toast-body small fw-semibold">✖ <?php echo htmlspecialchars($m['text']); ?></div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-          </div>
-        </div>
-      <?php endif; endif; ?>
-    </div>
+    
 
     <div class="loader">
       <i class="fas fa-utensils loader-icone"></i>
@@ -244,5 +230,23 @@ if (isset($_COOKIE['user_img'])) {
     <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
     <?php require_once __DIR__ . '/../config/bootstrap.php'; ?>
     <script src="<?php echo asset('js/script.js'); ?>"></script>
+    <!-- Include toast notifications JS -->
+    <script src="<?php echo asset('js/toast_notifications.js'); ?>"></script>
+    
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Check for session messages and show toast
+        <?php if (isset($_SESSION['msg'])): $m = $_SESSION['msg']; unset($_SESSION['msg']); ?>
+          const messageType = '<?php echo $m['type']; ?>';
+          const messageText = <?php echo json_encode(htmlspecialchars($m['text'])); ?>;
+          
+          if (messageType === 'success') {
+            ToastNotifications.success(messageText);
+          } else {
+            ToastNotifications.error(messageText);
+          }
+        <?php endif; ?>
+      });
+    </script>
 </body>
 </html>

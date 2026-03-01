@@ -1,4 +1,5 @@
 <?php
+header('Content-Type: application/json');
 session_start();
 include_once "db.php";
 
@@ -15,13 +16,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($result->num_rows > 0) {
             $user = $result->fetch_assoc();
             if ($user['email'] === 'subodhpaudel0000@gmail.com') {
-                $_SESSION['msg'] = [
-                    'type' => 'error',
-                    'text' => 'Cannot delete the main admin account.'
+                $response = [
+                    'success' => false,
+                    'message' => 'Cannot delete the main admin account.'
                 ];
-                $check_stmt->close();
-                header("Location: /Masu%20Ko%20Jhol%28full%29/admin/users.php");
-                exit;
+                
+                // Check if this is an AJAX request
+                if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+                    echo json_encode($response);
+                    exit;
+                } else {
+                    $_SESSION['msg'] = [
+                        'type' => 'error',
+                        'text' => 'Cannot delete the main admin account.'
+                    ];
+                    $check_stmt->close();
+                    header("Location: /Masu%20Ko%20Jhol%28full%29/admin/users.php");
+                    exit;
+                }
             }
         }
         $check_stmt->close();
@@ -30,30 +42,79 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->bind_param("i", $user_id);
 
         if ($stmt->execute()) {
-            $_SESSION['msg'] = [
-                'type' => 'success',
-                'text' => 'User deleted successfully.'
+            $response = [
+                'success' => true,
+                'message' => 'User deleted successfully.'
             ];
+            
+            // Check if this is an AJAX request
+            if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+                echo json_encode($response);
+                exit;
+            } else {
+                $_SESSION['msg'] = [
+                    'type' => 'success',
+                    'text' => 'User deleted successfully.'
+                ];
+                header("Location: /Masu%20Ko%20Jhol%28full%29/admin/users.php");
+                exit;
+            }
         } else {
-            $_SESSION['msg'] = [
-                'type' => 'error',
-                'text' => 'Failed to delete user. Error: ' . $stmt->error
+            $response = [
+                'success' => false,
+                'message' => 'Failed to delete user. Error: ' . $stmt->error
             ];
+            
+            // Check if this is an AJAX request
+            if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+                echo json_encode($response);
+                exit;
+            } else {
+                $_SESSION['msg'] = [
+                    'type' => 'error',
+                    'text' => 'Failed to delete user. Error: ' . $stmt->error
+                ];
+                header("Location: /Masu%20Ko%20Jhol%28full%29/admin/users.php");
+                exit;
+            }
         }
 
         $stmt->close();
     } else {
-        $_SESSION['msg'] = [
-            'type' => 'error',
-            'text' => 'Invalid user ID.'
+        $response = [
+            'success' => false,
+            'message' => 'Invalid user ID.'
         ];
+        
+        // Check if this is an AJAX request
+        if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+            echo json_encode($response);
+            exit;
+        } else {
+            $_SESSION['msg'] = [
+                'type' => 'error',
+                'text' => 'Invalid user ID.'
+            ];
+            header("Location: /Masu%20Ko%20Jhol%28full%29/admin/users.php");
+            exit;
+        }
     }
 } else {
-    $_SESSION['msg'] = [
-        'type' => 'error',
-        'text' => 'Invalid request method.'
+    $response = [
+        'success' => false,
+        'message' => 'Invalid request method.'
     ];
+    
+    // Check if this is an AJAX request
+    if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+        echo json_encode($response);
+        exit;
+    } else {
+        $_SESSION['msg'] = [
+            'type' => 'error',
+            'text' => 'Invalid request method.'
+        ];
+        header("Location: /Masu%20Ko%20Jhol%28full%29/admin/users.php");
+        exit;
+    }
 }
-
-header("Location: /Masu%20Ko%20Jhol%28full%29/admin/users.php"); // Adjust the path as needed
-exit;

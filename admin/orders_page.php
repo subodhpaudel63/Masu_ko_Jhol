@@ -28,8 +28,137 @@ foreach($orders as $order) {
   <title>Orders - Masu Ko Jhol</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,0,0" />
   <link rel="stylesheet" href="../assets/css/adminstyle.css">
+  <link rel="stylesheet" href="../assets/css/toast_styles.css">
+  <style>
+    /* Delete Confirmation Modal */
+    .delete-confirm-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10001;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .delete-confirm-modal {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .delete-confirm-modal .icon-wrapper {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 15px;
+      background: #fee2e2;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: scaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .delete-confirm-modal h3 {
+      text-align: center;
+      margin: 15px 0;
+      color: #1f2937;
+      font-size: 20px;
+    }
+
+    .delete-confirm-modal p {
+      text-align: center;
+      color: #6b7280;
+      margin-bottom: 20px;
+    }
+
+    .delete-confirm-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .delete-confirm-buttons button {
+      padding: 10px 24px;
+      border: none;
+      border-radius: 6px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 14px;
+    }
+
+    .btn-cancel {
+      background: #e5e7eb;
+      color: #374151;
+    }
+
+    .btn-cancel:hover {
+      background: #d1d5db;
+    }
+
+    .btn-delete-confirm {
+      background: #ef4444;
+      color: white;
+    }
+
+    .btn-delete-confirm:hover {
+      background: #dc2626;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(30px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes scaleIn {
+      from {
+        transform: scale(0.5);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    @keyframes fadeOut {
+      from {
+        opacity: 1;
+      }
+      to {
+        opacity: 0;
+      }
+    }
+  </style>
 </head>
 <body>
+   <div id="toastContainer" class="toast-container"></div>
    <div class="container">
       <aside>
            
@@ -240,7 +369,7 @@ foreach($orders as $order) {
            <small class="text-muted">Online</small>
        </div>
        <div class="profile-photo">
-         <img src="../assets/img/usersprofiles/fa29eed8-1427-4ec2-a671-e4e45a399f3c.jpg" alt="Admin Profile"/>
+         <img src="../assets/img/usersprofiles/adminpic.jpg" alt="Admin Profile"/>
        </div>
     </div>
 </div>
@@ -250,7 +379,7 @@ foreach($orders as $order) {
    <div class="updates">
       <div class="update">
          <div class="profile-photo">
-            <img src="../assets/img/user-avatar.png" alt=""/>
+            <img src="../assets/img/usersprofiles/profilepic.jpg" alt=""/>
          </div>
         <div class="message">
            <p><b>New Order</b> received successfully</p>
@@ -258,7 +387,7 @@ foreach($orders as $order) {
       </div>
       <div class="update">
         <div class="profile-photo">
-        <img src="../assets/img/order-icon.png" alt=""/>
+        <img src="../assets/img/usersprofiles/profilepic.jpg" alt=""/>
         </div>
        <div class="message">
           <p><b>Order Status</b> updated to shipped</p>
@@ -266,7 +395,7 @@ foreach($orders as $order) {
      </div>
      <div class="update">
       <div class="profile-photo">
-         <img src="../assets/img/menu-icon.png" alt=""/>
+         <img src="../assets/img/usersprofiles/profilepic.jpg" alt=""/>
       </div>
      <div class="message">
         <p><b>Payment</b> confirmed for order</p>
@@ -338,6 +467,7 @@ foreach($orders as $order) {
 
    </div>
 
+<script src="../assets/js/toast_notifications.js"></script>
 <script src="../assets/js/adminscript.js"></script>
 <script>
 // AJAX Order Status Update
@@ -366,55 +496,74 @@ function handleOrderUpdate(orderId) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            // Show success message
-            showToast('Order status updated to ' + newStatus, 'success');
-            
-            // Update the status in the UI immediately
+            ToastNotifications.success('Order status updated to ' + newStatus);
             document.getElementById(`status-${orderId}`).value = newStatus;
-            
-            // Update the status badge display
-            const statusBadge = document.querySelector(`#status-${orderId}`).closest('td').querySelector('.status-badge');
-            if (statusBadge) {
-                // Remove old status classes
-                statusBadge.className = statusBadge.className.replace(/status-\w+/g, '');
-                // Add new status class
-                statusBadge.classList.add('status-badge', `status-${newStatus.toLowerCase()}`);
-                statusBadge.textContent = newStatus;
-                
-                // Add visual feedback
-                statusBadge.classList.add('status-updated');
-                setTimeout(() => {
-                    statusBadge.classList.remove('status-updated');
-                }, 2000);
-            }
         } else {
-            showToast('Error: ' + data.message, 'error');
+            ToastNotifications.error('Error: ' + data.message);
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Error updating order status');
+        ToastNotifications.error('Error updating order status');
     })
     .finally(() => {
-        // Re-enable button
         button.disabled = false;
         button.textContent = originalText;
     });
 }
 
 function handleOrderDelete(orderId) {
-    if (!confirm('Are you sure you want to delete order #' + orderId + '? This action cannot be undone.')) {
-        return;
+    event.preventDefault();
+    event.stopPropagation();
+    showDeleteConfirmation(orderId);
+}
+
+function showDeleteConfirmation(orderId) {
+    // Create modal HTML with animations
+    const modalHtml = `
+        <div id="deleteConfirmModal" class="delete-confirm-overlay">
+            <div class="delete-confirm-modal">
+                <div class="icon-wrapper">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2">
+                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/>
+                    </svg>
+                </div>
+                <h3>Delete Order?</h3>
+                <p>Order #${orderId} will be permanently deleted. This action cannot be undone.</p>
+                <div class="delete-confirm-buttons">
+                    <button class="btn-cancel" onclick="closeDeleteConfirmation()">Cancel</button>
+                    <button class="btn-delete-confirm" onclick="confirmDelete(${orderId})">Delete</button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Remove existing modal if any
+    const existingModal = document.getElementById('deleteConfirmModal');
+    if (existingModal) existingModal.remove();
+    
+    // Add modal to body
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+    
+    // Close modal when clicking outside
+    document.getElementById('deleteConfirmModal').addEventListener('click', function(e) {
+        if (e.target === this) closeDeleteConfirmation();
+    });
+}
+
+function closeDeleteConfirmation() {
+    const modal = document.getElementById('deleteConfirmModal');
+    if (modal) {
+        modal.style.animation = 'fadeOut 0.3s ease-in-out';
+        setTimeout(() => modal.remove(), 300);
     }
+}
+
+function confirmDelete(orderId) {
+    const button = document.querySelector(`button[onclick="handleOrderDelete(${orderId})"]`);
+    closeDeleteConfirmation();
     
-    const button = event.target;
-    
-    // Disable button during processing
-    const originalText = button.textContent;
-    button.disabled = true;
-    button.textContent = 'Deleting...';
-    
-    // Simple AJAX call
+    // Make delete request
     fetch('../includes/delete_order.php', {
         method: 'POST',
         headers: {
@@ -428,26 +577,19 @@ function handleOrderDelete(orderId) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            alert('Order deleted successfully!');
-            // Remove the row
-            const row = button.closest('tr');
+            ToastNotifications.success('Order deleted successfully');
+            // Remove the row with animation
+            const row = document.querySelector(`button[onclick="handleOrderDelete(${orderId})"]`).closest('tr');
             row.style.opacity = '0';
             row.style.transform = 'translateX(100px)';
-            setTimeout(() => {
-                row.remove();
-            }, 300);
+            setTimeout(() => row.remove(), 300);
         } else {
-            alert('Error: ' + data.message);
+            ToastNotifications.error('Error: ' + data.message);
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Error deleting order');
-    })
-    .finally(() => {
-        // Re-enable button
-        button.disabled = false;
-        button.textContent = originalText;
+        ToastNotifications.error('Error deleting order');
     });
 }
 
@@ -536,42 +678,12 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <!-- Toast notification container -->
-<div id="toast-container" style="position: fixed; top: 20px; right: 20px; z-index: 9999;"></div>
+<div id="toastContainer" class="toast-container"></div>
 
 <script>
-// Simple toast function
-function showToast(message, type = 'info') {
-    const toast = document.createElement('div');
-    toast.style.cssText = `
-        padding: 12px 20px;
-        margin: 10px 0;
-        border-radius: 4px;
-        color: white;
-        font-weight: 500;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        transform: translateX(100%);
-        transition: transform 0.3s ease;
-        ${type === 'success' ? 'background: #28a745;' : ''}
-        ${type === 'error' ? 'background: #dc3545;' : ''}
-        ${type === 'info' ? 'background: #17a2b8;' : ''}
-    `;
-    toast.textContent = message;
-    
-    document.getElementById('toast-container').appendChild(toast);
-    
-    // Animate in
-    setTimeout(() => {
-        toast.style.transform = 'translateX(0)';
-    }, 10);
-    
-    // Remove after 3 seconds
-    setTimeout(() => {
-        toast.style.transform = 'translateX(100%)'
-        setTimeout(() => {
-            toast.remove();
-        }, 300);
-    }, 3000);
-}
+// Animated Toast Notification System
+// Using the standardized ToastNotifications instead of custom implementation
 </script>
+<script src="../assets/js/toast_notifications.js"></script>
 </body>
 </html>

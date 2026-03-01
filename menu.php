@@ -330,12 +330,11 @@ if ($catResult) {
               <li class="list-unstyled py-2">
                 <a class="text-dark text-decoration-none text-uppercase p-4" href="./menu.php">Menu</a>
               </li>
-              <li class="list-unstyled py-2">
-                <a class="text-dark text-decoration-none text-uppercase p-4" href="./myorder.php">My Order</a>
-              </li>
+              
               <li class="list-unstyled py-2">
                 <a class="text-dark text-decoration-none text-uppercase p-4" href="./contactus.php">Contact</a>
               </li>
+              
               <?php if (!$currentUser): ?>
                 <li class="list-unstyled py-2 ps-3">
                   <a href="./login.php" class="nav-button">Login</a>

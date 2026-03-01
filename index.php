@@ -15,9 +15,6 @@ try {
     die("Database connection failed: " . $e->getMessage());
 }
 
-// Fetch all feedback from DB
-$stmt = $pdo->query("SELECT feedback_name, feedback_rating, feedback_message FROM feedback");
-$feedbacks = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Check if user is logged in
 require_once __DIR__ . '/includes/auth_check.php';
@@ -46,6 +43,7 @@ if (isset($_GET['action'])) {
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Masu Ko Jhol</title>
@@ -126,9 +124,89 @@ if (isset($_GET['action'])) {
         color: white;
         text-decoration: none;
       }
+      /*toast animations  */
+#toast-container {
+    position: fixed;
+    top: 30px;
+    right: 30px;
+    z-index: 9999;
+}
+
+.custom-toast {
+    min-width: 320px;
+    padding: 18px 25px;
+    margin-bottom: 15px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    color: #fff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    animation: toastSlideIn 0.7s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+    position: relative;
+    overflow: hidden;
+}
+
+.toast-success {
+    background: rgba(16, 185, 129, 0.95);
+    border-left: 6px solid #047857;
+}
+
+.toast-error {
+    background: rgba(239, 68, 68, 0.95);
+    border-left: 6px solid #b91c1c;
+}
+
+.toast-icon {
+    font-size: 1.5rem;
+    margin-right: 15px;
+}
+
+.toast-content strong {
+    display: block;
+    font-size: 1.1rem;
+    margin-bottom: 2px;
+}
+
+.toast-content span {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.toast-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: rgba(255,255,255,0.5);
+    width: 100%;
+    animation: progress linear forwards;
+}
+
+@keyframes progress {
+    from { width: 100%; }
+    to { width: 0%; }
+}
+
+@keyframes toastSlideIn {
+    0% { transform: translateX(120%); opacity: 0; }
+    100% { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes toastSlideOut {
+    0% { transform: translateX(0); opacity: 1; }
+    100% { transform: translateX(150%); opacity: 0; }
+}
+
+.toast-fade-out {
+    animation: toastSlideOut 0.8s ease-in forwards !important;
+}
     </style>
   </head>
   <body>
+    
     <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index:2000;">
       <?php if (isset($_SESSION['msg'])): $m=$_SESSION['msg']; unset($_SESSION['msg']); ?>
         <div class="toast show align-items-center border-0 <?php echo $m['type']==='success'?'toast-success':'toast-error'; ?>" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
@@ -459,37 +537,46 @@ Want to explore that next?
               <div class="slider-content pt-4 pb-4 mx-4">
                 <div>
                   <div class="testi-content">
-                    <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Architecto vel ipsa dolore sunt vitae, culpa, dolor reiciendis facilis sed blanditiis repellat incidunt impedit iusto? Odio veniam beatae veritatis adipisci a!</p>
+                    <p>Masu Ko Jhol Restaurant instantly reminded me of my childhood meals in Nepal. The flavors are authentic, and the ambience feels like stepping back into an old Nepali home. It’s more than just food—it’s an experience of culture and tradition."</p>
+
+
                   </div>
                   <div class="testi-info">
-                    <span class="name">Timothy Doe</span>
+                    <span class="name">Prakash Sharma</span>
                     <span class="position">Customer</span>
                   </div>
                 </div>
                 <div>
                   <div class="testi-content">
-                    <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Architecto vel ipsa dolore sunt vitae, culpa, dolor reiciendis facilis sed blanditiis repellat incidunt impedit iusto? Odio veniam beatae veritatis adipisci a!</p>
+                    <p>"I loved how the restaurant blends delicious Nepali dishes with a warm, traditional setting. The staff were welcoming, and the décor made me feel connected to my roots. A perfect place to enjoy cultural food with family and friends."</p>
+
+
                   </div>
                   <div class="testi-info">
-                    <span class="name">Sarah	Ruiz</span>
+                    <span class="name">Anita Rana </spam>
+
                     <span class="position">Director</span>
                   </div>
                 </div>
                 <div>
                   <div class="testi-content">
-                    <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Architecto vel ipsa dolore sunt vitae, culpa, dolor reiciendis facilis sed blanditiis repellat incidunt impedit iusto? Odio veniam beatae veritatis adipisci a!</p>
+                    <p>"Dining at Masu Ko Jhol Restaurant was a beautiful experience. From the traditional seating to the folk-inspired décor, everything felt genuine. The food was flavorful and comforting, just like what my grandmother used to make."</P>
+
+
                   </div>
                   <div class="testi-info">
-                    <span class="name">Tracey Lewis</span>
+                    <span class="name">Susmita Thapa</span>
                     <span class="position">Designer</span>
                   </div>
                 </div>
                 <div>
                   <div class="testi-content">
-                    <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Architecto vel ipsa dolore sunt vitae, culpa, dolor reiciendis facilis sed blanditiis repellat incidunt impedit iusto? Odio veniam beatae veritatis adipisci a!</p>
+                    <p>"The taste of the masu ko jhol here is unmatched. Rich flavors, perfectly cooked meat, and sides that remind you of home. The old Nepali ambience makes dining here truly unique. Highly recommended for anyone craving authentic Nepali cuisine."</p>
+
+
                   </div>
                   <div class="testi-info">
-                    <span class="name">Jamie	Erickson</span>
+                    <span class="name">Bikash Koirala</span>
                     <span class="position">Manager</span>
                   </div>
                 </div>
@@ -534,7 +621,7 @@ Want to explore that next?
               <div class="our-chef-slider d-flex flex-column align-items-center gap-4">
                 <img width="200px" src="./assets/images/team-1.png" alt="">
                 <div class="chef-slider-content">
-                  <h5 class="text-center d-block">Teresa Doe</h5>
+                  <h5 class="text-center d-block">-Ramu Kaka</h5>
                   <p class="text-center mb-0">Head Chef</p>
                   <div class="d-flex justify-content-center">
                     <hr class="w-25 my-2">
@@ -568,7 +655,8 @@ Want to explore that next?
               <div class="our-chef-slider d-flex flex-column align-items-center gap-4">
                 <img width="200px" src="./assets/images/team-2.png" alt="">
                 <div class="chef-slider-content">
-                  <h5 class="text-center d-block">Teresa Doe</h5>
+                  <h5 class="text-center d-block">- Boksi Maya </h5>
+
                   <p class="text-center mb-0">Head Chef</p>
                   <div class="d-flex justify-content-center">
                     <hr class="w-25 my-2">
@@ -603,7 +691,7 @@ Want to explore that next?
               <div class="our-chef-slider d-flex flex-column align-items-center gap-4">
                 <img width="200px" src="./assets/images/team-4.png" alt="">
                 <div class="chef-slider-content">
-                  <h5 class="text-center d-block">Teresa Doe</h5>
+                  <h5 class="text-center d-block">-Kute Maila</h5>
                   <p class="text-center mb-0">Head Chef</p>
                   <div class="d-flex justify-content-center">
                     <hr class="w-25 my-2">
@@ -804,35 +892,257 @@ Want to explore that next?
         </div>
       </section>
 
+      <!-- 
+  MASU KO JHOL FAQ SECTION
+  Optimized for smooth, high-performance animations.
+-->
+<section class="mkj-faq-wrapper">
+    <style>
+        .mkj-faq-wrapper {
+            font-family: 'Poppins', sans-serif !important;
+            padding: 60px 20px;
+            max-width: 900px;
+            margin: 0 auto;
+            color: #2d2d2d;
+        }
+
+        .mkj-faq-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .mkj-faq-header h2 {
+            font-family: 'Playfair Display', serif !important;
+            color: #e5612f;
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        .mkj-faq-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .mkj-faq-item {
+            background: #fffbf5;
+            border: 1px solid #fce4cc;
+            border-left: 5px solid #FF8C00;
+            border-radius: 10px;
+            overflow: hidden;
+            /* Using hardware acceleration for smoother shadow/transform */
+            will-change: transform, box-shadow;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .mkj-faq-item:hover {
+            box-shadow: 0 4px 12px rgba(255, 140, 0, 0.1);
+        }
+
+        .mkj-faq-question {
+            width: 100%;
+            padding: 22px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: none !important;
+            border: none;
+            cursor: pointer;
+            text-align: left;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #2d2d2d;
+            outline: none !important;
+        }
+
+        .mkj-faq-icon {
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            color: #FF8C00;
+            font-size: 1.2rem;
+        }
+
+        /* --- THE LAG-FREE TRANSITION ENGINE --- */
+        .mkj-faq-answer-wrapper {
+            display: grid;
+            grid-template-rows: 0fr; /* Initial state */
+            transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .mkj-faq-item.active .mkj-faq-answer-wrapper {
+            grid-template-rows: 1fr; /* Target state */
+        }
+
+        .mkj-faq-item.active .mkj-faq-icon {
+            transform: rotate(180deg);
+        }
+
+        /* Container for the content inside the grid */
+        .mkj-faq-answer-overflow {
+            overflow: hidden;
+        }
+
+        .mkj-faq-answer-inner {
+            padding: 0px 25px 25px 25px;
+            line-height: 1.7;
+            color: #555;
+            font-size: 0.95rem;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .mkj-faq-item.active .mkj-faq-answer-inner {
+            opacity: 1;
+            transform: translateY(0);
+            padding-top: 10px; /* Spacing appears only when open */
+        }
+    </style>
+
+    <div class="mkj-faq-header">
+        <h2>Our Culinary Heritage & Services</h2>
+        <p>Everything you need to know about our traditional flavors and dining.</p>
+    </div>
+
+    <div class="mkj-faq-container" id="mkjFaqContainer">
+        
+        <div class="mkj-faq-item">
+            <button class="mkj-faq-question" onclick="mkjToggle(this)">
+                Which ethnic communities' cuisines do you feature?
+                <span class="mkj-faq-icon">▾</span>
+            </button>
+            <div class="mkj-faq-answer-wrapper">
+                <div class="mkj-faq-answer-overflow">
+                    <div class="mkj-faq-answer-inner">
+                        At Masu ko Jhol, we celebrate the full tapestry of Nepal. Our menu features authentic dishes from the <strong>Newar</strong> community, <strong>Thakali</strong> sets, <strong>Kirat</strong> specialties, and traditional <strong>Terai</strong> flavors.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mkj-faq-item">
+            <button class="mkj-faq-question" onclick="mkjToggle(this)">
+                Do you use MSG in your food?
+                <span class="mkj-faq-icon">▾</span>
+            </button>
+            <div class="mkj-faq-answer-wrapper">
+                <div class="mkj-faq-answer-overflow">
+                    <div class="mkj-faq-answer-inner">
+                        Absolutely not. We are committed to healthy dining. We do not add <strong>MSG</strong> to any of our dishes. We rely on slow-cooking and a blend of over 20 natural Himalayan herbs.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mkj-faq-item">
+            <button class="mkj-faq-question" onclick="mkjToggle(this)">
+                What are the options for vegetarians?
+                <span class="mkj-faq-icon">▾</span>
+            </button>
+            <div class="mkj-faq-answer-wrapper">
+                <div class="mkj-faq-answer-overflow">
+                    <div class="mkj-faq-answer-inner">
+                        We have a vast selection of cultural vegetarian dishes, including our signature <strong>Veg Jhol</strong>, <strong>Kwanti</strong>, and seasonal <strong>Gundruk</strong> delicacies.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mkj-faq-item">
+            <button class="mkj-faq-question" onclick="mkjToggle(this)">
+                How do I make a reservation?
+                <span class="mkj-faq-icon">▾</span>
+            </button>
+            <div class="mkj-faq-wrapper-grid"> <!-- Wrapper names adjusted for stability -->
+                <div class="mkj-faq-answer-wrapper">
+                    <div class="mkj-faq-answer-overflow">
+                        <div class="mkj-faq-answer-inner">
+                            You can book a table via our website portal or call us. For groups larger than 8, we recommend booking 24 hours in advance.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mkj-faq-item">
+            <button class="mkj-faq-question" onclick="mkjToggle(this)">
+                Is there parking available?
+                <span class="mkj-faq-icon">▾</span>
+            </button>
+            <div class="mkj-faq-answer-wrapper">
+                <div class="mkj-faq-answer-overflow">
+                    <div class="mkj-faq-answer-inner">
+                        Yes, we have dedicated on-site parking and offer valet service during dinner hours on weekends.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mkj-faq-item">
+            <button class="mkj-faq-question" onclick="mkjToggle(this)">
+                Do you accept online orders for delivery?
+                <span class="mkj-faq-icon">▾</span>
+            </button>
+            <div class="mkj-faq-answer-wrapper">
+                <div class="mkj-faq-answer-overflow">
+                    <div class="mkj-faq-answer-inner">
+                        Yes! You can order via our website or major delivery apps. We use specialized spill-proof packaging for all our Jhol dishes.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function mkjToggle(btn) {
+            const item = btn.parentElement;
+            const container = document.getElementById('mkjFaqContainer');
+            const isActive = item.classList.contains('active');
+
+            // Force reflow for smoother performance
+            container.querySelectorAll('.mkj-faq-item').forEach(el => {
+                if(el !== item) el.classList.remove('active');
+            });
+
+            item.classList.toggle('active');
+        }
+    </script>
+</section>
+      
+     
+  
       
 
+
+
+
       <section class="subscribe-us pb-5 mb-5">
-         <img class="d-none d-lg-block" src="./assets/images/subscribe-us.png" alt="" data-aos="fade-down-right">
-        <div class="container">
-          <div class="row">
-            <div class="col-lg-2">
-            </div>
-            <div class="col-lg-8 d-flex flex-column flex-md-row align-items-lg-center">
-              <div class="content" data-aos="fade-right">
-                <h5 class="display-6 text-black">Subcribe Us Now</h5>
-                <p>
-                  Get more news and delicious dishes everyday from us
-                </p>
-              </div>
-              <div class="subscribe-form d-flex ps-0 ms-0 ps-lg-5 ms-lg-5" data-aos="fade-left">
-                <div class="input-form w-100">
-                  <input class="border-0 px-3 w-100" type="email" placeholder="Email">
-                </div>
-                <div class="input-button">
-                  <a class="text-decoration-none" href="#">
-                    <i class="fa fa-paper-plane"></i>
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
+  <img class="d-none d-lg-block" src="./assets/images/subscribe-us.png" alt="" data-aos="fade-down-right">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-2"></div>
+      <div class="col-lg-8 d-flex flex-column flex-md-row align-items-lg-center">
+        <div class="content" data-aos="fade-right">
+          <h5 class="display-6 text-black">Subcribe Us Now</h5>
+          <p>Get more news and delicious dishes everyday from us</p>
         </div>
-      </section>
+        
+        <form action="./includes/suscribe.php" method="POST" class="subscribe-form d-flex ps-0 ms-0 ps-lg-5 ms-lg-5" data-aos="fade-left">
+          <div class="input-form w-100">
+            <input class="border-0 px-3 w-100" type="email" name="email" placeholder="Email" required>
+          </div>
+          <div class="input-button">
+              <button type="submit" style="background: none; border: none; padding: 0; color: inherit; outline: none; cursor: pointer;">
+             <i class="fa fa-paper-plane"></i>
+           </button>
+             </div>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</section>
     </main>
     
 
@@ -875,6 +1185,125 @@ Want to explore that next?
           });
         }
       });
+
+      // toast js
+      
+    /**
+     * Function to generate the toast HTML and trigger animations
+     */
+    function showToast(status) {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = 'custom-toast';
+        const duration = 5000; // Matches the CSS progress bar animation
+
+        if (status === 'success') {
+            toast.classList.add('toast-success');
+            toast.innerHTML = `
+                <i class="fa fa-check-circle toast-icon"></i>
+                <div class="toast-content">
+                    <strong>Subscription Active!</strong>
+                    <span>You've been added to our food tribe.</span>
+                </div>
+                <div class="toast-progress" style="animation-duration: ${duration}ms"></div>
+            `;
+        } else {
+            toast.classList.add('toast-error');
+            toast.innerHTML = `
+                <i class="fa fa-circle-exclamation toast-icon"></i>
+                <div class="toast-content">
+                    <strong>Oops!</strong>
+                    <span>Something went wrong. Please try again.</span>
+                </div>
+                <div class="toast-progress" style="animation-duration: ${duration}ms"></div>
+            `;
+        }
+
+        container.appendChild(toast);
+
+        // Remove the toast after the duration
+        setTimeout(() => {
+            toast.classList.add('toast-fade-out');
+            setTimeout(() => {
+                toast.remove();
+            }, 800); // Wait for the slide-out animation to finish
+        }, duration - 800);
+    }
+
+    /**
+     * Check the URL for status parameters when the page loads
+     */
+    window.onload = function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const status = urlParams.get('status');
+        
+        if (status) {
+            showToast(status);
+            // Clean the URL so the toast doesn't reappear if the user refreshes
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+    };
+
+    /**
+     * Function to generate the toast HTML and trigger animations
+     */
+    function showToast(status) {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = 'custom-toast';
+        const duration = 5000; // Matches the CSS progress bar animation
+
+        if (status === 'success') {
+            toast.classList.add('toast-success');
+            toast.innerHTML = `
+                <i class="fa fa-check-circle toast-icon"></i>
+                <div class="toast-content">
+                    <strong>Subscription Active!</strong>
+                    <span>You've been added to our food tribe.</span>
+                </div>
+                <div class="toast-progress" style="animation-duration: ${duration}ms"></div>
+            `;
+        } else {
+            toast.classList.add('toast-error');
+            toast.innerHTML = `
+                <i class="fa fa-circle-exclamation toast-icon"></i>
+                <div class="toast-content">
+                    <strong>Oops!</strong>
+                    <span>Something went wrong. Please try again.</span>
+                </div>
+                <div class="toast-progress" style="animation-duration: ${duration}ms"></div>
+            `;
+        }
+
+        container.appendChild(toast);
+
+        // Remove the toast after the duration
+        setTimeout(() => {
+            toast.classList.add('toast-fade-out');
+            setTimeout(() => {
+                toast.remove();
+            }, 800); // Wait for the slide-out animation to finish
+        }, duration - 800);
+    }
+
+    /**
+     * Check the URL for status parameters when the page loads
+     */
+    window.onload = function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const status = urlParams.get('status');
+        
+        if (status) {
+            showToast(status);
+            // Clean the URL so the toast doesn't reappear if the user refreshes
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+    };
+
+
+
+
     </script>
+    <div id="toast-container"></div>
   </body>
 </html>

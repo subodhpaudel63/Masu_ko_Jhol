@@ -251,7 +251,7 @@ foreach($orders as $order) {
            <small class="text-muted">Online</small>
        </div>
        <div class="profile-photo">
-         <img src="../assets/img/admin-avatar.png" alt="Admin"/>
+         <img src="../assets/img/usersprofiles/adminpic.jpg" alt="Admin"/>
        </div>
     </div>
 </div>
@@ -261,7 +261,7 @@ foreach($orders as $order) {
    <div class="updates">
       <div class="update">
          <div class="profile-photo">
-            <img src="../assets/img/user-avatar.png" alt=""/>
+            <img src="../assets/img/usersprofiles/profilepic.jpg" alt=""/>
          </div>
         <div class="message">
            <p><b>New Order</b> received successfully</p>
@@ -269,7 +269,7 @@ foreach($orders as $order) {
       </div>
       <div class="update">
         <div class="profile-photo">
-        <img src="../assets/img/order-icon.png" alt=""/>
+        <img src="../assets/img/usersprofiles/profilepic.jpg" alt=""/>
         </div>
        <div class="message">
           <p><b>Order Status</b> updated to shipped</p>
@@ -277,7 +277,7 @@ foreach($orders as $order) {
      </div>
      <div class="update">
       <div class="profile-photo">
-         <img src="../assets/img/menu-icon.png" alt=""/>
+         <img src="../assets/img/usersprofiles/profilepic.jpg" alt=""/>
       </div>
      <div class="message">
         <p><b>Payment</b> confirmed for order</p>

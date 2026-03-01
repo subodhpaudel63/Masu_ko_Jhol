@@ -1,13 +1,19 @@
 <?php
+declare(strict_types=1);
 session_start();
-require_once 'db.php';
-require_once 'auth_check.php';
+require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/auth_check.php';
 
 header('Content-Type: application/json');
 
-// Check if user is admin
-$user = getUserFromCookie();
-if (!$user || $user['userType'] !== 'admin') {
+// Check if user is admin (matching admin_auth.php method)
+if (!isset($_COOKIE['admin_type'])) {
+    echo json_encode(['success' => false, 'message' => 'Unauthorized access']);
+    exit();
+}
+
+$userType = decrypt($_COOKIE['admin_type'], SECRET_KEY);
+if ($userType !== 'admin') {
     echo json_encode(['success' => false, 'message' => 'Unauthorized access']);
     exit();
 }

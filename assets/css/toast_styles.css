@@ -1,0 +1,160 @@
+/* Toast Notification Styles */
+:root {
+    /* Success Palette (Dark Green) */
+    --success-bg: #062016;
+    --success-border: #14532d;
+    --success-accent: #22c55e;
+    /* Error Palette (Dark Red) */
+    --error-bg: #1c0707;
+    --error-border: #7f1d1d;
+    --error-accent: #ef4444;
+}
+
+/* Toast Container */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 400px;
+    pointer-events: none;
+}
+
+/* Toast Element Animation */
+.toast {
+    animation: slideIn 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    pointer-events: auto;
+    display: flex;
+    align-items: center; /* Center align all items */
+    gap: 12px;
+    padding: 12px 16px;
+    min-width: 280px;
+    max-width: 400px;
+    width: auto;
+    font-size: 14px;
+}
+
+.toast-success { 
+    background-color: var(--success-bg); 
+    border: 1px solid var(--success-border); 
+}
+.toast-error { 
+    background-color: var(--error-bg); 
+    border: 1px solid var(--error-border);
+    animation: slideIn 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards, shake 0.4s ease-in-out 0.5s;
+}
+
+.toast.hiding { 
+    animation: slideOut 0.4s ease-in forwards; 
+}
+
+/* Progress Bar */
+.progress-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    width: 100%;
+    transform-origin: left;
+    animation: progress 5s linear forwards;
+}
+.toast-success .progress-bar { 
+    background-color: var(--success-accent); 
+}
+.toast-error .progress-bar { 
+    background-color: var(--error-accent); 
+}
+
+@keyframes progress { 
+    from { transform: scaleX(1); } 
+    to { transform: scaleX(0); } 
+}
+@keyframes slideIn { 
+    from { transform: translateX(120%); opacity: 0; } 
+    to { transform: translateX(0); opacity: 1; } 
+}
+@keyframes slideOut { 
+    from { transform: translateX(0); opacity: 1; } 
+    to { transform: translateX(120%); opacity: 0; } 
+}
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+}
+
+/* SVG Icon Animations */
+.icon-circle {
+    stroke-dasharray: 166; 
+    stroke-dashoffset: 166; 
+    stroke-width: 2;
+    fill: none; 
+    animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+.icon-path {
+    stroke-dasharray: 48; 
+    stroke-dashoffset: 48;
+    animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+}
+.icon-fill-success { 
+    animation: fillSuccess .4s ease-in-out .4s forwards; 
+}
+.icon-fill-error { 
+    animation: fillError .4s ease-in-out .4s forwards; 
+}
+
+@keyframes stroke { 
+    100% { stroke-dashoffset: 0; } 
+}
+@keyframes fillSuccess { 
+    100% { box-shadow: inset 0px 0px 0px 30px var(--success-accent); } 
+}
+@keyframes fillError { 
+    100% { box-shadow: inset 0px 0px 0px 30px var(--error-accent); } 
+}
+
+.icon-container {
+    width: 36px; 
+    height: 36px; 
+    border-radius: 50%; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    stroke-width: 2; 
+    stroke: #fff; 
+    flex-shrink: 0;
+}
+
+/* Content area styling */
+.toast-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0; /* Allow flex shrink */
+}
+
+.toast-type {
+    font-size: 10px; 
+    font-weight: 800; 
+    text-transform: uppercase; 
+    letter-spacing: 0.05em; 
+    color: rgba(255, 255, 255, 0.5); 
+    margin: 0 0 2px 0;
+}
+
+.toast-message {
+    font-size: 13px; 
+    color: white; 
+    font-weight: 400; 
+    margin: 0;
+    word-break: break-word;
+    line-height: 1.4;
+}

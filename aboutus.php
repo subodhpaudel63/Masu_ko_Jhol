@@ -204,6 +204,10 @@
                   >Contact</a
                 >
               </li>
+               <div class="d-flex align-items-center">
+            <a href="./login.php" class="nav-button">Login</a>
+            <a href="./register.php" class="nav-button-outline">Sign Up</a>
+          </div>
             </ul>
           </div>
         </div>
@@ -472,10 +476,11 @@
                 <div class="box-inner">
                   <div class="box-wrapper px-4">
                     <h2 class="pb-2">FRESH MENU</h2>
-                    <p class="pb-4">Lorem ipsum dolor sit amet, consec adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam</p>
+                    <p class="pb-4">Our kitchen brings you the true taste of Nepal with dishes prepared from locally sourced ingredients and traditional recipes. From the comforting masu ko jhol to crispy sel roti, every plate is crafted with care to preserve the flavors of home. Freshness isn’t just a promise—it’s our way of life.</p>
+
                     <div class="book-a-table">
                       <div class="anim-layer"></div>
-                      <a href="#">Read More</a>
+                      <a href="./404.php">Read More</a>
                     </div>
                   </div>
                   <div class="box-showcase pb-5">
@@ -492,10 +497,16 @@
                 <div class="box-inner">
                   <div class="box-wrapper px-4">
                     <h2 class="pb-2">VARIOUS DRINK</h2>
-                    <p class="pb-4">Lorem ipsum dolor sit amet, consec adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam</p>
+                    <p class="pb-4">In Nepali culture, meals are more than nourishment — they are an act of care and community. We prepare our dishes with fresh, seasonal ingredients, honoring the tradition of cooking with the right hand, a symbol of purity and respect. Every plate, from masu ko jhol to dal bhat, is served with the warmth of home and the values of hospitality that define Nepali life.</p>
+
+
+
+
+
+
                     <div class="book-a-table">
                       <div class="anim-layer"></div>
-                      <a href="#">Read More</a>
+                      <a href="./404.php">Read More</a>
                     </div>
                   </div>
                   <div class="box-showcase pb-5">
@@ -512,10 +523,11 @@
                 <div class="box-inner">
                   <div class="box-wrapper px-4">
                     <h2 class="pb-2">EXCLUSIVE DISHES</h2>
-                    <p class="pb-4">Lorem ipsum dolor sit amet, consec adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam</p>
+                    <p class="pb-4">Our exclusive dishes honor Nepali traditions while embracing innovation. Classics like gundruk ko achar and chiura with sukuti reflect the rustic flavors of village life, while fusion creations like momo tacos or sel roti cheesecake show how Nepali culture adapts and thrives. Each dish respects the values of sharing, community, and harmony — the essence of dining in Nepal.</p>
+
                     <div class="book-a-table">
                       <div class="anim-layer"></div>
-                      <a href="#">Read More</a>
+                      <a href="./404.php">Read More</a>
                     </div>
                   </div>
                   <div class="box-showcase pb-5">

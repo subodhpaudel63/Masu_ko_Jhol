@@ -1,42 +1,89 @@
 <?php
-session_start();
-require_once 'db.php';
-require_once 'auth_check.php';
-
 header('Content-Type: application/json');
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
 
-// Check if user is admin
-$user = getUserFromCookie();
-if (!$user || $user['userType'] !== 'admin') {
+// Include database - adjust path since this file is in the admin folder
+require_once __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/../includes/admin_auth.php';
+
+// Check if user is authenticated (session-based or cookie-based)
+// This handles both the legacy session method and cookie-based auth
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Check session auth OR cookie auth
+$isAuthenticated = false;
+if (isset($_SESSION['admin_id'])) {
+    $isAuthenticated = true;
+} elseif (isset($_COOKIE['admin_type'])) {
+    try {
+        $userType = decrypt($_COOKIE['admin_type'], SECRET_KEY);
+        if ($userType === 'admin') {
+            $isAuthenticated = true;
+        }
+    } catch (Exception $e) {
+        // Cookie decryption failed, not authenticated
+    }
+}
+
+if (!$isAuthenticated) {
     echo json_encode(['success' => false, 'message' => 'Unauthorized access']);
     exit();
 }
 
+// Handle both form data and JSON requests
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $data = json_decode(file_get_contents('php://input'), true);
-    $id = intval($data['id'] ?? 0);
-    $status = $data['status'] ?? '';
+    $input = json_decode(file_get_contents('php://input'), true);
     
-    // Validate status
-    $allowed_statuses = ['pending', 'confirmed', 'rejected'];
-    if (!in_array($status, $allowed_statuses)) {
-        echo json_encode(['success' => false, 'message' => 'Invalid status']);
-        exit();
+    if ($input) {
+        // JSON request
+        $order_id = intval($input['order_id'] ?? 0);
+        $status = $input['status'] ?? '';
+    } else {
+        // Form data request
+        $order_id = intval($_POST['order_id'] ?? 0);
+        $status = $_POST['status'] ?? '';
     }
     
-    if ($id > 0) {
+    $allowed_status = ['Confirmed', 'Shipping', 'Ongoing', 'Delivering', 'Cancelled'];
+    
+    if ($order_id > 0 && in_array($status, $allowed_status)) {
         $stmt = $conn->prepare("UPDATE bookings SET status = ? WHERE id = ?");
-        $stmt->bind_param("si", $status, $id);
+        $stmt->bind_param("si", $status, $order_id);
         
         if ($stmt->execute()) {
-            echo json_encode(['success' => true, 'message' => 'Booking status updated successfully']);
+            // Get updated booking data
+            $booking_stmt = $conn->prepare("SELECT id, name, email, phone, booking_date, booking_time, people, message, status, created_at FROM bookings WHERE id = ?");
+            $booking_stmt->bind_param("i", $order_id);
+            $booking_stmt->execute();
+            $result = $booking_stmt->get_result();
+            $updated_booking = $result->fetch_assoc();
+            
+            $response = [
+                'success' => true,
+                'message' => 'Booking status updated successfully',
+                'booking' => $updated_booking
+            ];
         } else {
-            echo json_encode(['success' => false, 'message' => 'Failed to update booking status']);
+            $response = [
+                'success' => false,
+                'message' => 'Failed to update booking status: ' . $stmt->error
+            ];
         }
         $stmt->close();
     } else {
-        echo json_encode(['success' => false, 'message' => 'Invalid booking ID']);
+        $response = [
+            'success' => false,
+            'message' => 'Invalid order ID or status'
+        ];
     }
 } else {
-    echo json_encode(['success' => false, 'message' => 'Invalid request method']);
+    $response = [
+        'success' => false,
+        'message' => 'Invalid request method'
+    ];
 }
+
+echo json_encode($response);
+exit;

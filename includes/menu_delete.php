@@ -1,4 +1,5 @@
 <?php
+header('Content-Type: application/json');
 session_start();
 require_once 'db.php'; // Your DB connection
 
@@ -29,48 +30,114 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $imagePath = __DIR__ . "/../assets/img/menu/" . $imageFileName;
                 if (file_exists($imagePath)) {
                     if (!unlink($imagePath)) {
-                        $_SESSION['msg'] = [
-                            'type' => 'error',
-                            'text' => 'Failed to delete image file: ' . htmlspecialchars($imageFileName)
+                        $response = [
+                            'success' => false,
+                            'message' => 'Failed to delete image file: ' . htmlspecialchars($imageFileName)
                         ];
-                        header("Location: /Masu%20Ko%20Jhol%28full%29/admin/menu.php");
-                        exit;
+                        
+                        // Check if this is an AJAX request
+                        if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+                            echo json_encode($response);
+                            exit;
+                        } else {
+                            $_SESSION['msg'] = [
+                                'type' => 'error',
+                                'text' => 'Failed to delete image file: ' . htmlspecialchars($imageFileName)
+                            ];
+                            header("Location: /Masu%20Ko%20Jhol%28full%29/admin/menu.php");
+                            exit;
+                        }
                     }
                 }
 
-                $_SESSION['msg'] = [
-                    'type' => 'success',
-                    'text' => 'Menu item deleted successfully.'
+                $response = [
+                    'success' => true,
+                    'message' => 'Menu item deleted successfully.'
                 ];
-                header("Location: /Masu%20Ko%20Jhol%28full%29/admin/menu.php");
-                exit;
+                
+                // Check if this is an AJAX request
+                if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+                    echo json_encode($response);
+                    exit;
+                } else {
+                    $_SESSION['msg'] = [
+                        'type' => 'success',
+                        'text' => 'Menu item deleted successfully.'
+                    ];
+                    header("Location: /Masu%20Ko%20Jhol%28full%29/admin/menu.php");
+                    exit;
+                }
             } else {
                 error_log("Delete Error: " . $deleteStmt->error);
+                $response = [
+                    'success' => false,
+                    'message' => 'Failed to delete menu item from database.'
+                ];
+                
+                // Check if this is an AJAX request
+                if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+                    echo json_encode($response);
+                    exit;
+                } else {
+                    $_SESSION['msg'] = [
+                        'type' => 'error',
+                        'text' => 'Failed to delete menu item from database.'
+                    ];
+                    header("Location: /Masu%20Ko%20Jhol%28full%29/admin/menu.php");
+                    exit;
+                }
+            }
+        } else {
+            $response = [
+                'success' => false,
+                'message' => 'Menu item not found.'
+            ];
+            
+            // Check if this is an AJAX request
+            if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+                echo json_encode($response);
+                exit;
+            } else {
                 $_SESSION['msg'] = [
                     'type' => 'error',
-                    'text' => 'Failed to delete menu item from database.'
+                    'text' => 'Menu item not found.'
                 ];
                 header("Location: /Masu%20Ko%20Jhol%28full%29/admin/menu.php");
                 exit;
             }
+        }
+    } else {
+        $response = [
+            'success' => false,
+            'message' => 'Invalid menu ID.'
+        ];
+        
+        // Check if this is an AJAX request
+        if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+            echo json_encode($response);
+            exit;
         } else {
             $_SESSION['msg'] = [
                 'type' => 'error',
-                'text' => 'Menu item not found.'
+                'text' => 'Invalid menu ID.'
             ];
             header("Location: /Masu%20Ko%20Jhol%28full%29/admin/menu.php");
             exit;
         }
-    } else {
-        $_SESSION['msg'] = [
-            'type' => 'error',
-            'text' => 'Invalid menu ID.'
-        ];
-        header("Location: /Masu%20Ko%20Jhol%28full%29/admin/menu.php");
-        exit;
     }
 } else {
-    header("HTTP/1.1 405 Method Not Allowed");
-    echo "Method Not Allowed";
-    exit;
+    $response = [
+        'success' => false,
+        'message' => 'Method Not Allowed'
+    ];
+    
+    // Check if this is an AJAX request
+    if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+        echo json_encode($response);
+        exit;
+    } else {
+        header("HTTP/1.1 405 Method Not Allowed");
+        echo "Method Not Allowed";
+        exit;
+    }
 }

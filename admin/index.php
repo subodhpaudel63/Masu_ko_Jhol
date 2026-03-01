@@ -79,7 +79,11 @@ $shipping_orders = $shipping_orders_query->fetch_assoc()['shipping'];
            </a>
            <a href="bookings.php">
               <span class="material-symbols-sharp">calendar_month </span>
-              <h3>Bookings</h3>
+              <h3>Bookings</h3> 
+               </a>
+              <a href="feedback.php">
+              <span class="material-symbols-sharp">Feedback </span>
+              <h3>Feedback</h3>
            </a>
            <a href="#">
               <span class="material-symbols-sharp">settings </span>
@@ -238,7 +242,7 @@ $shipping_orders = $shipping_orders_query->fetch_assoc()['shipping'];
            <small class="text-muted">Online</small>
        </div>
        <div class="profile-photo">
-         <img src="../assets/img/usersprofiles/fa29eed8-1427-4ec2-a671-e4e45a399f3c.jpg" alt="Admin Profile"/>
+         <img src="../assets/img/usersprofiles/adminpic.jpg" alt="Admin Profile"/>
        </div>
     </div>
 </div>
@@ -248,7 +252,7 @@ $shipping_orders = $shipping_orders_query->fetch_assoc()['shipping'];
    <div class="updates">
       <div class="update">
          <div class="profile-photo">
-            <img src="./images/wallpaperflare.com_wallpaper (2).jpg" alt=""/>
+            <img src="../assets/img/usersprofiles/profilepic.jpg" alt=""/>
          </div>
         <div class="message">
            <p><b>Subodh</b> Recived his order of USB</p>
@@ -256,7 +260,7 @@ $shipping_orders = $shipping_orders_query->fetch_assoc()['shipping'];
       </div>
       <div class="update">
         <div class="profile-photo">
-        <img src="./images/depositphotos_59094701-stock-illustration-businessman-profile-icon.jpg" alt=""/>
+        <img src="../assets/img/usersprofiles/profilepic.jpg" alt=""/>
         </div>
        <div class="message">
           <p><b>Hari</b> Recived his order of USB</p>
@@ -264,7 +268,7 @@ $shipping_orders = $shipping_orders_query->fetch_assoc()['shipping'];
      </div>
      <div class="update">
       <div class="profile-photo">
-         <img src="./images/depositphotos_59094701-stock-illustration-businessman-profile-icon.jpg" alt=""/>
+         <img src="../assets/img/usersprofiles/profilepic.jpg" alt=""/>
       </div>
      <div class="message">
         <p><b>Sita</b> Recived his order of USB</p>

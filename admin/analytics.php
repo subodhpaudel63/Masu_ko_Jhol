@@ -319,6 +319,10 @@ $avg_order_value = $total_orders > 0 ? $total_revenue / $total_orders : 0;
               <span class="material-symbols-sharp">calendar_month </span>
               <h3>Bookings</h3>
            </a>
+           <a href="feedback.php">
+              <span class="material-symbols-sharp">Feedback </span>
+              <h3>Feedback</h3>
+           </a>
            <a href="../includes/logout.php">
               <span class="material-symbols-sharp">logout </span>
               <h3>Logout</h3>
@@ -536,7 +540,7 @@ $avg_order_value = $total_orders > 0 ? $total_revenue / $total_orders : 0;
                       <small class="text-muted">Online</small>
                   </div>
                   <div class="profile-photo">
-                      <img src="../assets/img/usersprofiles/fa29eed8-1427-4ec2-a671-e4e45a399f3c.jpg" alt="Admin Profile"/>
+                      <img src="../assets/img/usersprofiles/adminpic.jpg" alt="Admin Profile"/>
                   </div>
               </div>
           </div>

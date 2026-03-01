@@ -61,6 +61,8 @@ if (isset($_COOKIE['user_img'])) {
     />
     <?php require_once __DIR__ . '/../config/bootstrap.php'; ?>
     <link rel="stylesheet" href="<?php echo asset('css/style.css'); ?>" />
+    <!-- Include toast styles -->
+    <link rel="stylesheet" href="<?php echo asset('css/toast_styles.css'); ?>" />
     <style>
       /* Add padding to prevent content from being hidden under navbar */
       .main-content {
@@ -76,16 +78,7 @@ if (isset($_COOKIE['user_img'])) {
   </head>
 
 <body>
-    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index:2000;">
-      <?php if (isset($_SESSION['msg'])): $m=$_SESSION['msg']; unset($_SESSION['msg']); ?>
-        <div class="toast show align-items-center border-0 <?php echo $m['type']==='success'?'text-bg-success':'text-bg-danger'; ?>" role="alert" aria-live="assertive" aria-atomic="true" style="<?php echo $m['type']==='success'?'background:#0f5132;':''; ?>" data-bs-delay="5000">
-          <div class="d-flex">
-            <div class="toast-body small fw-semibold"><?php echo htmlspecialchars($m['text']); ?></div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-          </div>
-        </div>
-      <?php endif; ?>
-    </div>
+    
 
     <div class="loader">
       <i class="fas fa-utensils loader-icone"></i>
@@ -300,7 +293,7 @@ if (isset($_COOKIE['user_img'])) {
                   <div data-aos="fade-right" class="image-box col-lg-2 px-0">
                     <img
                       class="w-100"
-                      src="./assets/images/timeline-1.jpg"
+                      src="../assets/images/timeline-1.jpg"
                       alt=""
                     />
                     <div class="image-box-inner"><p class="mb-0">2000</p></div>
@@ -308,7 +301,7 @@ if (isset($_COOKIE['user_img'])) {
                   <div data-aos="fade-down" class="image-box col-lg-2 px-0">
                     <img
                       class="w-100"
-                      src="./assets/images/timeline-2.jpg"
+                      src="../assets/images/timeline-2.jpg"
                       alt=""
                     />
                     <div class="image-box-inner"><p class="mb-0">2002</p></div>
@@ -317,7 +310,7 @@ if (isset($_COOKIE['user_img'])) {
                   <div data-aos="fade-up" class="image-box col-lg-2 px-0">
                     <img
                       class="w-100"
-                      src="./assets/images/timeline-3.jpg"
+                      src="../assets/images/timeline-3.jpg"
                       alt=""
                     />
                     <div class="image-box-inner"><p class="mb-0">2004</p></div>
@@ -325,7 +318,7 @@ if (isset($_COOKIE['user_img'])) {
                   <div data-aos="fade-down" class="image-box col-lg-2 px-0">
                     <img
                       class="w-100"
-                      src="./assets/images/timeline-4.jpg"
+                      src="../assets/images/timeline-4.jpg"
                       alt=""
                     />
                     <div class="image-box-inner"><p class="mb-0">2008</p></div>
@@ -334,7 +327,7 @@ if (isset($_COOKIE['user_img'])) {
                   <div data-aos="fade-up" class="image-box col-lg-2 px-0">
                     <img
                       class="w-100"
-                      src="./assets/images/timeline-5.jpg"
+                      src="../assets/images/timeline-5.jpg"
                       alt=""
                     />
                     <div class="image-box-inner"><p class="mb-0">2012</p></div>
@@ -343,7 +336,7 @@ if (isset($_COOKIE['user_img'])) {
                   <div data-aos="fade-left" class="image-box col-lg-2 px-0">
                     <img
                       class="w-100"
-                      src="./assets/images/timeline-6.jpg"
+                      src="../assets/images/timeline-6.jpg"
                       alt=""
                     />
                     <div class="image-box-inner"><p class="mb-0">2016</p></div>
@@ -417,7 +410,7 @@ if (isset($_COOKIE['user_img'])) {
         <div class="container my-2 py-2 mt-lg-4 pt-lg-4 mb-lg-0 pb-lg-0">
           <div class="row">
             <div class="col-lg-4 d-none d-lg-block">
-              <img src="./assets/images/ab_team_01.png" alt="" data-aos="fade-right">  
+              <img src="../assets/images/ab_team_01.png" alt="" data-aos="fade-right">  
               <!-- chef like -->
             </div>
             <div class="col-12 col-lg-8">
@@ -428,7 +421,7 @@ if (isset($_COOKIE['user_img'])) {
                       <p>"The authentic flavors of Nepal in every bite! Masu Ko Jhol brings back memories of my grandmother's cooking. Their dal bhat is exactly how I remember it from my childhood in Bangsing."</p>
                     </div>
                     <div class="d-flex justify-content-center mb-3">
-                      <img src="./assets/images/testi-signal.png" alt="">
+                      <img src="../assets/images/testi-signal.png" alt="">
                     </div>
                     <div class="testi-info">
                       <span class="name">Anil Shah</span>
@@ -440,7 +433,7 @@ if (isset($_COOKIE['user_img'])) {
                       <p>"As someone who has never been to Nepal, Masu Ko Jhol gave me an incredible introduction to Nepali cuisine. The atmosphere is warm and welcoming, and the food is absolutely delicious!"</p>
                     </div>
                     <div class="d-flex justify-content-center mb-3">
-                      <img src="./assets/images/testi-signal.png" alt="">
+                      <img src="../assets/images/testi-signal.png" alt="">
                     </div>
                     <div class="testi-info">
                       <span class="name">Priya Sharma</span>
@@ -452,11 +445,11 @@ if (isset($_COOKIE['user_img'])) {
                       <p>"I've been coming to Masu Ko Jhol for over five years now, and they never disappoint. Their momos are the best I've had outside of Nepal, and their service is consistently excellent."</p>
                     </div>
                     <div class="d-flex justify-content-center mb-3">
-                      <img src="./assets/images/testi-signal.png" alt="">
+                      <img src="../assets/images/testi-signal.png" alt="">
                     </div>
                     <div class="testi-info">
-                      <span class="name">Raj KC</span>
-                      <span class="position">Loyal Patron</span>
+                      <span class="name">Sunita Paudel</span>
+                      <span class="position">Vloger</span>
                     </div>
                   </div>
                   <div>
@@ -464,7 +457,7 @@ if (isset($_COOKIE['user_img'])) {
                       <p>"The perfect spot for family gatherings! Masu Ko Jhol offers not just great food but an authentic cultural experience. Their thukpa warmed my heart on a cold winter evening."</p>
                     </div>
                     <div class="d-flex justify-content-center mb-3">
-                      <img src="./assets/images/testi-signal.png" alt="">
+                      <img src="../assets/images/testi-signal.png" alt="">
                     </div>
                     <div class="testi-info">
                       <span class="name">Sunita Rai</span>
@@ -475,16 +468,16 @@ if (isset($_COOKIE['user_img'])) {
                 <div class="slider-nav-wrapper mx-5" data-aos="fade-up-right">
                   <div class="slider-nav">
                     <div class="slider-nav-img active">
-                      <img src="./assets/images/testi-1.jpg" alt="">
+                      <img src="../assets/img/usersprofiles/profilepic.jpg" alt="">
                     </div>
                     <div class="slider-nav-img">
-                      <img src="./assets/images/testi-2.jpg" alt="">
+                      <img src="../assets/images/testi-2.jpg" alt="">
                     </div>
                     <div class="slider-nav-img">
-                      <img src="./assets/images/testi-3.jpg" alt="">
+                      <img src="../assets/images/testi-3.jpg" alt="">
                     </div>
                     <div class="slider-nav-img">
-                      <img src="./assets/images/testi-4.jpg" alt="">
+                      <img src="../assets/images/testi-4.jpg" alt="">
                     </div>
                   </div>
                 </div>
@@ -512,15 +505,16 @@ if (isset($_COOKIE['user_img'])) {
                 <div class="box-inner">
                   <div class="box-wrapper px-4">
                     <h2 class="pb-2">FRESH MENU</h2>
-                    <p class="pb-4">Lorem ipsum dolor sit amet, consec adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam</p>
+                    <p class="pb-4">Our kitchen brings you the true taste of Nepal with dishes prepared from locally sourced ingredients and traditional recipes. From the comforting masu ko jhol to crispy sel roti, every plate is crafted with care to preserve the flavors of home. Freshness isn’t just a promise—it’s our way of life.</p>
+
                     <div class="book-a-table">
                       <div class="anim-layer"></div>
-                      <a href="#">Read More</a>
+                      <a href="../404.php">Read More</a>
                     </div>
                   </div>
                   <div class="box-showcase pb-5">
                     <div class="d-flex flex-column align-items-center justify-content-center">
-                      <img class="img-fluid" src="<?php echo asset('images/feature-box-bg.jpg'); ?>" alt="">
+                      <img class="img-fluid" src="../assets/images/feature-box-bg.jpg" alt="">
                       <h2 class="text-center">FRESH MENU</h2>
                     </div>
                   </div>
@@ -532,15 +526,21 @@ if (isset($_COOKIE['user_img'])) {
                 <div class="box-inner">
                   <div class="box-wrapper px-4">
                     <h2 class="pb-2">VARIOUS DRINK</h2>
-                    <p class="pb-4">Lorem ipsum dolor sit amet, consec adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam</p>
+                    <p class="pb-4">In Nepali culture, meals are more than nourishment — they are an act of care and community. We prepare our dishes with fresh, seasonal ingredients, honoring the tradition of cooking with the right hand, a symbol of purity and respect. Every plate, from masu ko jhol to dal bhat, is served with the warmth of home and the values of hospitality that define Nepali life.</p>
+
+
+
+
+
+
                     <div class="book-a-table">
                       <div class="anim-layer"></div>
-                      <a href="#">Read More</a>
+                      <a href="../404.php">Read More</a>
                     </div>
                   </div>
                   <div class="box-showcase pb-5">
                     <div class="d-flex flex-column align-items-center justify-content-center">
-                      <img class="img-fluid" src="<?php echo asset('images/feature-box-bg-2.jpg'); ?>" alt="">
+                      <img class="img-fluid" src="../assets/images/feature-box-bg-2.jpg" alt="">
                       <h2 class="text-center">VARIOUS DRINK</h2>
                     </div>
                   </div>
@@ -552,15 +552,16 @@ if (isset($_COOKIE['user_img'])) {
                 <div class="box-inner">
                   <div class="box-wrapper px-4">
                     <h2 class="pb-2">EXCLUSIVE DISHES</h2>
-                    <p class="pb-4">Lorem ipsum dolor sit amet, consec adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam</p>
+                    <p class="pb-4">Our exclusive dishes honor Nepali traditions while embracing innovation. Classics like gundruk ko achar and chiura with sukuti reflect the rustic flavors of village life, while fusion creations like momo tacos or sel roti cheesecake show how Nepali culture adapts and thrives. Each dish respects the values of sharing, community, and harmony — the essence of dining in Nepal.</p>
+
                     <div class="book-a-table">
                       <div class="anim-layer"></div>
-                      <a href="#">Read More</a>
+                      <a href="../404.php">Read More</a>
                     </div>
                   </div>
                   <div class="box-showcase pb-5">
                     <div class="d-flex flex-column align-items-center justify-content-center">
-                      <img class="img-fluid" src="<?php echo asset('images/feature-box-bg-3.jpg'); ?>" alt="">
+                      <img class="img-fluid" src="../assets/images/feature-box-bg-3.jpg" alt="">
                       <h2 class="text-center">EXCLUSIVE DISHES</h2>
                     </div>
                   </div>
@@ -756,18 +757,22 @@ if (isset($_COOKIE['user_img'])) {
     <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
     <?php require_once __DIR__ . '/../config/bootstrap.php'; ?>
     <script src="<?php echo asset('js/script.js'); ?>"></script>
+    <!-- Include toast notifications JS -->
+    <script src="<?php echo asset('js/toast_notifications.js'); ?>"></script>
     
-    <!-- Toast auto-hide script -->
     <script>
       document.addEventListener('DOMContentLoaded', function() {
-        // Auto hide toast notifications after 5 seconds
-        var toasts = document.querySelectorAll('.toast');
-        toasts.forEach(function(toast) {
-          var bsToast = new bootstrap.Toast(toast, {
-            delay: 5000
-          });
-          bsToast.show();
-        });
+        // Check for session messages and show toast
+        <?php if (isset($_SESSION['msg'])): $m = $_SESSION['msg']; unset($_SESSION['msg']); ?>
+          const messageType = '<?php echo $m['type']; ?>';
+          const messageText = <?php echo json_encode(htmlspecialchars($m['text'])); ?>;
+          
+          if (messageType === 'success') {
+            ToastNotifications.success(messageText);
+          } else {
+            ToastNotifications.error(messageText);
+          }
+        <?php endif; ?>
       });
     </script>
   </body>

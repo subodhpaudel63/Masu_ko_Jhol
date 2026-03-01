@@ -191,6 +191,8 @@ if (isset($_POST['ajax_action']) && $_POST['ajax_action'] === 'checkout') {
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>Cart | Masu Ko Jhol</title>
     <link rel="stylesheet" href="../assets/css/style.css" />
+        <!-- Include toast styles -->
+        <link rel="stylesheet" href="../assets/css/toast_styles.css" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -259,22 +261,22 @@ if (isset($_POST['ajax_action']) && $_POST['ajax_action'] === 'checkout') {
             <div class="menus">
                 <ul class="d-flex mb-0">
                     <li class="list-unstyled py-2">
-                        <a class="text-dark text-decoration-none text-uppercase p-4" href="./index.php"
+                        <a class="text-decoration-none text-uppercase p-4" href="./index.php"
                           >Home</a
                         >
                     </li>
                     <li class="list-unstyled py-2">
-                        <a class="text-dark text-decoration-none text-uppercase p-4" href="./aboutus.php"
+                        <a class="text-decoration-none text-uppercase p-4" href="./aboutus.php"
                           >About</a
                         >
                     </li>
                     <li class="list-unstyled py-2">
-                        <a class="text-dark text-decoration-none text-uppercase p-4" href="./menu.php"
+                        <a class="text-decoration-none text-uppercase p-4" href="./menu.php"
                           >Menu</a
                         >
                     </li>
                     <li class="list-unstyled py-2">
-                        <a class="text-dark text-decoration-none text-uppercase p-4" href="./myorder.php"
+                        <a class="text-decoration-none text-uppercase p-4" href="./myorder.php"
                           >My Order</a>
                     </li>
                     <?php if (!$user): ?>
@@ -283,7 +285,7 @@ if (isset($_POST['ajax_action']) && $_POST['ajax_action'] === 'checkout') {
                     </li>
                     <?php endif; ?>
                     <li class="list-unstyled py-2">
-                        <a class="text-dark text-decoration-none text-uppercase p-4" href="./contactus.php"
+                        <a class="text-decoration-none text-uppercase p-4" href="./contactus.php"
                           >Contact</a
                         >
                     </li>
@@ -306,6 +308,82 @@ if (isset($_POST['ajax_action']) && $_POST['ajax_action'] === 'checkout') {
                 </div>
                 <?php endif; ?>
             </div>
+        </div>
+
+        <div
+          class="d-flex justify-content-around py-3 align-items-center d-lg-none"
+        >
+          <div id="hamburger">
+            <i class="fa fa-2x fa-bars me-3 text-white"></i>
+          </div>
+          <div class="mobile-nav-logo">
+            <div class="logo">
+              <a href="./index.php">
+                <i class="fa fa-utensils me-3 text-white"></i>
+                <h1 class="mb-0 text-white">Masu Ko Jhol</h1>
+              </a>
+            </div>
+          </div>
+          <div class="mobile-nav-icons">
+            <div class="icons">
+              <a class="text-decoration-none" id="searchBtnMobile" href="#">
+                <i class="fa fa-search me-3 text-white"></i>
+              </a>
+              <a class="text-decoration-none" id="shoppingbuttonMobile" href="./cart.php">
+                <i class="fa fa-shopping-bag me-3 text-white"></i>
+              </a>
+            </div>
+          </div>
+          <div
+            class="position-fixed w-75 bg-white h-100 top-0 start-0"
+            id="mobile-menu"
+          >
+            <div
+              id="hamburger-cross"
+              class="d-flex justify-content-end align-items-center py-2"
+            >
+              <i class="fa fa-2x fa-times me-3"></i>
+            </div>
+            <div class="menus">
+              <ul class="d-flex flex-column ps-2 mb-0 mt-4">
+                <li class="list-unstyled py-2">
+                  <a
+                    class="text-dark text-decoration-none text-uppercase p-4"
+                    href="./index.php"
+                    >Home</a
+                  >
+                </li>
+                <li class="list-unstyled py-2">
+                  <a
+                    class="text-dark text-decoration-none text-uppercase p-4"
+                    href="./aboutus.php"
+                    >About</a
+                  >
+                </li>
+                <li class="list-unstyled py-2">
+                  <a
+                    class="text-dark text-decoration-none text-uppercase p-4"
+                    href="./menu.php"
+                    >Menu</a
+                  >
+                </li>
+                <li class="list-unstyled py-2">
+                  <a
+                    class="text-dark text-decoration-none text-uppercase p-4"
+                    href="./myorder.php"
+                    >My Order</a
+                  >
+                </li>
+                <li class="list-unstyled py-2">
+                  <a
+                    class="text-dark text-decoration-none text-uppercase p-4"
+                    href="./contactus.php"
+                    >Contact</a
+                  >
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
     </header>
 
@@ -445,7 +523,20 @@ if (isset($_POST['ajax_action']) && $_POST['ajax_action'] === 'checkout') {
     <?php include_once __DIR__ . '/../footer.php'; ?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Include toast notifications JS -->
+    <script src="../assets/js/toast_notifications.js"></script>
     <script>
+      // Check for session messages and show toast
+      <?php if (isset($_SESSION['msg'])): $m = $_SESSION['msg']; unset($_SESSION['msg']); ?>
+        const messageType = '<?php echo $m['type']; ?>';
+        const messageText = <?php echo json_encode(htmlspecialchars($m['text'])); ?>;
+        
+        if (messageType === 'success') {
+          ToastNotifications.success(messageText);
+        } else {
+          ToastNotifications.error(messageText);
+        }
+      <?php endif; ?>
         function updateQuantity(index, change, newQuantity = null) {
             let inputs = document.querySelectorAll('.quantity-input');
             let input = inputs[index];
@@ -466,18 +557,27 @@ if (isset($_POST['ajax_action']) && $_POST['ajax_action'] === 'checkout') {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Reload the page to ensure all prices are updated properly
-                    location.reload();
+                    // Update the total for this item
+                    const itemRow = input.closest('.cart-item');
+                    const priceElement = itemRow.querySelector('[data-price]');
+                    const totalElement = itemRow.querySelector('.item-total');
+                    
+                    if (priceElement && totalElement) {
+                        const price = parseFloat(priceElement.getAttribute('data-price'));
+                        const newTotal = price * quantity;
+                        totalElement.textContent = 'रु' + newTotal.toFixed(2);
+                        updateCartSummary();
+                    }
                 } else {
                     // Show error message
-                    showToast('Failed to update quantity: ' + (data.message || 'Unknown error'), 'error');
+                    ToastNotifications.error('Failed to update quantity: ' + (data.message || 'Unknown error'));
                     // Revert the input value
                     input.value = currentValue;
                 }
             }).catch(error => {
                 console.error('Error updating quantity:', error);
                 // Show error message
-                showToast('Error updating quantity: ' + error.message, 'error');
+                ToastNotifications.error('Error updating quantity: ' + error.message);
                 // Revert the input value
                 input.value = currentValue;
             });
@@ -514,48 +614,7 @@ if (isset($_POST['ajax_action']) && $_POST['ajax_action'] === 'checkout') {
             }
         }
         
-        // Show toast notification
-        function showToast(message, type = 'success') {
-            // Remove any existing toasts
-            let existingToasts = document.querySelectorAll('.custom-toast');
-            existingToasts.forEach(toast => toast.remove());
-            
-            // Create toast container if it doesn't exist
-            let toastContainer = document.querySelector('.toast-container');
-            if (!toastContainer) {
-                toastContainer = document.createElement('div');
-                toastContainer.className = 'toast-container position-fixed top-0 end-0 p-3';
-                toastContainer.style.zIndex = '9999';
-                document.body.appendChild(toastContainer);
-            }
-            
-            // Create toast element
-            const toastDiv = document.createElement('div');
-            toastDiv.className = `toast custom-toast ${type === 'success' ? 'bg-success' : 'bg-danger'} text-white`;
-            toastDiv.setAttribute('role', 'alert');
-            toastDiv.setAttribute('aria-live', 'assertive');
-            toastDiv.setAttribute('aria-atomic', 'true');
-            
-            toastDiv.innerHTML = `
-                <div class="toast-body d-flex justify-content-between align-items-center">
-                    <span>${message}</span>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
-                </div>
-            `;
-            
-            toastContainer.appendChild(toastDiv);
-            
-            // Initialize and show the toast
-            const toast = new bootstrap.Toast(toastDiv, {
-                delay: 7000
-            });
-            toast.show();
-            
-            // Remove toast after it's hidden
-            toastDiv.addEventListener('hidden.bs.toast', function() {
-                this.remove();
-            });
-        }
+        
         
         function removeItem(index) {
             if (confirm('Are you sure you want to remove this item?')) {
@@ -569,8 +628,25 @@ if (isset($_POST['ajax_action']) && $_POST['ajax_action'] === 'checkout') {
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        location.reload();
+                        // Remove the item from DOM
+                        const itemRow = document.querySelectorAll('.cart-item')[index];
+                        if (itemRow) {
+                            itemRow.remove();
+                            updateCartSummary();
+                            // Show success message
+                            ToastNotifications.success(data.message);
+                        }
+                        // If cart is empty, reload to show empty cart message
+                        if (document.querySelectorAll('.cart-item').length === 0) {
+                            location.reload();
+                        }
+                    } else {
+                        ToastNotifications.error(data.message || 'Failed to remove item');
                     }
+                })
+                .catch(error => {
+                    console.error('Error removing item:', error);
+                    ToastNotifications.error('Error removing item: ' + error.message);
                 });
             }
         }
@@ -587,8 +663,22 @@ if (isset($_POST['ajax_action']) && $_POST['ajax_action'] === 'checkout') {
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        location.reload();
+                        // Clear all items from DOM
+                        document.querySelectorAll('.cart-item').forEach(item => item.remove());
+                        updateCartSummary();
+                        // Show success message
+                        ToastNotifications.success(data.message);
+                        // Reload after a short delay to show empty cart
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1500);
+                    } else {
+                        ToastNotifications.error(data.message || 'Failed to clear cart');
                     }
+                })
+                .catch(error => {
+                    console.error('Error clearing cart:', error);
+                    ToastNotifications.error('Error clearing cart: ' + error.message);
                 });
             }
         }
@@ -612,18 +702,18 @@ if (isset($_POST['ajax_action']) && $_POST['ajax_action'] === 'checkout') {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    showToast(data.message, 'success');
+                    ToastNotifications.success(data.message);
                     const redirectUrl = data.redirect || 'myorder.php';
                     setTimeout(() => {
                         window.location.href = redirectUrl;
                     }, 1500); // Wait 1.5 seconds before redirecting to let user see the toast
                 } else {
-                    showToast('Error: ' + data.message, 'error');
+                    ToastNotifications.error('Error: ' + data.message);
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Error processing order');
+                ToastNotifications.error('Error processing order: ' + error.message);
             })
             .finally(() => {
                 checkoutBtn.textContent = originalText;

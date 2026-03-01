@@ -28,8 +28,10 @@ foreach($users as $user) {
   <title>Users Management - Masu Ko Jhol</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,0,0" />
   <link rel="stylesheet" href="../assets/css/adminstyle.css">
+  <link rel="stylesheet" href="../assets/css/toast_styles.css">
 </head>
 <body>
+<div id="toastContainer" class="toast-container"></div>
    <div class="container">
       <aside>
            
@@ -71,6 +73,12 @@ foreach($users as $user) {
               <span class="material-symbols-sharp">calendar_month </span>
               <h3>Bookings</h3>
            </a>
+
+           <a href="feedback.php">
+              <span class="material-symbols-sharp">Feedback </span>
+              <h3>Feedback</h3>
+           </a>
+           
            <a href="#">
               <span class="material-symbols-sharp">settings </span>
               <h3>settings</h3>
@@ -99,10 +107,15 @@ foreach($users as $user) {
 
            <!-- Session Messages -->
            <?php if (isset($_SESSION['msg'])): ?>
-             <div class="message <?php echo $_SESSION['msg']['type'] === 'success' ? 'success' : 'error'; ?>">
-               <p><?php echo htmlspecialchars($_SESSION['msg']['text']); ?></p>
-               <span class="close-btn">&times;</span>
-             </div>
+             <script>
+               document.addEventListener('DOMContentLoaded', function() {
+                 <?php if ($_SESSION['msg']['type'] === 'success'): ?>
+                 ToastNotifications.success('<?php echo addslashes(htmlspecialchars($_SESSION['msg']['text'])); ?>');
+                 <?php else: ?>
+                 ToastNotifications.error('<?php echo addslashes(htmlspecialchars($_SESSION['msg']['text'])); ?>');
+                 <?php endif; ?>
+               });
+             </script>
              <?php unset($_SESSION['msg']); ?>
            <?php endif; ?>
 
@@ -297,7 +310,7 @@ foreach($users as $user) {
            <small class="text-muted">Online</small>
        </div>
        <div class="profile-photo">
-         <img src="../assets/img/usersprofiles/fa29eed8-1427-4ec2-a671-e4e45a399f3c.jpg" alt="Admin Profile"/>
+         <img src="../assets/img/usersprofiles/adminpic.jpg" alt="Admin Profile"/>
        </div>
     </div>
 </div>
@@ -307,7 +320,7 @@ foreach($users as $user) {
    <div class="updates">
       <div class="update">
          <div class="profile-photo">
-            <img src="../assets/img/user-avatar.png" alt=""/>
+            <img src="../assets/img/usersprofiles/profilepic.jpg" alt=""/>
          </div>
         <div class="message">
            <p><b>New User</b> registered successfully</p>
@@ -315,7 +328,7 @@ foreach($users as $user) {
       </div>
       <div class="update">
         <div class="profile-photo">
-        <img src="../assets/img/order-icon.png" alt=""/>
+        <img src="../assets/img/usersprofiles/profilepic.jpg" alt=""/>
         </div>
        <div class="message">
           <p><b>User Role</b> updated successfully</p>
@@ -323,7 +336,7 @@ foreach($users as $user) {
      </div>
      <div class="update">
       <div class="profile-photo">
-         <img src="../assets/img/menu-icon.png" alt=""/>
+         <img src="../assets/img/usersprofiles/profilepic.jpg" alt=""/>
       </div>
      <div class="message">
         <p><b>User Status</b> changed to active</p>
@@ -406,6 +419,7 @@ foreach($users as $user) {
 
    </div>
 
+<script src="../assets/js/toast_notifications.js"></script>
 <script src="../assets/js/adminscript.js"></script>
 </body>
 </html>

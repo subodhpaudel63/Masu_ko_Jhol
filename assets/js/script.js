@@ -1,5 +1,5 @@
 AOS.init({
-  offset: '140', // 50% viewport height ka offset
+  offset: '140', // 50% viewport height ko offset
 });
 document.addEventListener("DOMContentLoaded", function() {
   const loader = document.querySelector('.loader');
@@ -395,22 +395,44 @@ if(msgArea){
     /* ── Loading state ── */
     btn.classList.add('loading');
 
-    /*
-      Replace the setTimeout below with a real fetch() / XMLHttpRequest
-      to your server endpoint, then call showSuccess() in the callback.
-    */
-    setTimeout(function () {
+    // Prepare form data for submission
+    const formData = new FormData();
+    formData.append('name', nameF.value.trim());
+    formData.append('email', emailF.value.trim());
+    formData.append('rating', document.querySelector('input[name="rating"]:checked')?.value || 0);
+    formData.append('comments', msgF.value.trim());
+    // Use the selected category or empty string if none selected
+    const selectedCategoryElement = document.getElementById('selectedCategory');
+    formData.append('category', selectedCategoryElement ? selectedCategoryElement.value : '');
 
-      /* ── Green "sent" flash ── */
+    // Make actual fetch request to backend
+    fetch('../includes/feedback_form.php', {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
       btn.classList.remove('loading');
-      btn.classList.add('sent');
-      btn.querySelector('.btn-label').innerHTML = '✓ Sent!';
-
-      setTimeout(function () {
-        showSuccess();
-      }, 600);
-
-    }, 1800); /* ← simulated network delay; remove when using real fetch */
+      if (data.status === 'success') {
+        btn.classList.add('sent');
+        btn.querySelector('.btn-label').innerHTML = '✓ Sent!';
+        setTimeout(function () {
+          showSuccess();
+        }, 600);
+      } else {
+        btn.classList.remove('sent');
+        formNote.textContent = '⚠ ' + (data.message || 'An error occurred');
+        btn.classList.add('is-invalid');
+        setTimeout(() => {
+          btn.classList.remove('is-invalid');
+        }, 3000);
+      }
+    })
+    .catch(error => {
+      btn.classList.remove('loading');
+      console.error('Error:', error);
+      formNote.textContent = '⚠ An error occurred while submitting the form';
+    });
   });
 
 
@@ -502,7 +524,120 @@ if(msgArea){
 
 })();
 
+// toast
 
-// index reservation forms starts ....
+
+    /**
+     * Function to generate the toast HTML and trigger animations
+     */
+    function showToast(status) {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = 'custom-toast';
+        const duration = 5000; // Matches the CSS progress bar animation
+
+        if (status === 'success') {
+            toast.classList.add('toast-success');
+            toast.innerHTML = `
+                <i class="fa fa-check-circle toast-icon"></i>
+                <div class="toast-content">
+                    <strong>Subscription Active!</strong>
+                    <span>You've been added to our food tribe.</span>
+                </div>
+                <div class="toast-progress" style="animation-duration: ${duration}ms"></div>
+            `;
+        } else {
+            toast.classList.add('toast-error');
+            toast.innerHTML = `
+                <i class="fa fa-circle-exclamation toast-icon"></i>
+                <div class="toast-content">
+                    <strong>Oops!</strong>
+                    <span>Something went wrong. Please try again.</span>
+                </div>
+                <div class="toast-progress" style="animation-duration: ${duration}ms"></div>
+            `;
+        }
+
+        container.appendChild(toast);
+
+        // Remove the toast after the duration
+        setTimeout(() => {
+            toast.classList.add('toast-fade-out');
+            setTimeout(() => {
+                toast.remove();
+            }, 800); // Wait for the slide-out animation to finish
+        }, duration - 800);
+    }
+
+    /**
+     * Check the URL for status parameters when the page loads
+     */
+    window.onload = function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const status = urlParams.get('status');
+        
+        if (status) {
+            showToast(status);
+            // Clean the URL so the toast doesn't reappear if the user refreshes
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+    };
+
+    /**
+     * Function to generate the toast HTML and trigger animations
+     */
+    function showToast(status) {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = 'custom-toast';
+        const duration = 5000; // Matches the CSS progress bar animation
+
+        if (status === 'success') {
+            toast.classList.add('toast-success');
+            toast.innerHTML = `
+                <i class="fa fa-check-circle toast-icon"></i>
+                <div class="toast-content">
+                    <strong>Subscription Active!</strong>
+                    <span>You've been added to our food tribe.</span>
+                </div>
+                <div class="toast-progress" style="animation-duration: ${duration}ms"></div>
+            `;
+        } else {
+            toast.classList.add('toast-error');
+            toast.innerHTML = `
+                <i class="fa fa-circle-exclamation toast-icon"></i>
+                <div class="toast-content">
+                    <strong>Oops!</strong>
+                    <span>Something went wrong. Please try again.</span>
+                </div>
+                <div class="toast-progress" style="animation-duration: ${duration}ms"></div>
+            `;
+        }
+
+        container.appendChild(toast);
+
+        // Remove the toast after the duration
+        setTimeout(() => {
+            toast.classList.add('toast-fade-out');
+            setTimeout(() => {
+                toast.remove();
+            }, 800); // Wait for the slide-out animation to finish
+        }, duration - 800);
+    }
+
+    /**
+     * Check the URL for status parameters when the page loads
+     */
+    window.onload = function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const status = urlParams.get('status');
+        
+        if (status) {
+            showToast(status);
+            // Clean the URL so the toast doesn't reappear if the user refreshes
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+    };
+
 
 

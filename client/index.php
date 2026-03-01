@@ -57,22 +57,11 @@ if (isset($_COOKIE['user_img'])) {
     <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
     <?php require_once __DIR__ . '/../config/bootstrap.php'; ?>
     <link rel="stylesheet" href="<?php echo asset('css/style.css'); ?>" />
+    <!-- Include toast styles -->
+    <link rel="stylesheet" href="<?php echo asset('css/toast_styles.css'); ?>" />
     <style>
       header.scrolled .menus > ul > li::after {
         background-color: var(--text-color-white);
-      }
-      
-      /* Toast styling for better visibility */
-      .toast-success {
-        background-color: #0f5132 !important; /* Dark green */
-        border-color: #0f5132 !important;
-        color: white !important;
-      }
-      
-      .toast-error {
-        background-color: #842029 !important; /* Dark red */
-        border-color: #842029 !important;
-        color: white !important;
       }
       
       /* Smooth scrolling for anchor links */
@@ -82,16 +71,7 @@ if (isset($_COOKIE['user_img'])) {
     </style>
   </head>
   <body>
-    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index:2000;">
-      <?php if (isset($_SESSION['msg'])): $m=$_SESSION['msg']; unset($_SESSION['msg']); ?>
-        <div class="toast show align-items-center border-0 <?php echo $m['type']==='success'?'toast-success':'toast-error'; ?>" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
-          <div class="d-flex">
-            <div class="toast-body small fw-semibold"><?php echo htmlspecialchars($m['text']); ?></div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-          </div>
-        </div>
-      <?php endif; ?>
-    </div>
+    
 
     <div class="loader">
       <i class="fas fa-utensils loader-icone"></i>
@@ -763,6 +743,7 @@ Want to explore that next?
                   Get more news and delicious dishes everyday from us
                 </p>
               </div>
+              <form action ="../includes/suscribe.php" method ="POST"class ="subscribe-form d-flex ps-0 ms-0 ps-lg-5 ms-lg-5" data-aos="fade-left">
               <div class="subscribe-form d-flex ps-0 ms-0 ps-lg-5 ms-lg-5" data-aos="fade-left">
                 <div class="input-form w-100">
                   <input class="border-0 px-3 w-100" type="email" placeholder="Email">
@@ -772,7 +753,8 @@ Want to explore that next?
                     <i class="fa fa-paper-plane"></i>
                   </a>
                 </div>
-              </div>
+                 </div>
+                </form>
             </div>
           </div>
         </div>
@@ -795,18 +777,22 @@ Want to explore that next?
     <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
     <?php require_once __DIR__ . '/../config/bootstrap.php'; ?>
     <script src="<?php echo asset('js/script.js'); ?>"></script>
+    <!-- Include toast notifications JS -->
+    <script src="<?php echo asset('js/toast_notifications.js'); ?>"></script>
     
-    <!-- Enhanced Toast and Form Submission Script -->
     <script>
       document.addEventListener('DOMContentLoaded', function() {
-        // Auto hide toast notifications after 5 seconds
-        var toasts = document.querySelectorAll('.toast');
-        toasts.forEach(function(toast) {
-          var bsToast = new bootstrap.Toast(toast, {
-            delay: 5000
-          });
-          bsToast.show();
-        });
+        // Check for session messages and show toast
+        <?php if (isset($_SESSION['msg'])): $m = $_SESSION['msg']; unset($_SESSION['msg']); ?>
+          const messageType = '<?php echo $m['type']; ?>';
+          const messageText = <?php echo json_encode(htmlspecialchars($m['text'])); ?>;
+          
+          if (messageType === 'success') {
+            ToastNotifications.success(messageText);
+          } else {
+            ToastNotifications.error(messageText);
+          }
+        <?php endif; ?>
         
         // Form submission handling
         var bookingForm = document.getElementById('bookingForm');
