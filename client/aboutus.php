@@ -63,6 +63,7 @@ if (isset($_COOKIE['user_img'])) {
     <link rel="stylesheet" href="<?php echo asset('css/style.css'); ?>" />
     <!-- Include toast styles -->
     <link rel="stylesheet" href="<?php echo asset('css/toast_styles.css'); ?>" />
+  
     <style>
       /* Add padding to prevent content from being hidden under navbar */
       .main-content {
@@ -759,6 +760,7 @@ if (isset($_COOKIE['user_img'])) {
     <script src="<?php echo asset('js/script.js'); ?>"></script>
     <!-- Include toast notifications JS -->
     <script src="<?php echo asset('js/toast_notifications.js'); ?>"></script>
+    
     
     <script>
       document.addEventListener('DOMContentLoaded', function() {

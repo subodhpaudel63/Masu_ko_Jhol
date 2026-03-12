@@ -378,6 +378,7 @@ if (isset($_GET['action'])) {
                   <?php endif; ?>
                 </div>
             </div>
+            
             <div class="col-md-6 banner-img" data-aos="fade-left" data-aos-delay="3000">
               <img class="img  mt-5 mt-lg-0" src="./assets/images/NangloSet.png" alt="">
             </div>

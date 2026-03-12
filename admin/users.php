@@ -72,6 +72,7 @@ foreach($users as $user) {
            <a href="bookings.php">
               <span class="material-symbols-sharp">calendar_month </span>
               <h3>Bookings</h3>
+              <span class="msg_count">1</span>
            </a>
 
            <a href="feedback.php">

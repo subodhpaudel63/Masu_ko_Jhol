@@ -59,6 +59,7 @@ if (isset($_COOKIE['user_img'])) {
     <link rel="stylesheet" href="<?php echo asset('css/style.css'); ?>" />
     <!-- Include toast styles -->
     <link rel="stylesheet" href="<?php echo asset('css/toast_styles.css'); ?>" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <style>
       /* Add padding to prevent content from being hidden under navbar */
       .main-content {

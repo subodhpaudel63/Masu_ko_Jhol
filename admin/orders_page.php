@@ -199,6 +199,11 @@ foreach($orders as $order) {
            <a href="bookings.php">
               <span class="material-symbols-sharp">calendar_month </span>
               <h3>Bookings</h3>
+              <span class="msg_count">1</span>
+           </a>
+           <a href="feedback.php">
+              <span class="material-symbols-sharp">Feedback </span>
+              <h3>Feedback</h3>
            </a>
            <a href="#">
               <span class="material-symbols-sharp">settings </span>
@@ -684,6 +689,6 @@ document.addEventListener('DOMContentLoaded', function() {
 // Animated Toast Notification System
 // Using the standardized ToastNotifications instead of custom implementation
 </script>
-<script src="../assets/js/toast_notifications.js"></script>
+
 </body>
 </html>

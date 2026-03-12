@@ -486,6 +486,7 @@ $categories = ['starter', 'breakfast', 'lunch', 'dinner'];
            <a href="orders_page.php">
               <span class="material-symbols-sharp">mail_outline </span>
               <h3>Orders</h3>
+              <span class="msg_count">14</span>
            </a>
            <a href="menu.php" class="active">
               <span class="material-symbols-sharp">receipt_long </span>
@@ -494,6 +495,7 @@ $categories = ['starter', 'breakfast', 'lunch', 'dinner'];
            <a href="bookings.php">
               <span class="material-symbols-sharp">calendar_month </span>
               <h3>Bookings</h3>
+              <span class="msg_count">1</span>
            </a>
 
            <a href="feedback.php">

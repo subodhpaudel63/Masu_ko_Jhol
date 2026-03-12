@@ -80,10 +80,12 @@ $shipping_orders = $shipping_orders_query->fetch_assoc()['shipping'];
            <a href="bookings.php">
               <span class="material-symbols-sharp">calendar_month </span>
               <h3>Bookings</h3> 
+              <span class="msg_count">1</span>
                </a>
               <a href="feedback.php">
               <span class="material-symbols-sharp">Feedback </span>
               <h3>Feedback</h3>
+              
            </a>
            <a href="#">
               <span class="material-symbols-sharp">settings </span>

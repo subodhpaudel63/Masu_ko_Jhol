@@ -180,11 +180,11 @@ $positive_percent = $total_feedback > 0 ? round(($positive_feedback / $total_fee
               <span class="material-symbols-sharp">insights </span>
               <h3>Analytics</h3>
             </a>
-            <a href="myorder.php">
+            <a href="orders_page.php">
               <span class="material-symbols-sharp">mail_outline </span>
               <h3>Orders</h3>
               <span class="msg_count">14</span>
-            </a>
+           </a>
             <a href="menu.php">
               <span class="material-symbols-sharp">receipt_long </span>
               <h3>Menu</h3>
@@ -192,6 +192,7 @@ $positive_percent = $total_feedback > 0 ? round(($positive_feedback / $total_fee
             <a href="bookings.php">
               <span class="material-symbols-sharp">calendar_month </span>
               <h3>Bookings</h3>
+              <span class="msg_count">1</span>
             </a>
             <a href="feedback.php" class="active">
               <span class="material-symbols-sharp">Feedback </span>
@@ -310,7 +311,7 @@ $positive_percent = $total_feedback > 0 ? round(($positive_feedback / $total_fee
                   <small class="text-muted">Administrator</small>
                </div>
                <div class="profile-photo">
-                  <img src="../assets/img/admin-avatar.png" alt="Admin" onerror="this.src='https://ui-avatars.com/api/?name=Admin&background=7380ec&color=fff'">
+                  <img src="../assets/img/usersprofiles/adminpic.jpg" alt="Admin" onerror="this.src='https://ui-avatars.com/api/?name=Admin&background=7380ec&color=fff'">
                </div>
             </div>
          </div>

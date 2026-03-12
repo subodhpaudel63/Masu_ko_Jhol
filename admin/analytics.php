@@ -310,6 +310,7 @@ $avg_order_value = $total_orders > 0 ? $total_revenue / $total_orders : 0;
            <a href="orders_page.php">
               <span class="material-symbols-sharp">mail_outline </span>
               <h3>Orders</h3>
+              <span class="msg_count">14</span>
            </a>
            <a href="menu.php">
               <span class="material-symbols-sharp">receipt_long </span>
@@ -318,14 +319,24 @@ $avg_order_value = $total_orders > 0 ? $total_revenue / $total_orders : 0;
            <a href="bookings.php">
               <span class="material-symbols-sharp">calendar_month </span>
               <h3>Bookings</h3>
+              <span class="msg_count">1</span>
            </a>
            <a href="feedback.php">
               <span class="material-symbols-sharp">Feedback </span>
               <h3>Feedback</h3>
            </a>
+        
+           <a href="#">
+              <span class="material-symbols-sharp">settings </span>
+              <h3>settings</h3>
+           </a>
+           <a href="#">
+              <span class="material-symbols-sharp">add </span>
+              <h3>Add Product</h3>
+           </a>
            <a href="../includes/logout.php">
               <span class="material-symbols-sharp">logout </span>
-              <h3>Logout</h3>
+              <h3>logout</h3>
            </a>
          </div>
       </aside>
