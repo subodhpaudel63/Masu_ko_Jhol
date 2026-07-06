@@ -68,6 +68,12 @@ if (isset($_COOKIE['user_img'])) {
       html {
         scroll-behavior: smooth;
       }
+
+      .reservation .date-picker-white::-webkit-calendar-picker-indicator,
+      .reservation .time-picker-white::-webkit-calendar-picker-indicator {
+        filter: invert(1);
+        opacity: 1;
+      }
     </style>
   </head>
   <body>
@@ -650,13 +656,13 @@ Want to explore that next?
                     <div class="col-12 col-lg-6 mb-3">
                       <div class="input d-flex align-items-center">
                         <i class="fa fa-calendar py-2 px-3"></i>
-                        <input class="form-control datepicker bg-transparent border-0 px-3 text-white" type="date" name="date" required>
+                        <input class="form-control datepicker date-picker-white bg-transparent border-0 px-3 text-white" type="date" name="date" id="reservationDate" required>
                       </div>
                     </div>
                     <div class="col-12 col-lg-6 mb-3">
                       <div class="input d-flex align-items-center">
                         <i class="fa fa-clock py-2 px-3"></i>
-                        <input class="form-control bg-transparent border-0 px-3 text-white" type="time" name="time" required>
+                        <input class="form-control time-picker-white bg-transparent border-0 px-3 text-white" type="time" name="time" required>
                       </div>
                     </div>
                   </div>
@@ -836,8 +842,28 @@ Want to explore that next?
         
         // Form submission handling
         var bookingForm = document.getElementById('bookingForm');
+        var reservationDate = document.getElementById('reservationDate');
+        var today = new Date().toISOString().split('T')[0];
+
+        if (reservationDate) {
+          reservationDate.setAttribute('min', today);
+        }
+
         if (bookingForm) {
           bookingForm.addEventListener('submit', function(e) {
+            if (reservationDate && reservationDate.value < today) {
+              e.preventDefault();
+              reservationDate.value = '';
+              reservationDate.focus();
+              reservationDate.setCustomValidity('Please select today or a future date.');
+              reservationDate.reportValidity();
+              return;
+            }
+
+            if (reservationDate) {
+              reservationDate.setCustomValidity('');
+            }
+
             // Form will submit normally, but we show a loading state
             var submitBtn = bookingForm.querySelector('button[type="submit"]');
             submitBtn.innerHTML = 'Booking...';
