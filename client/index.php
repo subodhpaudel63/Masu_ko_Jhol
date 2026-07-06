@@ -135,7 +135,14 @@ if (isset($_COOKIE['user_img'])) {
 
         <div class="icons d-flex align-items-center">
           <a class="text-decoration-none" id="searchBtn" href="#"><i class="fa fa-search me-3"></i></a>
-          <a class="text-decoration-none" id="shoppingbutton" href="./cart.php"><i class="fa fa-shopping-bag me-3"></i></a>
+          <a class="text-decoration-none" id="shoppingbutton" href="./cart.php">
+            <i class="fa fa-shopping-bag me-3"></i>
+            <?php if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])): ?>
+              <span class="position-absolute translate-middle badge rounded-pill bg-danger" style="top: 10px; right: 10px; font-size: 0.7rem; padding: 0.25rem 0.5rem;">
+                <?php echo count($_SESSION['cart']); ?>
+              </span>
+            <?php endif; ?>
+          </a>
           <?php if ($currentUser): ?>
             <div class="dropdown">
               <a class="d-flex align-items-center text-decoration-none dropdown-toggle" href="#" role="button" id="profileMenu" data-bs-toggle="dropdown" aria-expanded="false">
@@ -148,7 +155,34 @@ if (isset($_COOKIE['user_img'])) {
                 <li><a class="dropdown-item" href="<?php echo url('includes/logout.php'); ?>"><i class="fa fa-right-from-bracket me-2"></i>Logout</a></li>
               </ul>
             </div>
-          <?php endif; ?>
+            <div class="dropdown">
+    
+
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileMenu">
+      <li>
+        <h6 class="dropdown-header">
+          <?php echo htmlspecialchars($currentUser['email'] ?? ''); ?>
+        </h6>
+      </li>
+
+      <li><hr class="dropdown-divider"></li>
+
+      <li>
+        <a class="dropdown-item" href="./update_password.php">
+          <i class="fa fa-key me-2"></i>Update Password
+        </a>
+      </li>
+
+      <li>
+        <a class="dropdown-item" href="<?php echo url('includes/logout.php'); ?>">
+          <i class="fa fa-right-from-bracket me-2"></i>Logout
+        </a>
+      </li>
+
+    </ul>
+  </div>
+<?php endif; ?>
+         
         </div>
       </div>
 
@@ -173,6 +207,11 @@ if (isset($_COOKIE['user_img'])) {
             </a>
             <a class="text-decoration-none" id="shoppingbuttonMobile" href="./cart.php">
               <i class="fa fa-shopping-bag me-3 text-white"></i>
+              <?php if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])): ?>
+                <span class="position-absolute translate-middle badge rounded-pill bg-danger" style="top: 10px; right: 10px; font-size: 0.7rem; padding: 0.25rem 0.5rem;">
+                  <?php echo count($_SESSION['cart']); ?>
+                </span>
+              <?php endif; ?>
             </a>
           </div>
         </div>

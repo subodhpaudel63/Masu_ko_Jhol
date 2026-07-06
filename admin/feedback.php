@@ -66,7 +66,7 @@ $positive_percent = $total_feedback > 0 ? round(($positive_feedback / $total_fee
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,0,0" />
   <!-- Ensure this path is correct based on your folder structure -->
   <link rel="stylesheet" href="../assets/css/adminstyle.css">
-  <link rel="stylesheet" href="../assets/css/toast_styles.css">
+  
   <style>
     /* Internal styles to complement adminstyle.css */
     .recent-orders {
@@ -155,7 +155,7 @@ $positive_percent = $total_feedback > 0 ? round(($positive_feedback / $total_fee
   </style>
 </head>
 <body>
-<div id="toastContainer" class="toast-container"></div>
+
    <div class="container">
       <aside>
          <div class="top">
@@ -355,8 +355,7 @@ $positive_percent = $total_feedback > 0 ? round(($positive_feedback / $total_fee
        </div>
    </div>
 
-   <script src="../assets/js/toast_notifications.js"></script>
-   <script>
+      <script>
        const sideMenu = document.querySelector("aside");
        const menuBtn = document.querySelector("#menu_btn");
        const closeBtn = document.querySelector("#close_btn");
@@ -496,7 +495,7 @@ $positive_percent = $total_feedback > 0 ? round(($positive_feedback / $total_fee
                .then(response => response.json())
                .then(data => {
                    if (data.success) {
-                       ToastNotifications.success(data.message);
+                       
                        // Remove the row from the table - find by data attribute instead
                        const button = event.target;
                        const row = button.closest('tr');
@@ -510,13 +509,10 @@ $positive_percent = $total_feedback > 0 ? round(($positive_feedback / $total_fee
                                tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No feedback yet.</td></tr>';
                            }
                        }, 300);
-                   } else {
-                       ToastNotifications.error(data.message);
                    }
                })
                .catch(error => {
                    console.error('Error:', error);
-                   ToastNotifications.error('Error deleting feedback');
                });
            });
        }
@@ -528,6 +524,6 @@ $positive_percent = $total_feedback > 0 ? round(($positive_feedback / $total_fee
            }
        }
    </script>
-   <script src="../assets/js/toast_notifications.js"></script>
+   
 </body>
 </html>

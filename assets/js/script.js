@@ -230,7 +230,8 @@ $('.our-chefs .our-chef-slider-wrapper').slick({
  * it never pollutes the global scope.
  */
 
-(function () {
+// Wait for DOM to be fully loaded before initializing the feedback form
+document.addEventListener('DOMContentLoaded', function() {
   'use strict';
 
   /* ── Emoji labels for each star value ── */
@@ -242,12 +243,14 @@ $('.our-chefs .our-chef-slider-wrapper').slick({
   ════════════════════════════════════════════ */
   var srHint = document.getElementById('srHint');
 
-  document.querySelectorAll('.star-rating input').forEach(function (input) {
-    input.addEventListener('change', function () {
-      srHint.textContent = RATING_LABELS[this.value] || '';
-      srHint.classList.add('visible');
+  if (srHint) {
+    document.querySelectorAll('.star-rating input').forEach(function (input) {
+      input.addEventListener('change', function () {
+        srHint.textContent = RATING_LABELS[this.value] || '';
+        srHint.classList.add('visible');
+      });
     });
-  });
+  }
 
 
   /* ════════════════════════════════════════════
@@ -410,7 +413,13 @@ if(msgArea){
       method: 'POST',
       body: formData
     })
-    .then(response => response.json())
+    .then(response => {
+      // Check if response is OK before parsing JSON
+      if (!response.ok) {
+        throw new Error('Server responded with status ' + response.status);
+      }
+      return response.json();
+    })
     .then(data => {
       btn.classList.remove('loading');
       if (data.status === 'success') {
@@ -431,7 +440,11 @@ if(msgArea){
     .catch(error => {
       btn.classList.remove('loading');
       console.error('Error:', error);
-      formNote.textContent = '⚠ An error occurred while submitting the form';
+      formNote.textContent = '⚠ Network error: ' + error.message + '. Please check your internet connection or try again.';
+      btn.classList.add('is-invalid');
+      setTimeout(() => {
+        btn.classList.remove('is-invalid');
+      }, 5000);
     });
   });
 
@@ -522,7 +535,7 @@ if(msgArea){
     }, 300);
   });
 
-})();
+}); // End of DOMContentLoaded for feedback form
 
 // toast
 

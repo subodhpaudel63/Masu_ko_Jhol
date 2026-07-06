@@ -17,7 +17,7 @@ if (isset($_COOKIE['user_type'])) {
 <title>Admin Login | Masu Ko Jhol</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-<link rel="stylesheet" href="../assets/css/toast_styles.css">
+
 <style>
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 
@@ -297,7 +297,6 @@ html, body {
 </style>
 </head>
 <body>
-<div id="toastContainer" class="toast-container"></div>
 
 <!-- ── FLOATING FOOD OBJECTS ── -->
 <div class="floater f-bowl" style="top:8%;left:5%;--ft:7s;--delay:0s;--r0:-6deg;--r1:6deg;">
@@ -350,14 +349,9 @@ html, body {
   <?php if (isset($_SESSION['msg'])): ?>
     <script>
       document.addEventListener('DOMContentLoaded', function() {
-        // Show toast notification based on session message
+        
         const msg = <?php echo json_encode($_SESSION['msg']); ?>;
         if (msg) {
-          if (msg.type === 'success') {
-            ToastNotifications.success(msg.text);
-          } else {
-            ToastNotifications.error(msg.text);
-          }
         }
         // Clear the session message
         <?php unset($_SESSION['msg']); ?>
@@ -422,4 +416,3 @@ document.getElementById('submitBtn').addEventListener('click', function(e) {
   }, 550);
 });
 </script>
-<script src="../assets/js/toast_notifications.js"></script>

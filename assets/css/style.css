@@ -3140,3 +3140,48 @@ footer p {
 
 
 /* faq section  */
+
+/* Header Contact Bar */
+.header-contact-bar {
+    background: linear-gradient(135deg, #ff6a00, #d32f2f);
+    color: white;
+    padding: 8px 0;
+    font-size: 0.9rem;
+}
+
+.header-contact-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+}
+
+.header-contact-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.header-contact-item i {
+    font-size: 1.1rem;
+}
+
+.header-contact-item a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    transition: opacity 0.3s ease;
+}
+
+.header-contact-item a:hover {
+    opacity: 0.8;
+}
+
+@media (max-width: 768px) {
+    .header-contact-info {
+        flex-direction: column;
+        gap: 5px;
+    }
+}
+
+/* Floating WhatsApp Button */

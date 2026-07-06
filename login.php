@@ -9,7 +9,6 @@ if (isset($_GET['session_expired']) && $_GET['session_expired'] == 1) {
 
 <!DOCTYPE html>
 <html lang="en">
-<?php include_once __DIR__ . '/header.php'; ?>
 <head>
    <div class="loader">
       <i class="fas fa-utensils loader-icone"></i>
@@ -104,7 +103,13 @@ if (isset($_GET['session_expired']) && $_GET['session_expired'] == 1) {
       .auth-section {
         position: relative;
         z-index: 1;
-        padding: 60px 0 80px;
+        padding: 90px 0 80px;
+      }
+
+      @media (max-width: 991px) {
+        .auth-section {
+          padding-top: 50px;
+        }
       }
 
       /* ── Card wrap: simple, no border tricks ── */
@@ -372,25 +377,14 @@ if (isset($_GET['session_expired']) && $_GET['session_expired'] == 1) {
 </head>
 
 <body>
+  <?php include_once __DIR__ . '/header.php'; ?>
 
   <!-- Floating food emojis (JS-generated, CSS-animated) -->
   <div id="food-floaters"></div>
   <!-- Soft bg tint -->
   <div class="page-bg-tint"></div>
 
-  <!-- ══════════════════════════════════════════
-       ORIGINAL NAVBAR — IDENTICAL TO SOURCE
-  ══════════════════════════════════════════ -->
-  <nav class="navbar navbar-expand-lg navbar-custom">
-    <div class="container">
-      <a class="logo-text" href="index.php">
-        <i class="fa-solid fa-utensil-spoon"></i>
-      </a>
-      <div class="ml-auto">
-        <a href="register.php" class="nav-button">Register</a>
-      </div>
-    </div>
-  </nav>
+
 
   <!-- ══════════════════════════════════════════
        TOAST NOTIFICATIONS — animated
@@ -431,7 +425,7 @@ if (isset($_GET['session_expired']) && $_GET['session_expired'] == 1) {
                 </div>
 
                 <h2 class="text-center mb-2 auth-title">Login to Your Account</h2>
-                 <h6 class="text-center mb-2 auth-title">Welcome back to Masu ko jhol</h4>
+                 <h6 class="text-center mb-2 auth-title">Welcome back to Masu ko jhol</h6>
                 <!-- <p class="text-center mb-4 auth-sub" style="font-size:.95rem;color:#333;font-weight:500;">
                   Welcome back to Masu Ko Jhol
                 </p> -->

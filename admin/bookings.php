@@ -30,187 +30,8 @@ foreach($bookings as $booking) {
   <title>Table Bookings - Masu Ko Jhol</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,0,0" />
   <link rel="stylesheet" href="../assets/css/adminstyle.css">
-  <style>
-    :root {
-      /* Success Palette (Dark Green) */
-      --success-bg: #062016;
-      --success-border: #14532d;
-      --success-accent: #22c55e;
-      /* Error Palette (Dark Red) */
-      --error-bg: #1c0707;
-      --error-border: #7f1d1d;
-      --error-accent: #ef4444;
-    }
-
-    /* Toast Container Animation */
-    .toast {
-      animation: slideIn 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
-      transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
-      pointer-events: auto;
-    }
-
-    .toast-success { 
-      background-color: var(--success-bg); 
-      border: 1px solid var(--success-border); 
-    }
-    .toast-error { 
-      background-color: var(--error-bg); 
-      border: 1px solid var(--error-border);
-      animation: slideIn 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards, shake 0.4s ease-in-out 0.5s;
-    }
-
-    .toast.hiding { 
-      animation: slideOut 0.4s ease-in forwards; 
-    }
-
-    /* Progress Bar */
-    .progress-bar {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      height: 3px;
-      width: 100%;
-      transform-origin: left;
-      animation: progress 5s linear forwards;
-    }
-    .toast-success .progress-bar { 
-      background-color: var(--success-accent); 
-    }
-    .toast-error .progress-bar { 
-      background-color: var(--error-accent); 
-    }
-
-    @keyframes progress { 
-      from { transform: scaleX(1); } 
-      to { transform: scaleX(0); } 
-    }
-    @keyframes slideIn { 
-      from { transform: translateX(120%); opacity: 0; } 
-      to { transform: translateX(0); opacity: 1; } 
-    }
-    @keyframes slideOut { 
-      from { transform: translateX(0); opacity: 1; } 
-      to { transform: translateX(120%); opacity: 0; } 
-    }
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-4px); }
-      75% { transform: translateX(4px); }
-    }
-
-    /* SVG Icon Animations */
-    .icon-circle {
-      stroke-dasharray: 166; 
-      stroke-dashoffset: 166; 
-      stroke-width: 2;
-      fill: none; 
-      animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
-    }
-    .icon-path {
-      stroke-dasharray: 48; 
-      stroke-dashoffset: 48;
-      animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
-    }
-    .icon-fill-success { 
-      animation: fillSuccess .4s ease-in-out .4s forwards; 
-    }
-    .icon-fill-error { 
-      animation: fillError .4s ease-in-out .4s forwards; 
-    }
-
-    @keyframes stroke { 
-      100% { stroke-dashoffset: 0; } 
-    }
-    @keyframes fillSuccess { 
-      100% { box-shadow: inset 0px 0px 0px 30px var(--success-accent); } 
-    }
-    @keyframes fillError { 
-      100% { box-shadow: inset 0px 0px 0px 30px var(--error-accent); } 
-    }
-
-    @keyframes fadeOut {
-      from { opacity: 1; }
-      to { opacity: 0; }
-    }
-
-    .icon-container {
-      width: 44px; 
-      height: 44px; 
-      border-radius: 50%; 
-      display: block;
-      stroke-width: 2; 
-      stroke: #fff; 
-      flex-shrink: 0;
-    }
-
-    /* Toast container positioning */
-    #toastContainer {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      z-index: 9999;
-      pointer-events: none;
-    }
-
-    .toast {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      padding: 16px;
-      padding-bottom: 20px;
-      border-radius: 12px;
-      min-width: 320px;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    }
-
-    .toast h4 {
-      font-size: 11px;
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: rgba(255, 255, 255, 0.5);
-      margin: 0;
-    }
-
-    .toast p {
-      font-size: 14px;
-      color: white;
-      font-weight: 500;
-      margin: 4px 0 0 0;
-    }
-
-    .close-btn {
-      opacity: 0.5;
-      transition: opacity 0.3s ease;
-      padding: 8px;
-      color: white;
-      background: none;
-      border: none;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .close-btn:hover {
-      opacity: 1;
-    }
-
-    .close-btn svg {
-      width: 18px;
-      height: 18px;
-    }
-  </style>
 </head>
 <body>
-   <!-- Container for Toast Notifications -->
-   <div id="toastContainer"></div>
 
    <div class="container">
       <aside>
@@ -549,15 +370,11 @@ function handleUpdate(bookingId) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            ToastNotifications.success('Booking status updated successfully!');
             document.getElementById(`status-${bookingId}`).value = newStatus;
-        } else {
-            ToastNotifications.error('Error: ' + data.message)
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        ToastNotifications.error('Error updating booking status');
     })
     .finally(() => {
         // Re-enable button
@@ -754,7 +571,6 @@ function confirmDelete(bookingId) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            ToastNotifications.success('Booking deleted successfully!');
             // Find and remove the row
             let row = null;
             const rows = document.querySelectorAll('table tbody tr');
@@ -772,13 +588,10 @@ function confirmDelete(bookingId) {
                     row.remove();
                 }, 300);
             }
-        } else {
-            ToastNotifications.error('Error: ' + data.message)
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        ToastNotifications.error('Error deleting booking');
     })
     .finally(() => {
         // Re-enable button
@@ -805,7 +618,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const testButton = document.getElementById('testButton');
     if (testButton) {
         testButton.addEventListener('click', function() {
-            ToastNotifications.success('Test button is working!');
             console.log('Test button clicked');
         });
         console.log('Test button found and listener added');
@@ -909,7 +721,6 @@ document.addEventListener('click', function(event) {
 });
 </script>
 <!-- Note: adminscript.js removed to avoid conflicts with custom delete confirmation -->
-<script src="../assets/js/toast_notifications.js"></script>
 <script src="../assets/js/adminscript.js"></script>
 </body>
 </html>

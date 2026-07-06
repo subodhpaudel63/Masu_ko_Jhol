@@ -3,7 +3,6 @@ session_start();
 ?>
 <!DOCTYPE html>
 <html lang="en">
-<?php include_once __DIR__ . '/header.php'; ?>
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
@@ -79,7 +78,13 @@ session_start();
       ───────────────────────────────────────── */
       .auth-section {
         position: relative; z-index: 1;
-        padding: 60px 0 80px;
+        padding: 90px 0 80px;
+      }
+
+      @media (max-width: 991px) {
+        .auth-section {
+          padding-top: 50px;
+        }
       }
       .auth-card-wrap {
         opacity: 0;
@@ -369,24 +374,13 @@ session_start();
 </head>
 
 <body>
+  <?php include_once __DIR__ . '/header.php'; ?>
 
   <!-- Food floaters -->
   <div id="food-floaters"></div>
   <div class="page-bg-tint"></div>
 
-  <!-- ══════════════════════════════════════════
-       ORIGINAL NAVBAR — REGISTER VARIANT
-  ══════════════════════════════════════════ -->
-  <nav class="navbar navbar-expand-lg navbar-custom">
-    <div class="container">
-      <a class="logo-text" href="index.php">
-        <i class="fas fa-utensils"></i>Masu Ko Jhol
-      </a>
-      <div class="ml-auto">
-        <a href="login.php" class="nav-button">Login</a>
-      </div>
-    </div>
-  </nav>
+
 
   <!-- ══════════════════════════════════════════
        TOAST NOTIFICATIONS

@@ -63,6 +63,49 @@
         text-decoration: none;
     }
     
+    /* Header Contact Section */
+    .header-contact-bar {
+        background: linear-gradient(135deg, #ff6a00, #d32f2f);
+        color: white;
+        padding: 8px 0;
+        font-size: 0.9rem;
+    }
+    
+    .header-contact-info {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+    }
+    
+    .header-contact-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .header-contact-item i {
+        font-size: 1.1rem;
+    }
+    
+    .header-contact-item a {
+        color: white;
+        text-decoration: none;
+        font-weight: 500;
+        transition: opacity 0.3s ease;
+    }
+    
+    .header-contact-item a:hover {
+        opacity: 0.8;
+    }
+    
+    @media (max-width: 768px) {
+        .header-contact-info {
+            flex-direction: column;
+            gap: 5px;
+        }
+    }
+    
     /* Modal styling */
     .login-modal .modal-content {
         border-radius: 15px;
@@ -160,6 +203,11 @@
           </a>
           <a class="text-decoration-none" id="shoppingbutton" href="./client/cart.php">
             <i class="fa fa-shopping-bag me-3 text-dark"></i>
+            <?php if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])): ?>
+              <span class="position-absolute translate-middle badge rounded-pill bg-danger" style="top: 10px; right: 10px; font-size: 0.7rem; padding: 0.25rem 0.5rem;">
+                <?php echo count($_SESSION['cart']); ?>
+              </span>
+            <?php endif; ?>
           </a>
           <!-- Login and Signup buttons -->
           <div class="d-flex align-items-center">
@@ -168,6 +216,9 @@
           </div>
         </div>
       </div>
+
+     
+      
 
       <div
         class="d-flex justify-content-around py-3 align-items-center d-lg-none"
@@ -190,6 +241,11 @@
             </a>
             <a class="text-decoration-none" id="shoppingbuttonMobile" href="./client/cart.php">
               <i class="fa fa-shopping-bag me-3 text-dark"></i>
+              <?php if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])): ?>
+                <span class="position-absolute translate-middle badge rounded-pill bg-danger" style="top: 10px; right: 10px; font-size: 0.7rem; padding: 0.25rem 0.5rem;">
+                  <?php echo count($_SESSION['cart']); ?>
+                </span>
+              <?php endif; ?>
             </a>
           </div>
         </div>

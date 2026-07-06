@@ -146,7 +146,7 @@ $categories = ['starter', 'breakfast', 'lunch', 'dinner'];
   <title>Menu Management - Masu Ko Jhol</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,0,0" />
   <link rel="stylesheet" href="../assets/css/adminstyle.css">
-  <link rel="stylesheet" href="../assets/css/toast_styles.css">
+  
   <style>
     .menu-sections {
         display: grid;
@@ -459,7 +459,7 @@ $categories = ['starter', 'breakfast', 'lunch', 'dinner'];
   </style>
 </head>
 <body>
-<div id="toastContainer" class="toast-container"></div>
+
    <div class="container">
       <aside>
          <div class="top">
@@ -525,9 +525,9 @@ $categories = ['starter', 'breakfast', 'lunch', 'dinner'];
            <script>
                document.addEventListener('DOMContentLoaded', function() {
                    <?php if ($message_type === 'success'): ?>
-                   ToastNotifications.success('<?php echo addslashes(htmlspecialchars($message)); ?>');
+                   
                    <?php else: ?>
-                   ToastNotifications.error('<?php echo addslashes(htmlspecialchars($message)); ?>');
+                   
                    <?php endif; ?>
                });
            </script>
@@ -873,17 +873,14 @@ $categories = ['starter', 'breakfast', 'lunch', 'dinner'];
                .then(response => response.json())
                .then(data => {
                    if (data.success) {
-                       ToastNotifications.success(data.message);
                        setTimeout(() => {
                            location.reload(); // Refresh to show updated data
                        }, 1500);
-                   } else {
-                       ToastNotifications.error('Error: ' + data.message);
                    }
                })
                .catch(error => {
                    console.error('Error:', error);
-                   ToastNotifications.error('Error deleting menu item');
+                   
                });
            });
        }
@@ -922,18 +919,15 @@ $categories = ['starter', 'breakfast', 'lunch', 'dinner'];
            .then(response => response.json())
            .then(data => {
                if (data.success) {
-                   ToastNotifications.success(data.message);
                    setTimeout(() => {
                        closeModal();
                        location.reload(); // Refresh to show updated data
                    }, 1500);
-               } else {
-                   ToastNotifications.error('Error: ' + data.message);
                }
            })
            .catch(error => {
                console.error('Error:', error);
-               ToastNotifications.error('Error saving menu item');
+               
            })
            .finally(() => {
                // Reset button
@@ -949,7 +943,7 @@ $categories = ['starter', 'breakfast', 'lunch', 'dinner'];
            }
        });
    </script>
-   <script src="../assets/js/toast_notifications.js"></script>
+   
    <script src="../assets/js/adminscript.js"></script>
 </body>
 </html>

@@ -218,13 +218,13 @@ function updateOrderStatus(orderId, newStatus) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            showToast('Order status updated successfully', 'success');
+            // Order status updated successfully
         } else {
-            showToast('Failed to update order status', 'error');
+            // Failed to update order status
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        showToast('Error updating order status', 'error');
+        // Error updating order status
     });
 }

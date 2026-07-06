@@ -28,10 +28,8 @@ foreach($users as $user) {
   <title>Users Management - Masu Ko Jhol</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,0,0" />
   <link rel="stylesheet" href="../assets/css/adminstyle.css">
-  <link rel="stylesheet" href="../assets/css/toast_styles.css">
 </head>
 <body>
-<div id="toastContainer" class="toast-container"></div>
    <div class="container">
       <aside>
            
@@ -110,11 +108,6 @@ foreach($users as $user) {
            <?php if (isset($_SESSION['msg'])): ?>
              <script>
                document.addEventListener('DOMContentLoaded', function() {
-                 <?php if ($_SESSION['msg']['type'] === 'success'): ?>
-                 ToastNotifications.success('<?php echo addslashes(htmlspecialchars($_SESSION['msg']['text'])); ?>');
-                 <?php else: ?>
-                 ToastNotifications.error('<?php echo addslashes(htmlspecialchars($_SESSION['msg']['text'])); ?>');
-                 <?php endif; ?>
                });
              </script>
              <?php unset($_SESSION['msg']); ?>
@@ -420,7 +413,6 @@ foreach($users as $user) {
 
    </div>
 
-<script src="../assets/js/toast_notifications.js"></script>
 <script src="../assets/js/adminscript.js"></script>
 </body>
 </html>

@@ -28,7 +28,7 @@ foreach($orders as $order) {
   <title>Orders - Masu Ko Jhol</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,0,0" />
   <link rel="stylesheet" href="../assets/css/adminstyle.css">
-  <link rel="stylesheet" href="../assets/css/toast_styles.css">
+
   <style>
     /* Delete Confirmation Modal */
     .delete-confirm-overlay {
@@ -146,19 +146,9 @@ foreach($orders as $order) {
         opacity: 1;
       }
     }
-
-    @keyframes fadeOut {
-      from {
-        opacity: 1;
-      }
-      to {
-        opacity: 0;
-      }
-    }
   </style>
 </head>
 <body>
-   <div id="toastContainer" class="toast-container"></div>
    <div class="container">
       <aside>
            
@@ -472,7 +462,7 @@ foreach($orders as $order) {
 
    </div>
 
-<script src="../assets/js/toast_notifications.js"></script>
+
 <script src="../assets/js/adminscript.js"></script>
 <script>
 // AJAX Order Status Update
@@ -501,15 +491,11 @@ function handleOrderUpdate(orderId) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            ToastNotifications.success('Order status updated to ' + newStatus);
             document.getElementById(`status-${orderId}`).value = newStatus;
-        } else {
-            ToastNotifications.error('Error: ' + data.message);
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        ToastNotifications.error('Error updating order status');
     })
     .finally(() => {
         button.disabled = false;
@@ -582,19 +568,15 @@ function confirmDelete(orderId) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            ToastNotifications.success('Order deleted successfully');
             // Remove the row with animation
             const row = document.querySelector(`button[onclick="handleOrderDelete(${orderId})"]`).closest('tr');
             row.style.opacity = '0';
             row.style.transform = 'translateX(100px)';
             setTimeout(() => row.remove(), 300);
-        } else {
-            ToastNotifications.error('Error: ' + data.message);
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        ToastNotifications.error('Error deleting order');
     });
 }
 
@@ -682,13 +664,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-<!-- Toast notification container -->
-<div id="toastContainer" class="toast-container"></div>
 
-<script>
-// Animated Toast Notification System
-// Using the standardized ToastNotifications instead of custom implementation
-</script>
+
 
 </body>
 </html>
