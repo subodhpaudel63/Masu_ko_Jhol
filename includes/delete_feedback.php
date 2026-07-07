@@ -15,15 +15,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $feedback_id = intval($_POST['feedback_id'] ?? 0);
 
     if ($feedback_id > 0) {
-        // Prepare statement to delete feedback (try different possible primary key names)
+        // Prepare statement to delete feedback using an existing primary key column.
         $possible_keys = ['feedback_id', 'id'];
         $stmt = null;
         
         foreach ($possible_keys as $key) {
-            $test_stmt = $conn->prepare("DELETE FROM feedback WHERE `$key` = ?");
-            if ($test_stmt) {
-                $stmt = $test_stmt;
-                break;
+            $columnCheck = $conn->query("SHOW COLUMNS FROM feedback LIKE '" . $conn->real_escape_string($key) . "'");
+            if ($columnCheck && $columnCheck->num_rows > 0) {
+                $stmt = $conn->prepare("DELETE FROM feedback WHERE `$key` = ?");
+                if ($stmt) {
+                    break;
+                }
             }
         }
         

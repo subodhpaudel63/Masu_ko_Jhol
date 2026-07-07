@@ -130,11 +130,6 @@ if (isset($_COOKIE['user_img'])) {
         <div class="icons d-flex align-items-center">
           <a class="text-decoration-none" id="searchBtn" href="#"><i class="fa fa-search me-3"></i></a>
           <a class="text-decoration-none" id="shoppingbutton" href="./cart.php"><i class="fa fa-shopping-bag me-3"></i></a>
-          <?php if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])): ?>
-            <span class="position-absolute translate-middle badge rounded-pill bg-danger" style="top: 10px; right: 10px; font-size: 0.7rem; padding: 0.25rem 0.5rem;">
-              <?php echo count($_SESSION['cart']); ?>
-            </span>
-          <?php endif; ?>
           <?php if ($currentUser): ?>
             <div class="dropdown">
               <a class="d-flex align-items-center text-decoration-none dropdown-toggle" href="#" role="button" id="profileMenu" data-bs-toggle="dropdown" aria-expanded="false">
@@ -170,11 +165,6 @@ if (isset($_COOKIE['user_img'])) {
             </a>
             <a class="text-decoration-none" id="shoppingbuttonMobile" href="./cart.php">
               <i class="fa fa-shopping-bag me-3"></i>
-              <?php if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])): ?>
-                <span class="position-absolute translate-middle badge rounded-pill bg-danger" style="top: 10px; right: 10px; font-size: 0.7rem; padding: 0.25rem 0.5rem;">
-                  <?php echo count($_SESSION['cart']); ?>
-                </span>
-              <?php endif; ?>
             </a>
           </div>
         </div>
@@ -534,6 +524,7 @@ if (isset($_COOKIE['user_img'])) {
       <i class="fa-solid fa-angles-up"></i>
     </a>
     
+    <?php include_once __DIR__ . '/../includes/cart_drawer.php'; ?>
     <?php include_once __DIR__ . '/../footer.php'; ?>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>

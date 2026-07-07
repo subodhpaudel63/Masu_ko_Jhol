@@ -284,7 +284,7 @@ $positive_percent = $total_feedback > 0 ? round(($positive_feedback / $total_fee
                                 View
                              </button>
                              <button class="btn-danger" 
-                                     onclick="deleteFeedback(<?php echo $item['id'] ?? 0; ?>, '<?php echo addslashes(addslashes($item['name'] ?? 'Guest')); ?>')"
+                                     onclick="deleteFeedback(<?php echo $item['id'] ?? 0; ?>, '<?php echo addslashes(addslashes($item['name'] ?? 'Guest')); ?>', this)"
                                      style="padding: 0.5rem 1rem; border-radius: var(--border-radius-1);">
                                 Delete
                              </button>
@@ -483,21 +483,18 @@ $positive_percent = $total_feedback > 0 ? round(($positive_feedback / $total_fee
            });
        }
 
-       function deleteFeedback(feedbackId, name) {
+       function deleteFeedback(feedbackId, name, button) {
            showDeleteConfirmation(`feedback from ${name}`, function() {
                fetch('../includes/delete_feedback.php', {
                    method: 'POST',
                    headers: {
-                       'Content-Type': 'application/x-form-urlencoded',
+                       'Content-Type': 'application/x-www-form-urlencoded',
                    },
-                   body: 'feedback_id=' + feedbackId
+                   body: 'feedback_id=' + encodeURIComponent(feedbackId)
                })
                .then(response => response.json())
                .then(data => {
                    if (data.success) {
-                       
-                       // Remove the row from the table - find by data attribute instead
-                       const button = event.target;
                        const row = button.closest('tr');
                        row.style.opacity = '0';
                        row.style.transition = 'opacity 0.3s ease';
@@ -509,10 +506,13 @@ $positive_percent = $total_feedback > 0 ? round(($positive_feedback / $total_fee
                                tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No feedback yet.</td></tr>';
                            }
                        }, 300);
+                   } else {
+                       alert(data.message || 'Failed to delete feedback.');
                    }
                })
                .catch(error => {
                    console.error('Error:', error);
+                   alert('Error deleting feedback. Please try again.');
                });
            });
        }

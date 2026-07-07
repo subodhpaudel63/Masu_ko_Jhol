@@ -1,0 +1,290 @@
+(function () {
+  const drawer = document.getElementById('cartDrawer');
+  const backdrop = document.getElementById('cartDrawerBackdrop');
+  const body = document.getElementById('cartDrawerBody');
+  const footer = document.getElementById('cartDrawerFooter');
+  const closeBtn = document.getElementById('cartDrawerClose');
+  const clearBtn = document.getElementById('cartDrawerClear');
+  const checkoutForm = document.getElementById('checkoutForm');
+  const checkoutBtn = document.getElementById('checkoutBtn');
+  const checkoutTotal = document.getElementById('checkoutModalTotal');
+  const cartEndpoint = 'cart.php';
+  let cartItems = Array.isArray(window.initialCartDrawerItems) ? window.initialCartDrawerItems : [];
+
+  function money(value) {
+    return 'Rs. ' + (parseFloat(value) || 0).toFixed(2);
+  }
+
+  function itemName(item) {
+    return item.name || item.menu_name || 'Menu item';
+  }
+
+  function itemImage(item) {
+    return item.image || '../assets/images/menu/menu-item-1.png';
+  }
+
+  function itemTotal(item) {
+    return parseFloat(item.total || ((parseFloat(item.price) || 0) * (parseInt(item.quantity, 10) || 1))) || 0;
+  }
+
+  function cartCount() {
+    return cartItems.length;
+  }
+
+  function cartSubtotal() {
+    return cartItems.reduce((sum, item) => sum + itemTotal(item), 0);
+  }
+
+  function ensureBadge(link) {
+    let badge = link.querySelector('.cart-drawer-count');
+    if (!badge) {
+      badge = document.createElement('span');
+      badge.className = 'cart-drawer-count';
+      link.appendChild(badge);
+    }
+    return badge;
+  }
+
+  function updateBadges() {
+    document.querySelectorAll('a[href$="cart.php"], #shoppingbutton, #shoppingbuttonMobile').forEach(link => {
+      link.classList.add('cart-drawer-trigger');
+      const badge = ensureBadge(link);
+      badge.textContent = cartCount();
+      badge.classList.toggle('is-empty', cartCount() === 0);
+    });
+
+    const headerCount = document.getElementById('cartDrawerHeaderCount');
+    if (headerCount) headerCount.textContent = cartCount();
+  }
+
+  function renderCart() {
+    updateBadges();
+    const subtotal = cartSubtotal();
+    document.getElementById('cartDrawerSubtotal').textContent = money(subtotal);
+    document.getElementById('cartDrawerTotal').textContent = money(subtotal);
+    if (checkoutTotal) checkoutTotal.textContent = money(subtotal);
+    if (checkoutBtn) checkoutBtn.textContent = 'Place Order (' + money(subtotal) + ')';
+
+    if (!cartItems.length) {
+      body.innerHTML = `
+        <div class="cart-empty-state">
+          <i class="fa fa-shopping-bag"></i>
+          <h3 class="h5 mb-0">Your cart is empty</h3>
+          <p class="mb-2">Add something delicious from the menu.</p>
+          <a class="btn btn-outline-primary cart-menu-btn" href="menu.php">Browse Menu</a>
+        </div>
+      `;
+      footer.style.display = 'none';
+      return;
+    }
+
+    footer.style.display = '';
+    body.innerHTML = cartItems.map((item, index) => `
+      <div class="cart-drawer-item" data-index="${index}">
+        <img src="${itemImage(item)}" alt="${escapeHtml(itemName(item))}">
+        <div>
+          <h3 class="cart-item-name">${escapeHtml(itemName(item))}</h3>
+          <p class="cart-item-price">${money(item.price)} each</p>
+          <div class="cart-item-actions">
+            <div class="cart-qty-control" aria-label="Quantity">
+              <button class="cart-qty-btn" type="button" data-cart-action="decrease" data-index="${index}">-</button>
+              <span class="cart-qty-value">${parseInt(item.quantity, 10) || 1}</span>
+              <button class="cart-qty-btn" type="button" data-cart-action="increase" data-index="${index}">+</button>
+            </div>
+            <strong class="cart-item-total">${money(itemTotal(item))}</strong>
+          </div>
+          <button class="cart-remove-btn mt-2" type="button" data-cart-action="remove" data-index="${index}">
+            <i class="fa fa-trash"></i> Remove
+          </button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function escapeHtml(value) {
+    const div = document.createElement('div');
+    div.textContent = value;
+    return div.innerHTML;
+  }
+
+  function openDrawer() {
+    drawer.classList.add('open');
+    backdrop.classList.add('open');
+    drawer.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('cart-drawer-locked');
+    refreshCart();
+  }
+
+  function closeDrawer() {
+    drawer.classList.remove('open');
+    backdrop.classList.remove('open');
+    drawer.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('cart-drawer-locked');
+  }
+
+  function postCart(data) {
+    return fetch(cartEndpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams(data)
+    }).then(response => response.json());
+  }
+
+  function refreshCart() {
+    return postCart({ ajax_action: 'get_cart' }).then(data => {
+      if (data.success) {
+        cartItems = Array.isArray(data.data) ? data.data : [];
+        renderCart();
+      }
+    }).catch(() => renderCart());
+  }
+
+  function updateQuantity(index, quantity) {
+    quantity = Math.max(1, parseInt(quantity, 10) || 1);
+    return postCart({ ajax_action: 'update_quantity', index, quantity }).then(data => {
+      if (data.success) {
+        showSuccess('Quantity updated successfully.', 'Cart updated');
+        return refreshCart();
+      }
+      showError(data.message || 'Could not update quantity.', 'Update failed');
+    });
+  }
+
+  function removeItem(index) {
+    return postCart({ ajax_action: 'remove_item', index }).then(data => {
+      if (data.success) {
+        showSuccess(data.message || 'Item removed from cart.', 'Item deleted');
+        return refreshCart();
+      }
+      showError(data.message || 'Could not remove item.', 'Delete failed');
+    });
+  }
+
+  function clearCart() {
+    if (!cartItems.length || !confirm('Clear all items from your cart?')) return;
+    postCart({ ajax_action: 'clear_cart' }).then(data => {
+      if (data.success) {
+        showSuccess(data.message || 'Cart cleared.', 'Cart cleared');
+        refreshCart();
+      } else {
+        showError(data.message || 'Could not clear cart.', 'Clear failed');
+      }
+    });
+  }
+
+  function showSuccess(message, title = 'Success') {
+    if (window.ToastNotifications) ToastNotifications.success(message, { title });
+  }
+
+  function showError(message, title = 'Something went wrong') {
+    if (window.ToastNotifications) ToastNotifications.error(message, { title });
+    else alert(message);
+  }
+
+  function showWarning(message, title = 'Please check') {
+    if (window.ToastNotifications) ToastNotifications.warning(message, { title });
+    else alert(message);
+  }
+
+  function showInfo(message, title = 'Notice') {
+    if (window.ToastNotifications) ToastNotifications.info(message, { title });
+  }
+
+  document.addEventListener('click', function (event) {
+    const cartLink = event.target.closest('a[href$="cart.php"], #shoppingbutton, #shoppingbuttonMobile');
+    if (cartLink) {
+      event.preventDefault();
+      openDrawer();
+      return;
+    }
+
+    const cartButton = event.target.closest('[data-cart-action]');
+    if (!cartButton) return;
+
+    const index = parseInt(cartButton.dataset.index, 10);
+    const item = cartItems[index];
+    if (!item) return;
+
+    if (cartButton.dataset.cartAction === 'increase') {
+      updateQuantity(index, (parseInt(item.quantity, 10) || 1) + 1);
+    }
+
+    if (cartButton.dataset.cartAction === 'decrease') {
+      updateQuantity(index, (parseInt(item.quantity, 10) || 1) - 1);
+    }
+
+    if (cartButton.dataset.cartAction === 'remove') {
+      removeItem(index);
+    }
+  });
+
+  document.addEventListener('submit', function (event) {
+    const addForm = event.target.closest('form[action*="includes/cart.php?action=add"]');
+    if (!addForm) return;
+
+    event.preventDefault();
+    fetch(addForm.action, {
+      method: 'POST',
+      body: new FormData(addForm)
+    }).then(response => {
+      if (response.redirected && response.url.includes('login.php')) {
+        showWarning('Please login to add items to your cart.', 'Login required');
+        window.location.href = response.url;
+        return;
+      }
+      showSuccess('Item added to your cart.', 'Added to cart');
+      openDrawer();
+    }).catch(() => showError('Could not add item to cart.', 'Add failed'));
+  });
+
+  closeBtn?.addEventListener('click', closeDrawer);
+  backdrop?.addEventListener('click', closeDrawer);
+  clearBtn?.addEventListener('click', clearCart);
+
+  document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape') closeDrawer();
+  });
+
+  checkoutForm?.addEventListener('submit', function (event) {
+    event.preventDefault();
+    if (!checkoutForm.checkValidity()) {
+      checkoutForm.reportValidity();
+      showWarning('Please enter a valid 10-digit mobile number and delivery address.', 'Checkout details needed');
+      return;
+    }
+
+    if (!cartItems.length) {
+      showWarning('Your cart is empty. Add an item before checkout.', 'Cart is empty');
+      return;
+    }
+
+    const formData = new FormData(checkoutForm);
+    formData.append('ajax_action', 'checkout');
+    const originalText = checkoutBtn.textContent;
+    checkoutBtn.textContent = 'Processing...';
+    checkoutBtn.disabled = true;
+    showInfo('We are placing your order now.', 'Processing order');
+
+    fetch(cartEndpoint, { method: 'POST', body: formData })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          showSuccess(data.message || 'Order placed successfully!', 'Order confirmed');
+          cartItems = [];
+          renderCart();
+          setTimeout(() => {
+            window.location.href = data.redirect || 'myorder.php';
+          }, 1200);
+        } else {
+          showError(data.message || 'Could not place order.', 'Checkout failed');
+        }
+      })
+      .catch(error => showError('Error processing order: ' + error.message, 'Checkout error'))
+      .finally(() => {
+        checkoutBtn.textContent = originalText;
+        checkoutBtn.disabled = false;
+      });
+  });
+
+  renderCart();
+})();

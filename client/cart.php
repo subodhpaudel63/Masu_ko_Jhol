@@ -46,23 +46,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_action'])) {
                 $index = intval($_POST['index']);
                 $quantity = intval($_POST['quantity']);
                 
-                // Log for debugging
-                error_log("Update quantity: index=$index, quantity=$quantity");
-                error_log("Cart before: " . print_r($_SESSION['cart'], true));
-                
                 if (isset($_SESSION['cart'][$index]) && $quantity > 0) {
                     $_SESSION['cart'][$index]['quantity'] = $quantity;
                     $_SESSION['cart'][$index]['total'] = $_SESSION['cart'][$index]['price'] * $quantity;
                     $response['success'] = true;
                     $response['message'] = 'Quantity updated';
-                    error_log("Quantity updated successfully for index $index");
                 } else {
                     $response['message'] = "Item not found at index $index or invalid quantity $quantity";
-                    error_log("Failed to update quantity: index=$index, quantity=$quantity");
                 }
             } else {
                 $response['message'] = "Cart session not found";
-                error_log("Cart session not found");
             }
             break;
             
@@ -71,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_action'])) {
                 $index = intval($_POST['index']);
                 if (isset($_SESSION['cart'][$index])) {
                     unset($_SESSION['cart'][$index]);
-                    $_SESSION['cart'] = array_values($_SESSION['cart']); // Reindex array
+                    $_SESSION['cart'] = array_values($_SESSION['cart']);
                     $response['success'] = true;
                     $response['message'] = 'Item removed from cart';
                     $response['count'] = count($_SESSION['cart']);
@@ -91,12 +84,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_action'])) {
             
         case 'checkout':
             if (!empty($_SESSION['cart'])) {
-                // Process checkout - create orders for each cart item
                 $email = $user['email'] ?? '';
                 $mobile = trim($_POST['mobile'] ?? '');
                 $address = trim($_POST['address'] ?? '');
                 
-                // Validate required fields
                 if (empty($email) || empty($mobile) || empty($address)) {
                     $response['message'] = 'Missing required checkout information';
                     break;
@@ -111,7 +102,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_action'])) {
                 $error_occurred = false;
                 
                 foreach ($_SESSION['cart'] as $item) {
-                    // Validate item data
                     if (!isset($item['menu_id']) || !isset($item['name']) || !isset($item['quantity']) || 
                         !isset($item['price']) || !isset($item['total'])) {
                         error_log('Invalid item data in cart: ' . print_r($item, true));
@@ -154,13 +144,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_action'])) {
                 }
                 
                 if ($success_count > 0 && !$error_occurred) {
-                    $_SESSION['cart'] = []; // Clear cart after successful checkout
+                    $_SESSION['cart'] = [];
                     $response['success'] = true;
                     $response['message'] = 'Order placed successfully!';
-                    $response['redirect'] = 'myorder.php'; // Add redirect URL
-                    
-                    // Log successful cart orders
-                    error_log("Cart Order placed successfully - Success count: " . $success_count . ", Email: " . $email);
+                    $response['redirect'] = 'myorder.php';
                 } else {
                     $response['message'] = 'Error placing order' . ($error_occurred ? ': Database error occurred' : '');
                 }
@@ -174,553 +161,140 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_action'])) {
     exit;
 }
 
-// Reindex cart to ensure numeric indices for JavaScript
 $cart = array_values($_SESSION['cart'] ?? []);
-
-// Log cart contents for debugging (only for checkout issues)
-if (isset($_POST['ajax_action']) && $_POST['ajax_action'] === 'checkout') {
-    error_log('Cart contents at checkout: ' . print_r($cart, true));
-    error_log('POST data at checkout: ' . print_r($_POST, true));
-}
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>Cart | Masu Ko Jhol</title>
-    <link rel="stylesheet" href="../assets/css/style.css" />
-        <!-- Include toast styles -->
-        <link rel="stylesheet" href="../assets/css/toast_styles.css" />
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <style>
-    body { background:#f8f9fa; }
-    .cart-container { 
-        background: white; 
-        border-radius: 15px; 
-        box-shadow: 0 0 30px rgba(0,0,0,0.1); 
-        margin: 2rem 0; 
-        padding: 2rem; 
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Cart | Masu Ko Jhol</title>
+  <link rel="stylesheet" href="../assets/css/style.css" />
+  <link rel="stylesheet" href="../assets/css/toast_styles.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+  <style>
+    body {
+      background: #f8f8f6;
+      min-height: 100vh;
     }
-    .cart-item { 
-        border-bottom: 1px solid #eee; 
-        padding: 1.5rem 0; 
+
+    .cart-page-shell {
+      min-height: 70vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 48px 18px;
     }
-    .cart-item:last-child { 
-        border-bottom: none; 
+
+    .cart-page-shell h1 {
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      font-weight: 900;
+      color: #202020;
     }
-    .item-image { 
-        width: 100px; 
-        height: 100px; 
-        object-fit: cover; 
-        border-radius: 10px; 
+
+    .cart-page-shell p {
+      color: #707070;
+      max-width: 520px;
+      margin: 10px auto 24px;
     }
-    .quantity-input { 
-        width: 80px; 
-        text-align: center; 
+
+    .cart-page-actions {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
     }
-    .btn-danger-outline { 
-        border: 2px solid #dc3545; 
-        color: #dc3545; 
-        background: transparent; 
+
+    .btn-cart-open {
+      background: #f05a22;
+      border-color: #f05a22;
+      color: #fff;
+      font-weight: 800;
     }
-    .btn-danger-outline:hover { 
-        background: #dc3545; 
-        color: white; 
+
+    .btn-cart-open:hover {
+      background: #d94d1b;
+      border-color: #d94d1b;
+      color: #fff;
     }
-    .summary-card { 
-        background: linear-gradient(135deg, #ff6a00, #d32f2f); 
-        color: white; 
-        border-radius: 15px; 
-        padding: 2rem; 
-    }
-    </style>
+  </style>
 </head>
 <body>
-    <div class="loader">
-        <i class="fas fa-utensils loader-icone"></i>
-        <p>Masu Ko Jhol</p>
-        <div class="loader-ellipses">
-            <span></span>
-            <span></span>
-            <span></span>
-        </div>
+  <div class="loader">
+    <i class="fas fa-utensils loader-icone"></i>
+    <p>Masu Ko Jhol</p>
+    <div class="loader-ellipses">
+      <span></span>
+      <span></span>
+      <span></span>
     </div>
+  </div>
 
-    <header>
-        <div class="container header my-3 d-none d-lg-flex">
-            <div class="logo">
-                <a href="./index.php">
-                    <i class="fa fa-utensils me-3"></i>
-                    <h1 class="mb-0">Masu Ko Jhol</h1>
-                </a>
-            </div>
-            <div class="menus">
-                <ul class="d-flex mb-0">
-                    <li class="list-unstyled py-2">
-                        <a class="text-decoration-none text-uppercase p-4" href="./index.php"
-                          >Home</a
-                        >
-                    </li>
-                    <li class="list-unstyled py-2">
-                        <a class="text-decoration-none text-uppercase p-4" href="./aboutus.php"
-                          >About</a
-                        >
-                    </li>
-                    <li class="list-unstyled py-2">
-                        <a class="text-decoration-none text-uppercase p-4" href="./menu.php"
-                          >Menu</a
-                        >
-                    </li>
-                    <li class="list-unstyled py-2">
-                        <a class="text-decoration-none text-uppercase p-4" href="./myorder.php"
-                          >My Order</a>
-                    </li>
-                    <?php if (!$user): ?>
-                    <li class="list-unstyled py-2">
-                        <a class="btn btn-gradient" href="<?php echo url('/login.php'); ?>">Login</a>
-                    </li>
-                    <?php endif; ?>
-                    <li class="list-unstyled py-2">
-                        <a class="text-decoration-none text-uppercase p-4" href="./contactus.php"
-                          >Contact</a
-                        >
-                    </li>
-                </ul>
-            </div>
-            <div class="icons d-flex align-items-center">
-                <a class="text-decoration-none" id="searchBtn" href="#"><i class="fa fa-search me-3"></i></a>
-                <a class="text-decoration-none" id="shoppingbutton" href="./cart.php"><i class="fa fa-shopping-bag me-3"></i></a>
-                <?php if ($user): ?>
-                <div class="dropdown">
-                    <a class="d-flex align-items-center text-decoration-none dropdown-toggle" href="#" role="button" id="profileMenu" data-bs-toggle="dropdown" aria-expanded="false">
-                        <img src="<?php echo url($profileImg); ?>" alt="profile" class="rounded-circle" style="width:36px;height:36px;object-fit:cover;">
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileMenu">
-                        <li><h6 class="dropdown-header"><?php echo htmlspecialchars($user['email'] ?? ''); ?></h6></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="./update_password.php"><i class="fa fa-key me-2"></i>Update Password</a></li>
-                        <li><a class="dropdown-item" href="<?php echo url('./includes/logout.php'); ?>"><i class="fa fa-right-from-bracket me-2"></i>Logout</a></li>
-                    </ul>
-                </div>
-                <?php endif; ?>
-            </div>
+  <header>
+    <div class="container header my-3 d-none d-lg-flex">
+      <div class="logo">
+        <a href="./index.php">
+          <i class="fa fa-utensils me-3"></i>
+          <h1 class="mb-0">Masu Ko Jhol</h1>
+        </a>
+      </div>
+      <div class="menus">
+        <ul class="d-flex mb-0">
+          <li class="list-unstyled py-2"><a class="text-decoration-none text-uppercase p-4" href="./index.php">Home</a></li>
+          <li class="list-unstyled py-2"><a class="text-decoration-none text-uppercase p-4" href="./aboutus.php">About</a></li>
+          <li class="list-unstyled py-2"><a class="text-decoration-none text-uppercase p-4" href="./menu.php">Menu</a></li>
+          <li class="list-unstyled py-2"><a class="text-decoration-none text-uppercase p-4" href="./myorder.php">My Order</a></li>
+          <li class="list-unstyled py-2"><a class="text-decoration-none text-uppercase p-4" href="./contactus.php">Contact</a></li>
+        </ul>
+      </div>
+      <div class="icons d-flex align-items-center">
+        <a class="text-decoration-none" id="searchBtn" href="#"><i class="fa fa-search me-3"></i></a>
+        <a class="text-decoration-none" id="shoppingbutton" href="./cart.php"><i class="fa fa-shopping-bag me-3"></i></a>
+        <div class="dropdown">
+          <a class="d-flex align-items-center text-decoration-none dropdown-toggle" href="#" role="button" id="profileMenu" data-bs-toggle="dropdown" aria-expanded="false">
+            <img src="<?php echo url($profileImg); ?>" alt="profile" class="rounded-circle" style="width:36px;height:36px;object-fit:cover;">
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileMenu">
+            <li><h6 class="dropdown-header"><?php echo htmlspecialchars($user['email'] ?? ''); ?></h6></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="./update_password.php"><i class="fa fa-key me-2"></i>Update Password</a></li>
+            <li><a class="dropdown-item" href="<?php echo url('includes/logout.php'); ?>"><i class="fa fa-right-from-bracket me-2"></i>Logout</a></li>
+          </ul>
         </div>
-
-        <div
-          class="d-flex justify-content-around py-3 align-items-center d-lg-none"
-        >
-          <div id="hamburger">
-            <i class="fa fa-2x fa-bars me-3 text-white"></i>
-          </div>
-          <div class="mobile-nav-logo">
-            <div class="logo">
-              <a href="./index.php">
-                <i class="fa fa-utensils me-3 text-white"></i>
-                <h1 class="mb-0 text-white">Masu Ko Jhol</h1>
-              </a>
-            </div>
-          </div>
-          <div class="mobile-nav-icons">
-            <div class="icons">
-              <a class="text-decoration-none" id="searchBtnMobile" href="#">
-                <i class="fa fa-search me-3 text-white"></i>
-              </a>
-              <a class="text-decoration-none" id="shoppingbuttonMobile" href="./cart.php">
-                <i class="fa fa-shopping-bag me-3 text-white"></i>
-              </a>
-            </div>
-          </div>
-          <div
-            class="position-fixed w-75 bg-white h-100 top-0 start-0"
-            id="mobile-menu"
-          >
-            <div
-              id="hamburger-cross"
-              class="d-flex justify-content-end align-items-center py-2"
-            >
-              <i class="fa fa-2x fa-times me-3"></i>
-            </div>
-            <div class="menus">
-              <ul class="d-flex flex-column ps-2 mb-0 mt-4">
-                <li class="list-unstyled py-2">
-                  <a
-                    class="text-dark text-decoration-none text-uppercase p-4"
-                    href="./index.php"
-                    >Home</a
-                  >
-                </li>
-                <li class="list-unstyled py-2">
-                  <a
-                    class="text-dark text-decoration-none text-uppercase p-4"
-                    href="./aboutus.php"
-                    >About</a
-                  >
-                </li>
-                <li class="list-unstyled py-2">
-                  <a
-                    class="text-dark text-decoration-none text-uppercase p-4"
-                    href="./menu.php"
-                    >Menu</a
-                  >
-                </li>
-                <li class="list-unstyled py-2">
-                  <a
-                    class="text-dark text-decoration-none text-uppercase p-4"
-                    href="./myorder.php"
-                    >My Order</a
-                  >
-                </li>
-                <li class="list-unstyled py-2">
-                  <a
-                    class="text-dark text-decoration-none text-uppercase p-4"
-                    href="./contactus.php"
-                    >Contact</a
-                  >
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-    </header>
-
-    <div class="container mt-4">
-        <h2 class="text-center mb-4">Your Shopping Cart</h2>
-        
-        <?php if (empty($cart)): ?>
-            <div class="cart-container text-center py-5">
-                <i class="bi bi-cart-x" style="font-size: 5rem; color: #ccc;"></i>
-                <h3 class="mt-3">Your cart is empty</h3>
-                <p class="text-muted">Add some delicious items from our menu!</p>
-                <a href="menu.php" class="btn btn-orange">Browse Menu</a>
-            </div>
-        <?php else: ?>
-            <div class="row">
-                <div class="col-lg-8">
-                    <div class="cart-container">
-                        <h4>Items in Cart (<?php echo count($cart); ?>)</h4>
-                        <?php foreach ($cart as $index => $item): ?>
-                        <div class="cart-item">
-                            <div class="row align-items-center">
-                                <div class="col-md-2">
-                                    <img src="<?php echo $item['image'] ? './' . ltrim($item['image'], '/') : './assets/images/menu/menu-item-1.png'; ?>" 
-                                         alt="<?php echo htmlspecialchars($item['name'] ?? $item['menu_name']); ?>"
-                                         class="item-image">
-                                </div>
-                                <div class="col-md-4">
-                                    <h5><?php echo htmlspecialchars($item['name'] ?? $item['menu_name']); ?></h5>
-                                    <p class="text-muted" data-price="<?php echo $item['price']; ?>">रु<?php echo number_format((float)$item['price'], 2); ?> each</p>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="input-group">
-                                        <button class="btn btn-outline-secondary" type="button" 
-                                                onclick="updateQuantity(<?php echo $index; ?>, -1)">-</button>
-                                        <input type="number" class="form-control quantity-input" 
-                                               value="<?php echo $item['quantity']; ?>" 
-                                               min="1" onchange="updateQuantity(<?php echo $index; ?>, 0, this.value)">
-                                        <button class="btn btn-outline-secondary" type="button" 
-                                                onclick="updateQuantity(<?php echo $index; ?>, 1)">+</button>
-                                    </div>
-                                </div>
-                                <div class="col-md-2">
-                                    <strong class="item-total">रु<?php echo number_format((float)($item['total'] ?? ($item['price'] * $item['quantity'])), 2); ?></strong>
-                                </div>
-                                <div class="col-md-1">
-                                    <button class="btn btn-danger-outline" onclick="removeItem(<?php echo $index; ?>)">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <?php endforeach; ?>
-                        
-                        <div class="d-flex justify-content-between mt-3">
-                            <button class="btn btn-outline-danger" onclick="clearCart()">
-                                <i class="bi bi-cart-x"></i> Clear Cart
-                            </button>
-                            <a href="menu.php" class="btn btn-outline-primary">
-                                <i class="bi bi-plus-circle"></i> Add More Items
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-lg-4">
-                    <div class="summary-card">
-                        <h4>Order Summary</h4>
-                        <hr class="text-white">
-                        <div class="d-flex justify-content-between mb-2">
-                            <span>Subtotal:</span>
-                            <?php 
-                            $subtotal = 0;
-                            foreach ($cart as $item) {
-                                $subtotal += $item['total'] ?? ($item['price'] * $item['quantity']);
-                            }
-                            ?>
-                            <span class="subtotal-amount">रु<?php echo number_format($subtotal, 2); ?></span>
-                        </div>
-                        <div class="d-flex justify-content-between mb-2">
-                            <span>Delivery:</span>
-                            <span>Free</span>
-                        </div>
-                        <hr class="text-white">
-                        <div class="d-flex justify-content-between mb-3">
-                            <h5>Total:</h5>
-                            <?php 
-                            $total = 0;
-                            foreach ($cart as $item) {
-                                $total += $item['total'] ?? ($item['price'] * $item['quantity']);
-                            }
-                            ?>
-                            <h5 class="total-amount">रु<?php echo number_format($total, 2); ?></h5>
-                        </div>
-                        <button class="btn btn-light w-100" data-bs-toggle="modal" data-bs-target="#checkoutModal">
-                            Proceed to Checkout
-                        </button>
-                    </div>
-                </div>
-            </div>
-        <?php endif; ?>
+      </div>
     </div>
+  </header>
 
-    <!-- Checkout Modal -->
-    <div class="modal fade" id="checkoutModal" tabindex="-1" aria-labelledby="checkoutModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="checkoutModalLabel">Delivery Information</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form id="checkoutForm">
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="mobile" class="form-label">Mobile Number *</label>
-                            <input type="tel" class="form-control" id="mobile" name="mobile" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="address" class="form-label">Delivery Address *</label>
-                            <textarea class="form-control" id="address" name="address" rows="3" required></textarea>
-                        </div>
-                        <div class="alert alert-info">
-                            <i class="bi bi-info-circle"></i> 
-                            Total amount: <strong class="modal-subtotal">रु<?php echo number_format($total, 2); ?></strong>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-success" id="checkoutBtn">
-                            Place Order (रु<?php echo number_format($total, 2); ?>)
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
+  <main class="cart-page-shell">
+    <div>
+      <h1>Your cart is ready in a drawer</h1>
+      <p>Review items, adjust quantity, clear the cart, or checkout without leaving the page.</p>
+      <div class="cart-page-actions">
+        <a class="btn btn-outline-secondary px-4" href="menu.php">Browse Menu</a>
+        <a class="btn btn-cart-open px-4" id="cartPageOpenButton" href="cart.php">Open Cart</a>
+      </div>
     </div>
+  </main>
 
-    <?php include_once __DIR__ . '/../footer.php'; ?>
+  <?php include_once __DIR__ . '/../includes/cart_drawer.php'; ?>
+  <?php include_once __DIR__ . '/../footer.php'; ?>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Include toast notifications JS -->
-    <script src="../assets/js/toast_notifications.js"></script>
-    <script>
-      // Check for session messages and show toast
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../assets/js/toast_notifications.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('cartPageOpenButton')?.click();
       <?php if (isset($_SESSION['msg'])): $m = $_SESSION['msg']; unset($_SESSION['msg']); ?>
         const messageType = '<?php echo $m['type']; ?>';
         const messageText = <?php echo json_encode(htmlspecialchars($m['text'])); ?>;
-        
-        if (messageType === 'success') {
-          ToastNotifications.success(messageText);
-        } else {
-          ToastNotifications.error(messageText);
+        if (window.ToastNotifications) {
+          messageType === 'success' ? ToastNotifications.success(messageText) : ToastNotifications.error(messageText);
         }
       <?php endif; ?>
-        function updateQuantity(index, change, newQuantity = null) {
-            let inputs = document.querySelectorAll('.quantity-input');
-            let input = inputs[index];
-            let currentValue = parseInt(input.value);
-            let quantity = newQuantity ? parseInt(newQuantity) : (currentValue + change);
-            
-            if (quantity < 1) quantity = 1;
-            
-            input.value = quantity;
-            
-            fetch('cart.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: 'ajax_action=update_quantity&index=' + index + '&quantity=' + quantity
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Update the total for this item
-                    const itemRow = input.closest('.cart-item');
-                    const priceElement = itemRow.querySelector('[data-price]');
-                    const totalElement = itemRow.querySelector('.item-total');
-                    
-                    if (priceElement && totalElement) {
-                        const price = parseFloat(priceElement.getAttribute('data-price'));
-                        const newTotal = price * quantity;
-                        totalElement.textContent = 'रु' + newTotal.toFixed(2);
-                        updateCartSummary();
-                    }
-                } else {
-                    // Show error message
-                    ToastNotifications.error('Failed to update quantity: ' + (data.message || 'Unknown error'));
-                    // Revert the input value
-                    input.value = currentValue;
-                }
-            }).catch(error => {
-                console.error('Error updating quantity:', error);
-                // Show error message
-                ToastNotifications.error('Error updating quantity: ' + error.message);
-                // Revert the input value
-                input.value = currentValue;
-            });
-        }
-        
-        function updateCartSummary() {
-            // Recalculate cart totals
-            let totalSum = 0;
-            document.querySelectorAll('.item-total').forEach(element => {
-                let text = element.textContent.replace('रु', '').replace(/,/g, '');
-                totalSum += parseFloat(text) || 0;
-            });
-            
-            // Update subtotal and total in the summary card
-            let subtotalElement = document.querySelector('.subtotal-amount');
-            if(subtotalElement) {
-                subtotalElement.textContent = 'रु' + totalSum.toFixed(2);
-            }
-            
-            let totalAmountElement = document.querySelector('.total-amount');
-            if(totalAmountElement) {
-                totalAmountElement.textContent = 'रु' + totalSum.toFixed(2);
-            }
-            
-            // Update the amounts in the modal
-            let modalSubtotalElement = document.querySelector('.modal-subtotal');
-            if(modalSubtotalElement) {
-                modalSubtotalElement.textContent = 'रु' + totalSum.toFixed(2);
-            }
-            
-            let checkoutBtn = document.getElementById('checkoutBtn');
-            if(checkoutBtn) {
-                checkoutBtn.textContent = 'Place Order (रु' + totalSum.toFixed(2) + ')';
-            }
-        }
-        
-        
-        
-        function removeItem(index) {
-            if (confirm('Are you sure you want to remove this item?')) {
-                fetch('cart.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: 'ajax_action=remove_item&index=' + index
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Remove the item from DOM
-                        const itemRow = document.querySelectorAll('.cart-item')[index];
-                        if (itemRow) {
-                            itemRow.remove();
-                            updateCartSummary();
-                            // Show success message
-                            ToastNotifications.success(data.message);
-                        }
-                        // If cart is empty, reload to show empty cart message
-                        if (document.querySelectorAll('.cart-item').length === 0) {
-                            location.reload();
-                        }
-                    } else {
-                        ToastNotifications.error(data.message || 'Failed to remove item');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error removing item:', error);
-                    ToastNotifications.error('Error removing item: ' + error.message);
-                });
-            }
-        }
-        
-        function clearCart() {
-            if (confirm('Are you sure you want to clear your cart?')) {
-                fetch('cart.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: 'ajax_action=clear_cart'
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Clear all items from DOM
-                        document.querySelectorAll('.cart-item').forEach(item => item.remove());
-                        updateCartSummary();
-                        // Show success message
-                        ToastNotifications.success(data.message);
-                        // Reload after a short delay to show empty cart
-                        setTimeout(() => {
-                            location.reload();
-                        }, 1500);
-                    } else {
-                        ToastNotifications.error(data.message || 'Failed to clear cart');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error clearing cart:', error);
-                    ToastNotifications.error('Error clearing cart: ' + error.message);
-                });
-            }
-        }
-        
-        document.getElementById('checkoutForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const formData = new FormData(this);
-            formData.append('ajax_action', 'checkout');
-            
-            const checkoutBtn = document.getElementById('checkoutBtn');
-            const originalText = checkoutBtn.textContent;
-            
-            checkoutBtn.textContent = 'Processing...';
-            checkoutBtn.disabled = true;
-            
-            fetch('cart.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    ToastNotifications.success(data.message);
-                    const redirectUrl = data.redirect || 'myorder.php';
-                    setTimeout(() => {
-                        window.location.href = redirectUrl;
-                    }, 1500); // Wait 1.5 seconds before redirecting to let user see the toast
-                } else {
-                    ToastNotifications.error('Error: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                ToastNotifications.error('Error processing order: ' + error.message);
-            })
-            .finally(() => {
-                checkoutBtn.textContent = originalText;
-                checkoutBtn.disabled = false;
-            });
-        });
-    </script>
+    });
+  </script>
 </body>
 </html>
