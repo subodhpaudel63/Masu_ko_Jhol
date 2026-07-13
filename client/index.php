@@ -819,48 +819,13 @@ Want to explore that next?
     
     <script>
       document.addEventListener('DOMContentLoaded', function() {
-        // Check for session messages and show toast
         <?php if (isset($_SESSION['msg'])): $m = $_SESSION['msg']; unset($_SESSION['msg']); ?>
-          const messageType = '<?php echo $m['type']; ?>';
-          const messageText = <?php echo json_encode(htmlspecialchars($m['text'])); ?>;
-          
-          if (messageType === 'success') {
-            ToastNotifications.success(messageText);
-          } else {
-            ToastNotifications.error(messageText);
-          }
+          window.MKJ_SESSION_MSG = {
+            type: '<?php echo $m['type']; ?>',
+            text: <?php echo json_encode(htmlspecialchars($m['text'])); ?>
+          };
+          mkjShowToastFromSession();
         <?php endif; ?>
-        
-        // Form submission handling
-        var bookingForm = document.getElementById('bookingForm');
-        var reservationDate = document.getElementById('reservationDate');
-        var today = new Date().toISOString().split('T')[0];
-
-        if (reservationDate) {
-          reservationDate.setAttribute('min', today);
-        }
-
-        if (bookingForm) {
-          bookingForm.addEventListener('submit', function(e) {
-            if (reservationDate && reservationDate.value < today) {
-              e.preventDefault();
-              reservationDate.value = '';
-              reservationDate.focus();
-              reservationDate.setCustomValidity('Please select today or a future date.');
-              reservationDate.reportValidity();
-              return;
-            }
-
-            if (reservationDate) {
-              reservationDate.setCustomValidity('');
-            }
-
-            // Form will submit normally, but we show a loading state
-            var submitBtn = bookingForm.querySelector('button[type="submit"]');
-            submitBtn.innerHTML = 'Booking...';
-            submitBtn.disabled = true;
-          });
-        }
       });
     </script>
   </body>

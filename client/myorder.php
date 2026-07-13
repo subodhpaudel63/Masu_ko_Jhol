@@ -399,17 +399,12 @@ if (isset($_COOKIE['user_img'])) {
         document.addEventListener('DOMContentLoaded', () => {
             fetchOrders();
             setInterval(fetchOrders, POLL_MS);
-            
-            // Check for session messages and show toast
             <?php if (isset($_SESSION['msg'])): $m = $_SESSION['msg']; unset($_SESSION['msg']); ?>
-              const messageType = '<?php echo $m['type']; ?>';
-              const messageText = <?php echo json_encode(htmlspecialchars($m['text'])); ?>;
-              
-              if (messageType === 'success') {
-                ToastNotifications.success(messageText);
-              } else {
-                ToastNotifications.error(messageText);
-              }
+              window.MKJ_SESSION_MSG = {
+                type: '<?php echo $m['type']; ?>',
+                text: <?php echo json_encode(htmlspecialchars($m['text'])); ?>
+              };
+              mkjShowToastFromSession();
             <?php endif; ?>
         });
     </script>

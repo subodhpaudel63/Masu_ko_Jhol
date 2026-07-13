@@ -140,7 +140,6 @@ $avg_order_value = $total_orders > 0 ? $total_revenue / $total_orders : 0;
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Analytics Dashboard - Masu Ko Jhol</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,0,0" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js">
   <link rel="stylesheet" href="../assets/css/adminstyle.css">
   <style>
     .analytics-container {
@@ -408,6 +407,7 @@ $avg_order_value = $total_orders > 0 ? $total_revenue / $total_orders : 0;
                    <div class="chart-container">
                        <canvas id="salesChart"></canvas>
                    </div>
+                   <script type="application/json" id="analyticsSalesData"><?php echo json_encode($sales_data); ?></script>
                </div>
 
                <!-- Order Status Distribution -->
@@ -416,6 +416,7 @@ $avg_order_value = $total_orders > 0 ? $total_revenue / $total_orders : 0;
                    <div class="chart-container">
                        <canvas id="orderStatusChart"></canvas>
                    </div>
+                   <script type="application/json" id="analyticsOrderStats"><?php echo json_encode($order_stats); ?></script>
                </div>
 
                <!-- Top Selling Items -->
@@ -559,114 +560,7 @@ $avg_order_value = $total_orders > 0 ? $total_revenue / $total_orders : 0;
    </div>
 
    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-   <script>
-       // Date filter functionality
-       function updateFilters() {
-           const dateRange = document.getElementById('dateRange').value;
-           const customFields = document.getElementById('customDateFields');
-           if (dateRange === 'custom') {
-               customFields.style.display = 'flex';
-           } else {
-               customFields.style.display = 'none';
-           }
-       }
-
-       function applyFilters() {
-           const dateRange = document.getElementById('dateRange').value;
-           let url = '?date_range=' + dateRange;
-           
-           if (dateRange === 'custom') {
-               const startDate = document.getElementById('startDate').value;
-               const endDate = document.getElementById('endDate').value;
-               url += '&start_date=' + startDate + '&end_date=' + endDate;
-           }
-           
-           window.location.href = url;
-       }
-
-       // Export functions
-       function exportCSV() {
-           const dateRange = document.getElementById('dateRange').value;
-           let url = 'export_csv.php?date_range=' + dateRange;
-           
-           if (dateRange === 'custom') {
-               const startDate = document.getElementById('startDate').value;
-               const endDate = document.getElementById('endDate').value;
-               url += '&start_date=' + startDate + '&end_date=' + endDate;
-           }
-           
-           window.location.href = url;
-       }
-
-       function exportPDF() {
-           alert('PDF export functionality requires additional libraries. CSV export is available.');
-       }
-
-       // Chart initialization
-       document.addEventListener('DOMContentLoaded', function() {
-           // Sales Chart
-           const salesCtx = document.getElementById('salesChart').getContext('2d');
-           const salesData = <?php echo json_encode($sales_data); ?>;
-           
-           new Chart(salesCtx, {
-               type: 'line',
-               data: {
-                   labels: salesData.map(item => item.date),
-                   datasets: [{
-                       label: 'Revenue (Rs)',
-                       data: salesData.map(item => item.revenue),
-                       borderColor: '#667eea',
-                       backgroundColor: 'rgba(102, 126, 234, 0.1)',
-                       tension: 0.4
-                   }, {
-                       label: 'Orders',
-                       data: salesData.map(item => item.order_count),
-                       borderColor: '#764ba2',
-                       backgroundColor: 'rgba(118, 75, 162, 0.1)',
-                       tension: 0.4
-                   }]
-               },
-               options: {
-                   responsive: true,
-                   maintainAspectRatio: false,
-                   scales: {
-                       y: {
-                           beginAtZero: true
-                       }
-                   }
-               }
-           });
-
-           // Order Status Chart
-           const statusCtx = document.getElementById('orderStatusChart').getContext('2d');
-           const orderStats = <?php echo json_encode($order_stats); ?>;
-           
-           new Chart(statusCtx, {
-               type: 'doughnut',
-               data: {
-                   labels: orderStats.map(item => item.status),
-                   datasets: [{
-                       data: orderStats.map(item => item.count),
-                       backgroundColor: [
-                           '#4CAF50',
-                           '#2196F3',
-                           '#FF9800',
-                           '#F44336'
-                       ]
-                   }]
-               },
-               options: {
-                   responsive: true,
-                   maintainAspectRatio: false,
-                   plugins: {
-                       legend: {
-                           position: 'bottom'
-                       }
-                   }
-               }
-           });
-       });
-   </script>
+   <script src="../assets/js/admin-pages.js"></script>
    <script src="../assets/js/adminscript.js"></script>
 </body>
 </html>

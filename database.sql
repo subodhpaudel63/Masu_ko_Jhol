@@ -128,11 +128,6 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `email`, `password`, `user_type`, `created_at`, `user_img`) VALUES
-(4, 'parivaibhav@gmail.com', '$2y$10$kcByzBxnoFOt6B8KYh1xaeooZv4n9cpBnFyazW.JvyBvf0srlcOB.', 'admin', '2025-05-29 05:18:46', 'assets/img/usersprofiles/uid0-175233498917f6401c.jpeg'),
-(9, 'demo@gmail.com', '$2y$10$Vqr6UyZuKDMzHK/y9ZLSrex6dPfICW7UEl1pnNyNR0UYW1SFXJoqO', 'user', '2025-06-01 09:24:25', 'assets/img/usersprofiles/uid0-175326867240317883.webp'),
-(14, 'example@gmail.com', '$2y$10$.E8e9Rf/9JHsZzXthtn9FefOXM2Stm3Em0msHKdwRAAO9hU9omY8C', 'user', '2025-07-04 09:33:27', '../assets/img/usersprofiles/profilepic.jpg'),
-(19, 'fake@gmail.com', '$2y$10$I5LVWlRA2BXMeZJSnDsyCerCsMSue1EChffupcxf.9ZCYc6aRevVy', 'user', '2025-07-23 10:10:07', 'assets/img/usersprofiles/uid0-1753265418f8b7a26c.jpeg');
-
 
 
 -- Suscribe table starts

@@ -669,21 +669,17 @@ if ($catResult) {
     <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
     <?php require_once __DIR__ . '/../config/bootstrap.php'; ?>
     <script src="<?php echo asset('js/script.js'); ?>"></script>
-    <!-- Include toast notifications JS -->
     <script src="<?php echo asset('js/toast_notifications.js'); ?>"></script>
     <script>
-      // Check for session messages and show toast
-      <?php if (isset($_SESSION['msg'])): $m = $_SESSION['msg']; unset($_SESSION['msg']); ?>
-        const messageType = '<?php echo $m['type']; ?>';
-        const messageText = <?php echo json_encode(htmlspecialchars($m['text'])); ?>;
-        
-        if (messageType === 'success') {
-          ToastNotifications.success(messageText);
-        } else {
-          ToastNotifications.error(messageText);
-        }
-      <?php endif; ?>
-    document.addEventListener('DOMContentLoaded', () => {
+      // Menu page bootstrap and Buy Now toast handling.
+      document.addEventListener('DOMContentLoaded', () => {
+        <?php if (isset($_SESSION['msg'])): $m = $_SESSION['msg']; unset($_SESSION['msg']); ?>
+          window.MKJ_SESSION_MSG = {
+            type: '<?php echo $m['type']; ?>',
+            text: <?php echo json_encode(htmlspecialchars($m['text'])); ?>
+          };
+          mkjShowToastFromSession();
+        <?php endif; ?>
 
         /* ── Toasts ── */
         document.querySelectorAll('.toast').forEach(t =>
@@ -818,10 +814,67 @@ if ($catResult) {
                 }
                 return;
             }
+            e.preventDefault();
 
-            if (window.ToastNotifications) {
-                ToastNotifications.info('We are placing your Buy Now order.', { title: 'Processing order' });
+            const submitBtn = form.querySelector('#confirm-buy');
+            const originalText = submitBtn ? submitBtn.textContent : '';
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Placing order...';
             }
+
+            const payload = new FormData(form);
+            fetch('../includes/menu_order.php', {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: payload
+            })
+            .then(async response => {
+                const data = await response.json().catch(() => null);
+                if (!response.ok || !data) {
+                    throw new Error('Unable to place order.');
+                }
+                return data;
+            })
+            .then(data => {
+                if (data.login_required && data.redirect) {
+                    if (window.ToastNotifications) {
+                        ToastNotifications.warning(data.message || 'Please login to place an order.', { title: 'Login required' });
+                    }
+                    window.location.href = data.redirect;
+                    return;
+                }
+
+                if (data.success) {
+                    if (window.ToastNotifications) {
+                        ToastNotifications.success(data.message || 'Order placed successfully!', { title: 'Order placed' });
+                    }
+                    const modalEl = document.getElementById('buyModal');
+                    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+                    modal.hide();
+                    form.reset();
+
+                    // Move the customer to My Orders after the success toast has had a moment to appear.
+                    window.setTimeout(() => {
+                        window.location.href = './myorder.php';
+                    }, 1200);
+                } else if (window.ToastNotifications) {
+                    ToastNotifications.error(data.message || 'Order failed. Please try again.', { title: 'Order failed' });
+                }
+            })
+            .catch(() => {
+                if (window.ToastNotifications) {
+                    ToastNotifications.error('Order failed. Please try again.', { title: 'Order failed' });
+                }
+            })
+            .finally(() => {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = originalText;
+                }
+            });
         });
     });
 </script>

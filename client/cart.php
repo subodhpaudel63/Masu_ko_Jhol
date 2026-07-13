@@ -174,53 +174,6 @@ $cart = array_values($_SESSION['cart'] ?? []);
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
-  <style>
-    body {
-      background: #f8f8f6;
-      min-height: 100vh;
-    }
-
-    .cart-page-shell {
-      min-height: 70vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 48px 18px;
-    }
-
-    .cart-page-shell h1 {
-      font-size: clamp(1.8rem, 4vw, 3rem);
-      font-weight: 900;
-      color: #202020;
-    }
-
-    .cart-page-shell p {
-      color: #707070;
-      max-width: 520px;
-      margin: 10px auto 24px;
-    }
-
-    .cart-page-actions {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .btn-cart-open {
-      background: #f05a22;
-      border-color: #f05a22;
-      color: #fff;
-      font-weight: 800;
-    }
-
-    .btn-cart-open:hover {
-      background: #d94d1b;
-      border-color: #d94d1b;
-      color: #fff;
-    }
-  </style>
 </head>
 <body>
   <div class="loader">
@@ -283,16 +236,16 @@ $cart = array_values($_SESSION['cart'] ?? []);
   <?php include_once __DIR__ . '/../footer.php'; ?>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="<?php echo asset('js/script.js'); ?>"></script>
   <script src="../assets/js/toast_notifications.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      document.getElementById('cartPageOpenButton')?.click();
       <?php if (isset($_SESSION['msg'])): $m = $_SESSION['msg']; unset($_SESSION['msg']); ?>
-        const messageType = '<?php echo $m['type']; ?>';
-        const messageText = <?php echo json_encode(htmlspecialchars($m['text'])); ?>;
-        if (window.ToastNotifications) {
-          messageType === 'success' ? ToastNotifications.success(messageText) : ToastNotifications.error(messageText);
-        }
+        window.MKJ_SESSION_MSG = {
+          type: '<?php echo $m['type']; ?>',
+          text: <?php echo json_encode(htmlspecialchars($m['text'])); ?>
+        };
+        mkjShowToastFromSession();
       <?php endif; ?>
     });
   </script>

@@ -721,6 +721,6 @@ document.addEventListener('click', function(event) {
 });
 </script>
 <!-- Note: adminscript.js removed to avoid conflicts with custom delete confirmation -->
-<script src="../assets/js/adminscript.js"></script>
+   <script src="../assets/js/adminscript.js"></script>
 </body>
 </html>

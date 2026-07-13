@@ -239,6 +239,123 @@ body {
   overflow-x: hidden;
 }
 
+/* Shared client helpers
+   These utilities support the page templates without duplicating repeated inline CSS. */
+.mkj-page-shell {
+  position: relative;
+}
+
+.mkj-hidden {
+  display: none !important;
+}
+
+.mkj-search-hidden {
+  display: none !important;
+}
+
+.mkj-section-muted {
+  color: var(--secondary-color);
+}
+
+.mkj-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+}
+
+.mkj-modal-card {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+  width: min(92vw, 640px);
+  max-height: min(86vh, 820px);
+  overflow: auto;
+}
+
+.mkj-toast-container {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 4000;
+}
+
+.mkj-toast {
+  border-radius: 14px;
+  padding: 0.9rem 1rem;
+  margin-bottom: 0.75rem;
+  background: rgba(255, 255, 255, 0.97);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.15);
+}
+
+.mkj-btn-primary {
+  background: var(--primary-color);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 0.85rem 1.4rem;
+}
+
+.mkj-btn-primary:hover {
+  filter: brightness(0.96);
+}
+
+.mkj-hero-banner {
+  background-size: cover;
+  background-position: center;
+  border-radius: 24px;
+}
+
+.mkj-inline-note {
+  font-size: 0.92rem;
+  color: var(--secondary-color);
+}
+
+/* Cart page shell */
+.cart-page-shell {
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 48px 18px;
+}
+
+.cart-page-shell h1 {
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  font-weight: 900;
+  color: #202020;
+}
+
+.cart-page-shell p {
+  color: #707070;
+  max-width: 520px;
+  margin: 10px auto 24px;
+}
+
+.cart-page-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btn-cart-open {
+  background: #f05a22;
+  border-color: #f05a22;
+  color: #fff;
+  font-weight: 800;
+}
+
+.btn-cart-open:hover {
+  background: #d94d1b;
+  border-color: #d94d1b;
+  color: #fff;
+}
+
 
 
 h1,

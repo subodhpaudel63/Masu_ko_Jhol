@@ -2,17 +2,33 @@
 session_start();
 include_once "db.php";
 require_once __DIR__ . '/auth_check.php';
-// Use the authenticated user's email instead of POST email
-$email = $_SESSION['user_email']; // Assuming the user's email is stored in the session
+
+$isAjax = isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+
+function respond_menu_order(array $payload, bool $isAjax): void {
+    if ($isAjax) {
+        header('Content-Type: application/json');
+        echo json_encode($payload);
+    } else {
+        $_SESSION['msg'] = [
+            'type' => $payload['success'] ? 'success' : 'error',
+            'text' => $payload['message'] ?? ($payload['success'] ? 'Order placed successfully!' : 'Order failed. Please try again.'),
+        ];
+    }
+    exit;
+}
 
 // Check if user is logged in
 $user = getUserFromCookie();
 
 // If user is not logged in, redirect to login
 if (!$user) {
-    $_SESSION['msg'] = ['type' => 'error', 'text' => 'Please login to place an order.'];
-    header('Location: /Masu%20Ko%20Jhol%28full%29/login.php?action=order_food');
-    exit;
+    respond_menu_order([
+        'success' => false,
+        'message' => 'Please login to place an order.',
+        'login_required' => true,
+        'redirect' => '/Masu%20Ko%20Jhol%28full%29/login.php?action=order_food',
+    ], $isAjax);
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -28,9 +44,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Basic validation
     if ($menu_id <= 0 || empty($menu_name) || $quantity <= 0 || $price <= 0 || $total_price <= 0 || empty($email) || !preg_match('/^[0-9]{10}$/', $mobile) || empty($address)) {
-        $_SESSION['msg'] = ['type' => 'error', 'text' => 'Invalid order data. Please fill in all fields correctly.'];
-        header('Location: ../client/index.php');
-        exit;
+        respond_menu_order([
+            'success' => false,
+            'message' => 'Invalid order data. Please fill in all fields correctly.',
+        ], $isAjax);
     }
 
     // Insert into DB
@@ -38,23 +55,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->bind_param("isdidsss", $menu_id, $menu_name, $price, $quantity, $total_price, $email, $mobile, $address);
 
     if ($stmt->execute()) {
-        $_SESSION['msg'] = ['type' => 'success', 'text' => 'Order placed successfully!'];
+        respond_menu_order([
+            'success' => true,
+            'message' => 'Order placed successfully!',
+            'order_id' => $stmt->insert_id,
+        ], $isAjax);
     } else {
-        $_SESSION['msg'] = ['type' => 'error', 'text' => 'Order failed. Please try again.'];
+        respond_menu_order([
+            'success' => false,
+            'message' => 'Order failed. Please try again.',
+        ], $isAjax);
     }
-
-    $stmt->close();
-    $conn->close();
-
-    // Redirect to client index page to display the message
-    header('Location: ../client/index.php');
-    exit;
 } else {
     // Invalid access
-    header('Location: ../client/index.php');
-    exit;
+    respond_menu_order([
+        'success' => false,
+        'message' => 'Invalid access.',
+    ], $isAjax);
 }
-// Redirect to myorder.php instead of index.php
-header('Location: myorder.php');
-exit();
 ?>

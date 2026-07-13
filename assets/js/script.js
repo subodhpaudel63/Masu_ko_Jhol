@@ -1,6 +1,79 @@
 AOS.init({
   offset: '140', // 50% viewport height ko offset
 });
+
+/* Shared client helpers
+   Central place for behaviors that appear across multiple front-end pages. */
+function mkjShowToastFromSession() {
+  if (!window.ToastNotifications || !window.MKJ_SESSION_MSG) return;
+  const msg = window.MKJ_SESSION_MSG;
+  if (!msg || !msg.text) return;
+  if (msg.type === 'success') {
+    ToastNotifications.success(msg.text);
+  } else if (msg.type === 'warning') {
+    ToastNotifications.warning(msg.text);
+  } else {
+    ToastNotifications.error(msg.text);
+  }
+  window.MKJ_SESSION_MSG = null;
+}
+
+function mkjSetMinDate(inputId) {
+  const input = document.getElementById(inputId);
+  if (!input) return;
+  input.setAttribute('min', new Date().toISOString().split('T')[0]);
+}
+
+function mkjBindFormBusyState(formSelector) {
+  const form = document.querySelector(formSelector);
+  if (!form) return;
+  form.addEventListener('submit', function () {
+    const submitBtn = this.querySelector('button[type="submit"]');
+    if (!submitBtn) return;
+    submitBtn.disabled = true;
+    submitBtn.dataset.originalText = submitBtn.textContent;
+    submitBtn.textContent = 'Processing...';
+  });
+}
+
+function mkjInitBookingForm() {
+  const bookingForm = document.getElementById('bookingForm');
+  const reservationDate = document.getElementById('reservationDate');
+  if (!bookingForm || !reservationDate) return;
+  const today = new Date().toISOString().split('T')[0];
+  reservationDate.setAttribute('min', today);
+  bookingForm.addEventListener('submit', function (e) {
+    if (reservationDate.value && reservationDate.value < today) {
+      e.preventDefault();
+      reservationDate.value = '';
+      reservationDate.focus();
+      reservationDate.setCustomValidity('Please select today or a future date.');
+      reservationDate.reportValidity();
+      return;
+    }
+    reservationDate.setCustomValidity('');
+    const submitBtn = bookingForm.querySelector('button[type="submit"]');
+    if (submitBtn) {
+      submitBtn.innerHTML = 'Booking...';
+      submitBtn.disabled = true;
+    }
+  });
+}
+
+function mkjOpenCartDrawer() {
+  const opener = document.getElementById('cartPageOpenButton');
+  if (!opener) return;
+  opener.addEventListener('click', function (e) {
+    e.preventDefault();
+    const drawerToggle = document.querySelector('#cart-drawer-open-button, .shopping-cart');
+    if (drawerToggle && drawerToggle.click) {
+      drawerToggle.click();
+      return;
+    }
+    const cart = document.querySelector('.shopping-cart');
+    if (cart) cart.style.right = '0';
+  });
+}
 document.addEventListener("DOMContentLoaded", function() {
   const loader = document.querySelector('.loader');
   setTimeout(() => {
@@ -118,6 +191,9 @@ document.addEventListener("DOMContentLoaded", function() {
       });
     });
   }
+
+  mkjShowToastFromSession();
+  mkjOpenCartDrawer();
 });
 
 // Header scroll behavior
@@ -219,6 +295,11 @@ $('.our-chefs .our-chef-slider-wrapper').slick({
       }
     }
   ]
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+  mkjBindFormBusyState('form');
+  mkjInitBookingForm();
 });
 
 /**
@@ -651,6 +732,4 @@ if(msgArea){
             window.history.replaceState({}, document.title, window.location.pathname);
         }
     };
-
-
 
