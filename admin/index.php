@@ -37,7 +37,7 @@ $shipping_orders = $shipping_orders_query->fetch_assoc()['shipping'];
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard </title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,0,0" />
-  <link rel="stylesheet" href="../assets/css/adminstyle.css">
+  <link rel="stylesheet" href="../assets/css/adminstyle.css?v=<?= filemtime(__DIR__ . '/../assets/css/adminstyle.css') ?>">
 </head>
 <body>
    <div class="container">
@@ -68,7 +68,7 @@ $shipping_orders = $shipping_orders_query->fetch_assoc()['shipping'];
               <span class="material-symbols-sharp">insights </span>
               <h3>Analytics</h3>
            </a>
-           <a href="myorder.php">
+           <a href="orders_page.php">
               <span class="material-symbols-sharp">mail_outline </span>
               <h3>Orders</h3>
               <span class="msg_count">14</span>

@@ -1,43 +1,42 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,500;0,600;0,700;0,800;1,600&display=swap');
-
-
-/* variables */
-
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-  --clr-primary: #7380ec;
-  --clr-danger: #ff7782;
-  --clr-success: #41f1b6;
-  --clr-white: #fff;
-  --clr-info-dark: #7d8da1;
-  --clr-info-light: #dce1eb;
-  --clr-dark: #363949;
-  --clr-warnig: #ff4edc;
-  --clr-light: rgba(132, 139, 200, 0.18);
-  --clr-primary-variant: #111e88;
-  --clr-dark-variant: #677483;
-  --clr-color-background: #f6f6f9;
+  --clr-primary: #f05a22;
+  --clr-primary-dark: #d84b16;
+  --clr-danger: #ff4757;
+  --clr-success: #2ed573;
+  --clr-white: #ffffff;
+  --clr-info-dark: #475569;
+  --clr-info-light: #f1f5f9;
+  --clr-dark: #1e293b;
+  --clr-warnig: #ffa502;
+  --clr-light: rgba(240, 90, 34, 0.08);
+  --clr-primary-variant: #c23616;
+  --clr-dark-variant: #64748b;
+  --clr-color-background: #f8f9fa;
+  --clr-border: #e2e8f0;
 
-  --card-border-radius: 2rem;
-  --border-radius-1: 0.4rem;
-  --border-radius-2: 0.8rem;
-  --border-radius-3: 1.2rem;
+  --card-border-radius: 1.2rem;
+  --border-radius-1: 0.5rem;
+  --border-radius-2: 0.75rem;
+  --border-radius-3: 1rem;
 
-  --card-padding: 1.8rem;
-  --padding-1: 1.2rem;
-  --box-shadow: 0 2rem 3rem var(--clr-light);
-
+  --card-padding: 1.5rem;
+  --padding-1: 1rem;
+  --box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
 }
 
 /* dark theme */
 .dark-theme-variables {
-  --clr-color-background: #181a1e;
-  --clr-white: #202528;
-  --clr-light: rgba(0, 0, 0, 0.4);
-  --clr-dark: #edeffd;
-  --clr-dark-variant: #677483;
-  --box-shadow: 0 2rem 3rem var(--clr-light)
+  --clr-color-background: #0f172a;
+  --clr-white: #1e293b;
+  --clr-light: rgba(255, 255, 255, 0.03);
+  --clr-dark: #f8fafc;
+  --clr-dark-variant: #94a3b8;
+  --clr-border: #334155;
+  --box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
 }
+
 
 
 
@@ -54,11 +53,11 @@
 body{
    width: 100vw;
    height: 100vh;
-   font-size: .7rem;
+   font-size: .88rem;
    user-select: none;
    overflow-x: hidden;
    background: var(--clr-color-background);
-   font-family: 'Poppins', sans-serif;
+   font-family: 'Outfit', sans-serif;
 }
 
 .container  {

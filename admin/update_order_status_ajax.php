@@ -14,26 +14,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!empty($raw) && json_last_error() === JSON_ERROR_NONE) {
         $order_id = intval($input['order_id'] ?? 0);
         $status = $input['status'] ?? '';
+        $admin_note = isset($input['admin_note']) ? (string)$input['admin_note'] : null;
     } else {
         $order_id = intval($_POST['order_id'] ?? 0);
         $status = $_POST['status'] ?? '';
+        $admin_note = isset($_POST['admin_note']) ? (string)$_POST['admin_note'] : null;
     }
 
     $allowed_status = ['Confirmed', 'Shipping', 'Ongoing', 'Delivering', 'Cancelled'];
 
     if ($order_id > 0 && in_array($status, $allowed_status)) {
 
-        $stmt = $conn->prepare("UPDATE orders SET status = ? WHERE order_id = ?");
+        if ($admin_note !== null) {
+            $stmt = $conn->prepare("UPDATE orders SET status = ?, admin_note = ? WHERE order_id = ?");
+            if ($stmt) {
+                $stmt->bind_param("ssi", $status, $admin_note, $order_id);
+            }
+        } else {
+            $stmt = $conn->prepare("UPDATE orders SET status = ? WHERE order_id = ?");
+            if ($stmt) {
+                $stmt->bind_param("si", $status, $order_id);
+            }
+        }
 
         if ($stmt) {
-
-            $stmt->bind_param("si", $status, $order_id);
 
             if ($stmt->execute()) {
 
                 $response = [
                     'success' => true,
-                    'message' => 'Order status updated successfully'
+                    'message' => 'Order updated successfully'
                 ];
 
             } else {

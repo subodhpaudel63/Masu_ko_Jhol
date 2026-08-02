@@ -11,6 +11,7 @@ SET time_zone = "+00:00";
 --
 -- Table structure for table `bookings`
 --
+DROP TABLE IF EXISTS bookings;
 
 CREATE TABLE `bookings` (
   `id` int(11) NOT NULL,
@@ -26,13 +27,7 @@ CREATE TABLE `bookings` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `bookings`
---
-
-INSERT INTO `bookings` (`id`, `name`, `email`, `phone`, `booking_date`, `booking_time`, `people`, `message`, `created_at`, `status`) VALUES
-(4, 'pari', 'sample@gmail.com', '8799064890', '2025-08-15', '16:36:00', 10, 'hi i am coming at 4 50 pm', '2025-08-07 11:07:09', 'pending');
-
--- --------------------------------------------------------
+-- 
 
 --
 -- Table structure for table `feedback`
@@ -52,13 +47,7 @@ CREATE TABLE `feedback` (
 ------
 
 --
--- Table structure for table `gallery`
 --
--- Dumping data for table `gallery`
---
-
--- --------------------------------------------------------
-
 --
 -- Table structure for table `menu`
 --
@@ -105,10 +94,7 @@ CREATE TABLE `orders` (
 -- Dumping data for table `orders`
 --
 
-INSERT INTO `orders` (`order_id`, `menu_id`, `email`, `menu_name`, `quantity`, `price`, `total_price`, `mobile`, `address`, `status`, `order_time`, `order_date`, `created_at`) VALUES
-(2, 102, 'jaysukh.rabari@yahoo.com', 'Ringna No Oro', 1, 0, 150, '9876512345', 'Bhavnagar, Gujarat', 'Shipping', '0000-00-00 00:00:00', '2025-06-07', '2025-06-07 14:40:00'),
-
--- --------------------------------------------------------
+------------
 
 --
 -- Table structure for table `users`
@@ -124,11 +110,7 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `users`
 --
-
-INSERT INTO `users` (`id`, `email`, `password`, `user_type`, `created_at`, `user_img`) VALUES
-
 
 -- Suscribe table starts
 CREATE TABLE subscribers (

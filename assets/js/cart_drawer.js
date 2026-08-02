@@ -63,7 +63,11 @@
     document.getElementById('cartDrawerSubtotal').textContent = money(subtotal);
     document.getElementById('cartDrawerTotal').textContent = money(subtotal);
     if (checkoutTotal) checkoutTotal.textContent = money(subtotal);
-    if (checkoutBtn) checkoutBtn.textContent = 'Place Order (' + money(subtotal) + ')';
+    const subtotalLabel = document.getElementById('cartDrawerSubtotalLabel');
+    const totalLabel = document.getElementById('cartDrawerTotalLabel');
+    if (subtotalLabel) subtotalLabel.textContent = money(subtotal);
+    if (totalLabel) totalLabel.textContent = money(subtotal);
+    if (checkoutBtn) checkoutBtn.textContent = 'Confirm Purchase';
 
     if (!cartItems.length) {
       body.innerHTML = `
@@ -79,6 +83,30 @@
     }
 
     footer.style.display = '';
+    const firstItem = cartItems[0] || {};
+    const drawerItemImage = document.getElementById('drawerItemImage');
+    const drawerItemName = document.getElementById('drawerItemName');
+    const drawerItemDescription = document.getElementById('drawerItemDescription');
+    const drawerSummaryList = document.getElementById('drawerSummaryList');
+    if (drawerItemImage) drawerItemImage.src = itemImage(firstItem);
+    if (drawerItemName) drawerItemName.textContent = itemName(firstItem);
+    if (drawerItemDescription) drawerItemDescription.textContent = cartItems.length > 1
+      ? 'You have ' + cartItems.length + ' items in your cart. Review them before confirming.'
+      : 'Review your cart, fill in delivery details, and confirm your order in one step.';
+    if (drawerSummaryList) {
+      drawerSummaryList.innerHTML = cartItems.map(item => `
+        <div class="mkj-summary-item" style="margin-bottom:14px;">
+          <img src="${itemImage(item)}" alt="${escapeHtml(itemName(item))}" class="mkj-summary-image" style="width:54px;height:54px;">
+          <div class="mkj-summary-copy" style="flex:1;">
+            <div class="mkj-summary-row">
+              <strong>${escapeHtml(itemName(item))}</strong>
+              <strong class="mkj-summary-price">${money(itemTotal(item))}</strong>
+            </div>
+            <div class="mkj-summary-qty">Qty: ${parseInt(item.quantity, 10) || 1}</div>
+          </div>
+        </div>
+      `).join('');
+    }
     body.innerHTML = cartItems.map((item, index) => `
       <div class="cart-drawer-item" data-index="${index}">
         <img src="${itemImage(item)}" alt="${escapeHtml(itemName(item))}">

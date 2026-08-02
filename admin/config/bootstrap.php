@@ -25,3 +25,5 @@ function asset(string $path): string {
 function include_path(string $rel): string {
     return SITE_ROOT . '/' . ltrim($rel, '/');
 }
+
+

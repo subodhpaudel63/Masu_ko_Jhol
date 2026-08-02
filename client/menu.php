@@ -63,6 +63,7 @@ if ($catResult) {
     <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
     <?php require_once __DIR__ . '/../config/bootstrap.php'; ?>
     <link rel="stylesheet" href="<?php echo asset('css/style.css'); ?>" />
+    <link rel="stylesheet" href="<?php echo asset('css/order_ui.css'); ?>" />
     <!-- Include toast styles -->
     <link rel="stylesheet" href="<?php echo asset('css/toast_styles.css'); ?>" />
     <style>
@@ -578,62 +579,202 @@ if ($catResult) {
     </div>
 </section>
 <!-- Modal -->
-<div class="modal fade" id="buyModal" tabindex="-1" aria-labelledby="buyModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content shadow">
+<div class="modal fade mkj-order-modal" id="buyModal" tabindex="-1" aria-labelledby="buyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content mkj-order-modal-content shadow">
             <form action="../includes/menu_order.php" method="post" class="needs-validation" novalidate>
-                <div class="modal-header">
-                    <h5 class="modal-title" id="buyModalLabel">Item Details</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row g-4">
-                        <div class="col-md-5 text-center">
-                            <img id="modal-image" src="" alt="" class="img-fluid" style="border-radius:14px;width:100%;height:200px;object-fit:cover;" />
+                <div class="mkj-order-layout">
+                    <div class="mkj-order-main">
+                        <div class="mkj-order-close-wrap">
+                            <button type="button" class="mkj-order-close" data-bs-dismiss="modal" aria-label="Close">
+                                <i class="fa fa-xmark"></i>
+                            </button>
                         </div>
-                        <div class="col-md-7">
-                            <h4 id="modal-name" class="text-primary fw-bold"></h4>
-                            <p id="modal-description" class="text-muted"></p>
-                            <p><strong>Price: रु<span id="modal-price"></span></strong></p>
-                            <p><strong>Total: रु<span id="modal-total-price"></span></strong></p>
-                            <input type="hidden" name="menu_id" id="input-menu-id" />
-                            <input type="hidden" name="menu_name" id="input-menu-name" />
-                            <input type="hidden" name="price" id="input-price" />
-                            <input type="hidden" name="total_price" id="input-total-price" />
-                            <div class="mb-3">
-                                <label for="email" class="form-label">Email</label>
-                                <input type="email" id="email" name="email" class="form-control" value="<?php echo $currentUser['email'] ?? '' ?>" required>
+
+                        <div class="mkj-order-product">
+                            <img id="modal-image" src="" alt="" class="mkj-order-product-image" />
+                            <div class="mkj-order-product-copy">
+                                <h2 id="modal-name" class="mkj-order-product-title"></h2>
+                                <p id="modal-description" class="mkj-order-product-description"></p>
+                                <p class="mkj-order-price">रु<span id="modal-price"></span></p>
                             </div>
-                            <div class="mb-3">
-                                <label for="quantity" class="form-label">Quantity</label>
-                                <div class="qty-stepper">
-                                    <button type="button" id="qty-minus">−</button>
-                                    <input type="number" id="quantity" name="quantity" min="1" value="1" required>
-                                    <button type="button" id="qty-plus">+</button>
+                        </div>
+
+                        <hr class="mkj-order-divider">
+
+                        <div class="mkj-order-section">
+                            <label class="mkj-order-label">Quantity</label>
+                            <div class="mkj-stepper">
+                                <button type="button" id="qty-minus" class="mkj-stepper-btn">−</button>
+                                <input type="number" id="quantity" name="quantity" min="1" value="1" required class="mkj-stepper-input">
+                                <button type="button" id="qty-plus" class="mkj-stepper-btn">+</button>
+                            </div>
+                            <div class="invalid-feedback">Please enter valid quantity</div>
+                        </div>
+
+                        <hr class="mkj-order-divider">
+
+                        <input type="hidden" name="menu_id" id="input-menu-id" />
+                        <input type="hidden" name="menu_name" id="input-menu-name" />
+                        <input type="hidden" name="price" id="input-price" />
+                        <input type="hidden" name="total_price" id="input-total-price" />
+
+                        <div class="mkj-form-grid">
+                            <div class="mkj-field">
+                                <label for="full_name" class="mkj-order-label">Full Name *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-end-0"><i class="fa fa-user text-muted"></i></span>
+                                    <input type="text" id="full_name" name="full_name" class="form-control mkj-control border-start-0 ps-0" value="<?php echo htmlspecialchars($currentUser['name'] ?? ''); ?>" required placeholder="Enter your full name">
                                 </div>
-                                <div class="invalid-feedback">Please enter valid quantity</div>
                             </div>
-                            <div class="mb-3">
-                                <label for="mobile" class="form-label">Mobile Number</label>
-                                <input type="tel" id="mobile" name="mobile" class="form-control" pattern="[0-9]{10}" maxlength="10" required>
+                            <div class="mkj-field">
+                                <label for="mobile" class="mkj-order-label">Mobile Number *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-end-0"><i class="fa fa-phone text-muted"></i></span>
+                                    <input type="tel" id="mobile" name="mobile" class="form-control mkj-control border-start-0 ps-0" pattern="[0-9]{10}" maxlength="10" required placeholder="Enter your mobile number">
+                                </div>
                                 <div class="invalid-feedback">Please enter valid number.</div>
                             </div>
-                            <div class="mb-3">
-                                <label for="address" class="form-label">Delivery Address</label>
-                                <textarea id="address" name="address" class="form-control" rows="3" required></textarea>
+                            <div class="mkj-field">
+                                <label for="email" class="mkj-order-label">Email (optional)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-end-0"><i class="fa fa-envelope text-muted"></i></span>
+                                    <input type="email" id="email" name="email" class="form-control mkj-control border-start-0 ps-0" value="<?php echo htmlspecialchars($currentUser['email'] ?? ''); ?>" placeholder="Enter your email">
+                                </div>
+                            </div>
+                            <div class="mkj-field">
+                                <label class="mkj-order-label">Order Type *</label>
+                                <div class="d-flex gap-2 flex-wrap mkj-radio-group">
+                                    <label class="mkj-custom-radio-btn">
+                                        <input type="radio" name="order_type" value="Delivery" class="order-type-radio" checked>
+                                        <span class="mkj-radio-indicator"></span>
+                                        <i class="fa fa-motorcycle mkj-radio-icon"></i>
+                                        <span class="mkj-radio-label">Delivery</span>
+                                    </label>
+
+                                    <label class="mkj-custom-radio-btn">
+                                        <input type="radio" name="order_type" value="Takeaway" class="order-type-radio">
+                                        <span class="mkj-radio-indicator"></span>
+                                        <i class="fa fa-shopping-bag mkj-radio-icon"></i>
+                                        <span class="mkj-radio-label">Takeaway</span>
+                                    </label>
+
+                                    <label class="mkj-custom-radio-btn">
+                                        <input type="radio" name="order_type" value="Dine In" class="order-type-radio">
+                                        <span class="mkj-radio-indicator"></span>
+                                        <i class="fa fa-chair mkj-radio-icon"></i>
+                                        <span class="mkj-radio-label">Dine In</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="mkj-field mkj-hidden" id="table_number_wrapper">
+                                <label for="table_number" class="mkj-order-label">Table Number (for Dine In)</label>
+                                <input type="text" id="table_number" name="table_number" class="form-control mkj-control" placeholder="Enter table number">
+                            </div>
+                            <div class="mkj-field">
+                                <label for="address" class="mkj-order-label">Delivery Address *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-end-0 align-items-start pt-2"><i class="fa fa-location-dot text-muted"></i></span>
+                                    <textarea id="address" name="address" class="form-control mkj-control border-start-0 ps-0 mkj-control-textarea" rows="3" required placeholder="Enter your complete address"></textarea>
+                                </div>
                                 <div class="invalid-feedback">Please enter valid address</div>
+                            </div>
+                            <div class="mkj-field">
+                                <label for="special_instructions" class="mkj-order-label">Special Instructions (optional)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-end-0 align-items-start pt-2"><i class="fa fa-pen text-muted"></i></span>
+                                    <textarea id="special_instructions" name="special_instructions" class="form-control mkj-control border-start-0 ps-0 mkj-control-textarea" rows="2" placeholder="Any special instructions for your order?"></textarea>
+                                </div>
+                            </div>
+                            <div class="mkj-field">
+                                <label class="mkj-order-label">Payment Method *</label>
+                                <div class="d-flex gap-2 flex-wrap mkj-radio-group">
+                                    <label class="mkj-custom-radio-btn">
+                                        <input type="radio" name="payment_method" value="Cash on Delivery" checked>
+                                        <span class="mkj-radio-indicator"></span>
+                                        <i class="fa fa-money-bill mkj-radio-icon"></i>
+                                        <span class="mkj-radio-label">Cash on Delivery</span>
+                                    </label>
+
+                                    <label class="mkj-custom-radio-btn">
+                                        <input type="radio" name="payment_method" value="Pay at Restaurant">
+                                        <span class="mkj-radio-indicator"></span>
+                                        <i class="fa fa-store mkj-radio-icon"></i>
+                                        <span class="mkj-radio-label">Pay at Restaurant</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="mkj-field mt-2">
+                                <div class="form-check mkj-custom-checkbox">
+                                    <input class="form-check-input" type="checkbox" id="confirm_details" required>
+                                    <label class="form-check-label text-muted" for="confirm_details">
+                                        I confirm that my order details are correct.
+                                    </label>
+                                </div>
                             </div>
                         </div>
                     </div>
+
+                    <aside class="mkj-order-summary">
+                        <h3 class="mkj-summary-title">Order Summary</h3>
+                        <div class="mkj-summary-item">
+                            <img id="summary-image" src="" alt="" class="mkj-summary-image">
+                            <div class="mkj-summary-copy">
+                                <div class="mkj-summary-row">
+                                    <strong id="summary-name">Item</strong>
+                                    <strong class="mkj-summary-price">रु<span id="modal-total-price"></span></strong>
+                                </div>
+                                <div class="mkj-summary-qty">Qty: <span id="summary-qty">1</span></div>
+                            </div>
+                        </div>
+                        <div class="mkj-summary-box">
+                            <div class="mkj-summary-line">
+                                <span>Subtotal</span>
+                                <strong>रु<span id="summary-subtotal">0.00</span></strong>
+                            </div>
+                            <div class="mkj-summary-line">
+                                <span>Delivery Charge</span>
+                                <strong class="text-success">FREE</strong>
+                            </div>
+                            <div class="mkj-summary-line mkj-summary-total">
+                                <span>Total</span>
+                                <strong class="mkj-summary-price">रु<span id="summary-total">0.00</span></strong>
+                            </div>
+                        </div>
+                        <div class="mkj-summary-note mkj-note-green">
+                            <i class="fa-regular fa-clock"></i>
+                            <div>
+                                <strong>Estimated Delivery Time</strong>
+                                <div>30 - 40 mins</div>
+                            </div>
+                        </div>
+                        <div class="mkj-summary-note mkj-note-amber">
+                            <i class="fa-regular fa-circle-info"></i>
+                            <div>
+                                <strong>Note</strong>
+                                <div>You will receive order updates on your mobile number.</div>
+                            </div>
+                        </div>
+                        <ul class="mkj-benefits">
+                            <li><i class="fa-regular fa-shield"></i><span>Safe &amp; Secure Order</span></li>
+                            <li><i class="fa-regular fa-circle-check"></i><span>Quality Food Guaranteed</span></li>
+                            <li><i class="fa-solid fa-headset"></i><span>24/7 Customer Support</span></li>
+                        </ul>
+                    </aside>
                 </div>
-                <div class="modal-footer justify-content-between">
-                    <button type="submit" class="btn btn-success" id="confirm-buy">Confirm Purchase</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+
+                <div class="mkj-order-footer">
+                    <button type="submit" class="btn mkj-confirm-btn" id="confirm-buy">
+                        <i class="fa fa-bag-shopping"></i>
+                        <span>Confirm Purchase</span>
+                    </button>
+                    <button type="button" class="btn mkj-cancel-btn" data-bs-dismiss="modal">Cancel</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
+
 
 <!-- Login Required Modal -->
 <div class="modal fade login-modal" id="loginRequiredModal" tabindex="-1" aria-labelledby="loginRequiredModalLabel" aria-hidden="true">
@@ -669,6 +810,7 @@ if ($catResult) {
     <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
     <?php require_once __DIR__ . '/../config/bootstrap.php'; ?>
     <script src="<?php echo asset('js/script.js'); ?>"></script>
+    <script src="<?php echo asset('js/order_ui.js'); ?>"></script>
     <script src="<?php echo asset('js/toast_notifications.js'); ?>"></script>
     <script>
       // Menu page bootstrap and Buy Now toast handling.
@@ -779,6 +921,12 @@ if ($catResult) {
             modalTotal.textContent = total;
             inputPrice.value = price.toFixed(2);
             inputTotal.value = total;
+            const summaryQty = document.getElementById('summary-qty');
+            const summarySubtotal = document.getElementById('summary-subtotal');
+            const summaryTotal = document.getElementById('summary-total');
+            if (summaryQty) summaryQty.textContent = qty;
+            if (summarySubtotal) summarySubtotal.textContent = total;
+            if (summaryTotal) summaryTotal.textContent = total;
         }
 
         document.getElementById('qty-minus')?.addEventListener('click', () => {
@@ -798,6 +946,8 @@ if ($catResult) {
             document.getElementById('modal-name').textContent        = btn.getAttribute('data-name');
             document.getElementById('modal-description').textContent = btn.getAttribute('data-description');
             document.getElementById('modal-image').src               = btn.getAttribute('data-image');
+            document.getElementById('summary-name').textContent      = btn.getAttribute('data-name');
+            document.getElementById('summary-image').src             = btn.getAttribute('data-image');
             modalPrice.textContent = parseFloat(btn.getAttribute('data-price')).toFixed(2);
             quantityInput.value    = 1;
             recalc();

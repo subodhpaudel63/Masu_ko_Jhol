@@ -27,7 +27,7 @@ foreach($users as $user) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Users Management - Masu Ko Jhol</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,0,0" />
-  <link rel="stylesheet" href="../assets/css/adminstyle.css">
+  <link rel="stylesheet" href="../assets/css/adminstyle.css?v=<?= filemtime(__DIR__ . '/../assets/css/adminstyle.css') ?>">
 </head>
 <body>
    <div class="container">
@@ -58,7 +58,7 @@ foreach($users as $user) {
               <span class="material-symbols-sharp">insights </span>
               <h3>Analytics</h3>
            </a>
-           <a href="myorder.php">
+           <a href="orders_page.php">
               <span class="material-symbols-sharp">mail_outline </span>
               <h3>Orders</h3>
               <span class="msg_count">14</span>
@@ -243,31 +243,33 @@ foreach($users as $user) {
                       <?php endif; ?>
                     </td>
                     <td>
-                      <div class="d-flex gap-2">
+                      <div class="d-flex gap-2" style="flex-wrap: wrap;">
+                        <a href="orders_page.php?q=<?php echo urlencode($user['email']); ?>" class="btn-primary" style="background: #2ed573; text-decoration: none; padding: 0.5rem 1rem; border-radius: var(--border-radius-1); font-size: 0.85rem; display: inline-flex; align-items: center; justify-content: center; height: 32px; font-weight: 600; color: white;">View Orders</a>
+                        
                         <?php if ($user['user_type'] === 'admin' && $user['email'] !== 'subodhpaudel0000@gmail.com'): ?>
                           <!-- Admin user - show delete button only (except main admin) -->
-                          <form action="../includes/delete_user.php" method="post" class="action-form" onsubmit="return confirm('Delete this admin permanently? This action cannot be undone.');">
+                          <form action="../includes/delete_user.php" method="post" class="action-form" onsubmit="return confirm('Delete this admin permanently? This action cannot be undone.');" style="margin:0;">
                             <input type="hidden" name="user_id" value="<?php echo intval($user['id']); ?>">
-                            <button type="submit" class="btn-danger">Delete Admin</button>
+                            <button type="submit" class="btn-danger" style="height:32px; padding: 0 10px; display:inline-flex; align-items:center; justify-content:center;">Delete Admin</button>
                           </form>
-                          <span class="admin-badge">Admin User</span>
+                          <span class="admin-badge" style="height:32px; display:inline-flex; align-items:center; justify-content:center;">Admin User</span>
                         <?php elseif ($user['user_type'] !== 'admin'): ?>
                           <!-- Regular user - show both buttons -->
-                          <form action="../includes/update_user_role.php" method="post" class="action-form">
+                          <form action="../includes/update_user_role.php" method="post" class="action-form" style="margin:0;">
                             <input type="hidden" name="user_id" value="<?php echo intval($user['id']); ?>">
                             <input type="hidden" name="role" value="<?php echo $user['user_type'] === 'user' ? 'admin' : 'user'; ?>">
-                            <button type="submit" class="btn-warning">
+                            <button type="submit" class="btn-warning" style="height:32px; padding: 0 10px; display:inline-flex; align-items:center; justify-content:center;">
                               <?php echo $user['user_type'] === 'user' ? 'Make Admin' : 'Make User'; ?>
                             </button>
                           </form>
                           
-                          <form action="../includes/delete_user.php" method="post" class="action-form" onsubmit="return confirm('Delete this user permanently?');">
+                          <form action="../includes/delete_user.php" method="post" class="action-form" onsubmit="return confirm('Delete this user permanently?');" style="margin:0;">
                             <input type="hidden" name="user_id" value="<?php echo intval($user['id']); ?>">
-                            <button type="submit" class="btn-danger">Delete</button>
+                            <button type="submit" class="btn-danger" style="height:32px; padding: 0 10px; display:inline-flex; align-items:center; justify-content:center;">Delete</button>
                           </form>
                         <?php else: ?>
                           <!-- Main admin - no actions -->
-                          <span class="admin-badge">Main Admin</span>
+                          <span class="admin-badge" style="height:32px; display:inline-flex; align-items:center; justify-content:center;">Main Admin</span>
                         <?php endif; ?>
                       </div>
                     </td>

@@ -2,6 +2,7 @@
 $drawerCart = array_values($_SESSION['cart'] ?? []);
 $drawerCount = count($drawerCart);
 ?>
+<link rel="stylesheet" href="<?php echo asset('css/order_ui.css'); ?>">
 <style>
   .cart-drawer-trigger {
     position: relative;
@@ -257,6 +258,257 @@ $drawerCount = count($drawerCart);
       padding-right: 16px;
     }
   }
+
+  .mkj-order-modal .modal-dialog {
+    max-width: min(1120px, calc(100vw - 24px));
+  }
+  .mkj-order-modal-content {
+    border: 0;
+    border-radius: 26px;
+    overflow: hidden;
+    background: #fff;
+  }
+  .mkj-order-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.55fr) minmax(320px, .95fr);
+  }
+  .mkj-order-main {
+    padding: 22px 24px 24px;
+  }
+  .mkj-order-summary {
+    padding: 28px 24px 24px;
+    background: linear-gradient(180deg, #fff, #fcfbf8);
+    border-left: 1px solid #eee7df;
+  }
+  .mkj-order-close-wrap {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 6px;
+  }
+  .mkj-order-close {
+    width: 36px;
+    height: 36px;
+    border: 0;
+    border-radius: 50%;
+    background: #f5f5f5;
+    color: #333;
+  }
+  .mkj-order-product {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 18px;
+    align-items: start;
+  }
+  .mkj-order-product-image,
+  .mkj-summary-image {
+    width: 100%;
+    object-fit: cover;
+    border-radius: 18px;
+  }
+  .mkj-order-product-image {
+    height: 170px;
+  }
+  .mkj-order-product-title {
+    margin: 4px 0 10px;
+    font-size: clamp(1.5rem, 2vw, 2rem);
+    font-weight: 800;
+    color: #111;
+  }
+  .mkj-order-product-description {
+    margin: 0 0 12px;
+    color: #5f6472;
+    line-height: 1.55;
+    font-size: 1rem;
+  }
+  .mkj-order-price,
+  .mkj-summary-price {
+    color: #f05a22;
+    font-weight: 900;
+    font-size: 1.15rem;
+  }
+  .mkj-order-divider {
+    border-color: #ececec;
+    opacity: 1;
+    margin: 18px 0;
+  }
+  .mkj-order-label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 800;
+    color: #222;
+  }
+  .mkj-stepper {
+    display: inline-flex;
+    border: 1px solid #eadfd3;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #fff;
+  }
+  .mkj-stepper-btn {
+    width: 46px;
+    height: 42px;
+    border: 0;
+    background: #fff7f0;
+    color: #f05a22;
+    font-size: 1.2rem;
+    font-weight: 800;
+  }
+  .mkj-stepper-input {
+    width: 62px;
+    border: 0 !important;
+    text-align: center;
+    font-weight: 800;
+    box-shadow: none !important;
+  }
+  .mkj-form-grid {
+    display: grid;
+    gap: 14px;
+  }
+  .mkj-control {
+    min-height: 48px;
+    border-radius: 10px;
+    border-color: #dfe3ea;
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+  .mkj-control-textarea {
+    min-height: 90px;
+  }
+  .mkj-summary-title {
+    margin: 0 0 18px;
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #111;
+  }
+  .mkj-summary-item {
+    display: grid;
+    grid-template-columns: 54px 1fr;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  .mkj-summary-image {
+    height: 54px;
+  }
+  .mkj-summary-row,
+  .mkj-summary-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+  .mkj-summary-copy strong,
+  .mkj-summary-qty {
+    color: #222;
+  }
+  .mkj-summary-qty {
+    margin-top: 5px;
+    color: #5e6472;
+  }
+  .mkj-summary-box {
+    border-top: 1px solid #ececec;
+    border-bottom: 1px solid #ececec;
+    padding: 16px 0;
+    margin-bottom: 16px;
+  }
+  .mkj-summary-line {
+    margin: 10px 0;
+    color: #30343f;
+  }
+  .mkj-summary-total {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid #ececec;
+    font-size: 1.05rem;
+    font-weight: 800;
+  }
+  .mkj-summary-note {
+    display: flex;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid transparent;
+    margin-bottom: 12px;
+  }
+  .mkj-summary-note i {
+    font-size: 1.1rem;
+    margin-top: 2px;
+  }
+  .mkj-note-green {
+    background: #f2fbf1;
+    border-color: #c7ebc4;
+    color: #1f7a2f;
+  }
+  .mkj-note-amber {
+    background: #fff8ed;
+    border-color: #f0d9a8;
+    color: #6d540b;
+  }
+  .mkj-benefits {
+    list-style: none;
+    padding: 8px 0 0;
+    margin: 0;
+    display: grid;
+    gap: 14px;
+    color: #4f5665;
+  }
+  .mkj-benefits li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .mkj-order-footer {
+    display: flex;
+    gap: 14px;
+    padding: 0 24px 24px;
+  }
+  .mkj-confirm-btn {
+    flex: 1;
+    min-height: 54px;
+    border: 0;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #f05a22, #f26a21);
+    color: #fff;
+    font-weight: 800;
+    box-shadow: 0 10px 22px rgba(240, 90, 34, .22);
+  }
+  .mkj-cancel-btn {
+    min-width: 124px;
+    min-height: 54px;
+    border-radius: 12px;
+    background: #f6f7f9;
+    color: #596271;
+    font-weight: 800;
+  }
+  @media (max-width: 991px) {
+    .mkj-order-layout {
+      grid-template-columns: 1fr;
+    }
+    .mkj-order-summary {
+      border-left: 0;
+      border-top: 1px solid #eee7df;
+    }
+  }
+  @media (max-width: 575px) {
+    .mkj-order-main,
+    .mkj-order-summary,
+    .mkj-order-footer {
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+    .mkj-order-product {
+      grid-template-columns: 1fr;
+    }
+    .mkj-order-product-image {
+      height: 210px;
+    }
+    .mkj-order-footer {
+      flex-direction: column;
+    }
+    .mkj-cancel-btn {
+      width: 100%;
+    }
+  }
 </style>
 
 <div class="cart-drawer-backdrop" id="cartDrawerBackdrop"></div>
@@ -291,30 +543,167 @@ $drawerCount = count($drawerCart);
   </div>
 </aside>
 
-<div class="modal fade" id="checkoutModal" tabindex="-1" aria-labelledby="checkoutModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="checkoutModalLabel">Delivery Information</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
+<div class="modal fade mkj-order-modal" id="checkoutModal" tabindex="-1" aria-labelledby="checkoutModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content mkj-order-modal-content shadow">
       <form id="checkoutForm">
-        <div class="modal-body">
-          <div class="mb-3">
-            <label for="drawerMobile" class="form-label">Mobile Number *</label>
-            <input type="tel" class="form-control" id="drawerMobile" name="mobile" pattern="[0-9]{10}" maxlength="10" required>
+        <div class="mkj-order-layout">
+          <div class="mkj-order-main">
+            <div class="mkj-order-close-wrap">
+              <button type="button" class="mkj-order-close" data-bs-dismiss="modal" aria-label="Close">
+                <i class="fa fa-xmark"></i>
+              </button>
+            </div>
+
+            <div class="mkj-order-product">
+              <img id="drawerItemImage" src="../assets/images/menu/menu-item-1.png" alt="Order item" class="mkj-order-product-image">
+              <div class="mkj-order-product-copy">
+                <h2 class="mkj-order-product-title" id="drawerItemName">Your Order</h2>
+                <p class="mkj-order-product-description" id="drawerItemDescription">Review your cart, fill in delivery details, and confirm your order in one step.</p>
+                <p class="mkj-order-price">रु<span id="checkoutModalTotal">0.00</span></p>
+              </div>
+            </div>
+
+            <hr class="mkj-order-divider">
+
+            <div class="mkj-form-grid">
+              <div class="mkj-field">
+                  <label for="drawerName" class="mkj-order-label">Full Name *</label>
+                  <div class="input-group">
+                      <span class="input-group-text bg-white border-end-0"><i class="fa fa-user text-muted"></i></span>
+                      <input type="text" id="drawerName" name="full_name" class="form-control mkj-control border-start-0 ps-0" value="<?php echo htmlspecialchars($user['name'] ?? $user['email'] ?? ''); ?>" required placeholder="Enter your full name">
+                  </div>
+              </div>
+              <div class="mkj-field">
+                  <label for="drawerMobile" class="mkj-order-label">Mobile Number *</label>
+                  <div class="input-group">
+                      <span class="input-group-text bg-white border-end-0"><i class="fa fa-phone text-muted"></i></span>
+                      <input type="tel" id="drawerMobile" name="mobile" class="form-control mkj-control border-start-0 ps-0" pattern="[0-9]{10}" maxlength="10" required placeholder="Enter your mobile number">
+                  </div>
+                  <div class="invalid-feedback">Please enter valid number.</div>
+              </div>
+              <div class="mkj-field">
+                  <label for="drawerEmail" class="mkj-order-label">Email (optional)</label>
+                  <div class="input-group">
+                      <span class="input-group-text bg-white border-end-0"><i class="fa fa-envelope text-muted"></i></span>
+                      <input type="email" id="drawerEmail" name="email" class="form-control mkj-control border-start-0 ps-0" value="<?php echo htmlspecialchars($user['email'] ?? ''); ?>" placeholder="Enter your email">
+                  </div>
+              </div>
+              <div class="mkj-field">
+                  <label class="mkj-order-label">Order Type *</label>
+                  <div class="d-flex gap-2 flex-wrap mkj-radio-group">
+                      <label class="mkj-custom-radio-btn">
+                          <input type="radio" name="order_type" value="Delivery" class="order-type-radio" checked>
+                          <span class="mkj-radio-indicator"></span>
+                          <i class="fa fa-motorcycle mkj-radio-icon"></i>
+                          <span class="mkj-radio-label">Delivery</span>
+                      </label>
+
+                      <label class="mkj-custom-radio-btn">
+                          <input type="radio" name="order_type" value="Takeaway" class="order-type-radio">
+                          <span class="mkj-radio-indicator"></span>
+                          <i class="fa fa-shopping-bag mkj-radio-icon"></i>
+                          <span class="mkj-radio-label">Takeaway</span>
+                      </label>
+
+                      <label class="mkj-custom-radio-btn">
+                          <input type="radio" name="order_type" value="Dine In" class="order-type-radio">
+                          <span class="mkj-radio-indicator"></span>
+                          <i class="fa fa-chair mkj-radio-icon"></i>
+                          <span class="mkj-radio-label">Dine In</span>
+                      </label>
+                  </div>
+              </div>
+              <div class="mkj-field mkj-hidden" id="drawer_table_number_wrapper">
+                  <label for="drawerTableNumber" class="mkj-order-label">Table Number (for Dine In)</label>
+                  <input type="text" id="drawerTableNumber" name="table_number" class="form-control mkj-control" placeholder="Enter table number">
+              </div>
+              <div class="mkj-field">
+                  <label for="drawerAddress" class="mkj-order-label">Delivery Address *</label>
+                  <div class="input-group">
+                      <span class="input-group-text bg-white border-end-0 align-items-start pt-2"><i class="fa fa-location-dot text-muted"></i></span>
+                      <textarea id="drawerAddress" name="address" class="form-control mkj-control border-start-0 ps-0 mkj-control-textarea" rows="3" required placeholder="Enter your complete address"></textarea>
+                  </div>
+                  <div class="invalid-feedback">Please enter valid address</div>
+              </div>
+              <div class="mkj-field">
+                  <label for="drawerNote" class="mkj-order-label">Special Instructions (optional)</label>
+                  <div class="input-group">
+                      <span class="input-group-text bg-white border-end-0 align-items-start pt-2"><i class="fa fa-pen text-muted"></i></span>
+                      <textarea id="drawerNote" name="special_instructions" class="form-control mkj-control border-start-0 ps-0 mkj-control-textarea" rows="2" placeholder="Any special instructions for your order?"></textarea>
+                  </div>
+              </div>
+              <div class="mkj-field">
+                  <label class="mkj-order-label">Payment Method *</label>
+                  <div class="d-flex gap-2 flex-wrap mkj-radio-group">
+                      <label class="mkj-custom-radio-btn">
+                          <input type="radio" name="payment_method" value="Cash on Delivery" checked>
+                          <span class="mkj-radio-indicator"></span>
+                          <i class="fa fa-money-bill mkj-radio-icon"></i>
+                          <span class="mkj-radio-label">Cash on Delivery</span>
+                      </label>
+
+                      <label class="mkj-custom-radio-btn">
+                          <input type="radio" name="payment_method" value="Pay at Restaurant">
+                          <span class="mkj-radio-indicator"></span>
+                          <i class="fa fa-store mkj-radio-icon"></i>
+                          <span class="mkj-radio-label">Pay at Restaurant</span>
+                      </label>
+                  </div>
+              </div>
+              <div class="mkj-field mt-2">
+                  <div class="form-check mkj-custom-checkbox">
+                      <input class="form-check-input" type="checkbox" id="drawer_confirm_details" required>
+                      <label class="form-check-label text-muted" for="drawer_confirm_details">
+                          I confirm that my order details are correct.
+                      </label>
+                  </div>
+              </div>
+            </div>
           </div>
-          <div class="mb-3">
-            <label for="drawerAddress" class="form-label">Delivery Address *</label>
-            <textarea class="form-control" id="drawerAddress" name="address" rows="3" required></textarea>
-          </div>
-          <div class="alert alert-info mb-0">
-            Total amount: <strong id="checkoutModalTotal">Rs. 0.00</strong>
-          </div>
+
+          <aside class="mkj-order-summary">
+            <h3 class="mkj-summary-title">Order Summary</h3>
+            <div id="drawerSummaryList"></div>
+            <div class="mkj-summary-box">
+              <div class="mkj-summary-line">
+                <span>Subtotal</span>
+                <strong id="cartDrawerSubtotalLabel">Rs. 0.00</strong>
+              </div>
+              <div class="mkj-summary-line">
+                <span>Delivery Charge</span>
+                <strong class="text-success">FREE</strong>
+              </div>
+              <div class="mkj-summary-line mkj-summary-total">
+                <span>Total</span>
+                <strong class="mkj-summary-price" id="cartDrawerTotalLabel">Rs. 0.00</strong>
+              </div>
+            </div>
+            <div class="mkj-summary-note mkj-note-green">
+              <i class="fa-regular fa-clock"></i>
+              <div>
+                <strong>Estimated Delivery Time</strong>
+                <div>30 - 40 mins</div>
+              </div>
+            </div>
+            <div class="mkj-summary-note mkj-note-amber">
+              <i class="fa-regular fa-circle-info"></i>
+              <div>
+                <strong>Note</strong>
+                <div>You will receive order updates on your mobile number.</div>
+              </div>
+            </div>
+            <ul class="mkj-benefits">
+              <li><i class="fa-regular fa-shield"></i><span>Safe &amp; Secure Order</span></li>
+              <li><i class="fa-regular fa-circle-check"></i><span>Quality Food Guaranteed</span></li>
+              <li><i class="fa-solid fa-headset"></i><span>24/7 Customer Support</span></li>
+            </ul>
+          </aside>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-success" id="checkoutBtn">Place Order</button>
+
+        <div class="mkj-order-footer">
+          <button type="submit" class="btn mkj-confirm-btn" id="checkoutBtn">Confirm Purchase</button>
+          <button type="button" class="btn mkj-cancel-btn" data-bs-dismiss="modal">Cancel</button>
         </div>
       </form>
     </div>

@@ -29,7 +29,7 @@ foreach($bookings as $booking) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Table Bookings - Masu Ko Jhol</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,0,0" />
-  <link rel="stylesheet" href="../assets/css/adminstyle.css">
+  <link rel="stylesheet" href="../assets/css/adminstyle.css?v=<?= filemtime(__DIR__ . '/../assets/css/adminstyle.css') ?>">
 </head>
 <body>
 
@@ -185,14 +185,13 @@ foreach($bookings as $booking) {
                 <th>Phone</th>
                 <th>Date & Time</th>
                 <th>People</th>
-                <th>Message</th>
-                <th>Status</th>
-                <th>Actions</th>
+                 <th>Message</th>
+                 <th>Actions</th>
               </tr>
              </thead>
               <tbody>
                 <?php if (!$bookings): ?>
-                  <tr><td colspan="9" class="text-center text-muted">No bookings found.</td></tr>
+                  <tr><td colspan="8" class="text-center text-muted">No bookings found.</td></tr>
                 <?php else: foreach ($bookings as $b): ?>
                   <tr>
                     <td><?php echo intval($b['id']); ?></td>
@@ -204,16 +203,9 @@ foreach($bookings as $booking) {
                     <td><a href="#" class="booking-message-link" data-message="<?php echo addslashes(htmlspecialchars($b['message'])); ?>" data-name="<?php echo addslashes(htmlspecialchars($b['name'])); ?>" onclick="showFullMessage(event, this); return false;"><?php echo htmlspecialchars(substr($b['message'], 0, 30)) . (strlen($b['message']) > 30 ? '...' : ''); ?></a></td>
                     <td>
                       <div class="booking-actions">
-                        <select name="status" class="booking-status-select" id="status-<?php echo intval($b['id']); ?>">
-                          <?php foreach (["pending","confirmed","rejected"] as $st): ?>
-                            <option value="<?php echo $st; ?>" <?php echo $b['status']===$st?'selected':''; ?>><?php echo ucfirst($st); ?></option>
-                          <?php endforeach; ?>
-                        </select>
-                        <button type="button" class="btn-update btn-booking-update" onclick="handleUpdate(<?php echo intval($b['id']); ?>)">Update</button>
+                        <button type="button" class="btn-update btn-booking-update" data-status="<?php echo $b['status']; ?>" onclick="handleView(<?php echo intval($b['id']); ?>)">View</button>
+                        <button type="button" class="btn-delete btn-booking-delete" onclick="handleDelete(<?php echo intval($b['id']); ?>)">Delete</button>
                       </div>
-                    </td>
-                    <td>
-                      <button type="button" class="btn-delete btn-booking-delete" onclick="handleDelete(<?php echo intval($b['id']); ?>)">Delete</button>
                     </td>
                   </tr>
                 <?php endforeach; endif; ?>
@@ -345,42 +337,99 @@ foreach($bookings as $booking) {
 
 <script>
 // Direct handler functions
-function handleUpdate(bookingId) {
-    const statusSelect = document.getElementById('status-' + bookingId);
-    const newStatus = statusSelect.value;
-    const button = event.target;
-    
-    // Disable button during processing
-    const originalText = button.textContent;
-    button.disabled = true;
-    button.textContent = 'Updating...';
-    
-    // Simple AJAX call
-    fetch('../includes/update_booking_status.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest'
-        },
-        body: JSON.stringify({
-            order_id: parseInt(bookingId),
-            status: newStatus
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            document.getElementById(`status-${bookingId}`).value = newStatus;
+function handleView(bookingId) {
+    const rows = document.querySelectorAll('table tbody tr');
+    let row = null;
+    for (let r of rows) {
+        const idCell = r.querySelector('td:first-child');
+        if (idCell && idCell.textContent.trim() == bookingId) {
+            row = r;
+            break;
         }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    })
-    .finally(() => {
-        // Re-enable button
-        button.disabled = false;
-        button.textContent = originalText;
-    });
+    }
+
+    if (!row) return;
+
+    const cells = row.querySelectorAll('td');
+    const id = cells[0].textContent.trim();
+    const name = cells[1].textContent.trim();
+    const email = cells[2].textContent.trim();
+    const phone = cells[3].textContent.trim();
+    const dateTime = cells[4].textContent.trim();
+    const people = cells[5].textContent.trim();
+    const status = cells[7].querySelector('.btn-booking-update').getAttribute('data-status');
+
+    const messageLink = cells[6].querySelector('.booking-message-link');
+    const message = messageLink ? messageLink.getAttribute('data-message') : cells[6].textContent.trim();
+
+    const modalHtml = `
+        <div id="viewBookingModal" class="view-booking-overlay" style="
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            animation: fadeIn 0.3s ease-in-out;
+        ">
+            <div class="view-booking-modal" style="
+                background: white;
+                padding: 30px;
+                border-radius: 12px;
+                max-width: 500px;
+                width: 90%;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            ">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="margin: 0; color: #1f2937; font-size: 18px; font-weight: 600;">Booking Details #${id}</h3>
+                    <span class="booking-status-text status-${status}" style="padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; text-transform: uppercase;">${status}</span>
+                </div>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr><td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb;"><strong>Name:</strong></td><td style="padding: 10px 0 10px 16px; border-bottom: 1px solid #e5e7eb;">${name}</td></tr>
+                    <tr><td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb;"><strong>Email:</strong></td><td style="padding: 10px 0 10px 16px; border-bottom: 1px solid #e5e7eb;">${email}</td></tr>
+                    <tr><td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb;"><strong>Phone:</strong></td><td style="padding: 10px 0 10px 16px; border-bottom: 1px solid #e5e7eb;">${phone}</td></tr>
+                    <tr><td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb;"><strong>Date & Time:</strong></td><td style="padding: 10px 0 10px 16px; border-bottom: 1px solid #e5e7eb;">${dateTime}</td></tr>
+                    <tr><td style="padding: 10px 0; border-bottom: 1px solid #e5e7eb;"><strong>People:</strong></td><td style="padding: 10px 0 10px 16px; border-bottom: 1px solid #e5e7eb;">${people}</td></tr>
+                    <tr><td style="padding: 10px 0;"><strong>Message:</strong></td><td style="padding: 10px 0 10px 16px; white-space: pre-wrap;">${message || 'No message'}</td></tr>
+                </table>
+                <div style="display: flex; justify-content: flex-end; margin-top: 25px;">
+                    <button onclick="closeViewBookingModal()" style="
+                        padding: 8px 24px;
+                        background: #007bff;
+                        color: white;
+                        border: none;
+                        border-radius: 6px;
+                        cursor: pointer;
+                        font-weight: 500;
+                        transition: all 0.2s ease;
+                        font-size: 14px;
+                    " onmouseover="this.style.background='#0056b3'" onmouseout="this.style.background='#007bff'">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    const existingModal = document.getElementById('viewBookingModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+}
+
+function closeViewBookingModal() {
+    const modal = document.getElementById('viewBookingModal');
+    if (modal) {
+        modal.style.animation = 'fadeOut 0.3s ease-in-out forwards';
+        setTimeout(() => modal.remove(), 300);
+    }
 }
 
 function handleDelete(bookingId) {
@@ -494,6 +543,10 @@ function showDeleteConfirmation(bookingId) {
                     transform: scale(1);
                     opacity: 1;
                 }
+            }
+            @keyframes fadeOut {
+                from { opacity: 1; }
+                to { opacity: 0; }
             }
         </style>
     `;
@@ -626,17 +679,17 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Debug: Check if buttons exist
-    const updateButtons = document.querySelectorAll('.btn-booking-update');
+    const viewButtons = document.querySelectorAll('.btn-booking-update');
     const deleteButtons = document.querySelectorAll('.btn-booking-delete');
-    console.log('Update buttons found:', updateButtons.length);
+    console.log('View buttons found:', viewButtons.length);
     console.log('Delete buttons found:', deleteButtons.length);
     
     // Add direct event listeners for debugging
-    updateButtons.forEach((button, index) => {
-        console.log('Adding listener to update button', index);
+    viewButtons.forEach((button, index) => {
+        console.log('Adding listener to view button', index);
         button.addEventListener('click', function(e) {
             e.preventDefault();
-            console.log('Update button clicked!');
+            console.log('View button clicked!');
         });
     });
     
@@ -717,6 +770,14 @@ document.addEventListener('click', function(event) {
     const modalOverlay = document.getElementById('messageModal');
     if (modalOverlay && event.target === modalOverlay) {
         closeMessageModal();
+    }
+});
+
+// Close view booking modal when clicking outside
+document.addEventListener('click', function(event) {
+    const modalOverlay = document.getElementById('viewBookingModal');
+    if (modalOverlay && event.target === modalOverlay) {
+        closeViewBookingModal();
     }
 });
 </script>

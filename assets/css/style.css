@@ -3302,3 +3302,66 @@ footer p {
 }
 
 /* Floating WhatsApp Button */
+
+/* Custom Radio Buttons and Checkbox for Checkout Forms */
+.mkj-custom-radio-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 16px;
+    border: 1px solid #dee2e6;
+    border-radius: 12px;
+    cursor: pointer;
+    background: #fff;
+    transition: all 0.3s ease;
+    flex: 1;
+    gap: 8px;
+    margin-bottom: 0;
+    color: #495057;
+}
+.mkj-custom-radio-btn input {
+    display: none;
+}
+.mkj-radio-indicator {
+    display: none !important;
+}
+.mkj-custom-radio-btn:has(input:checked) {
+    border: 2px solid #f05a22;
+    background: #fff4f0;
+    color: #f05a22;
+    font-weight: 700;
+}
+.mkj-custom-radio-btn:has(input:checked) .mkj-radio-icon {
+    color: #f05a22 !important;
+}
+.mkj-radio-icon {
+    font-size: 1.2rem;
+    color: #6c757d;
+}
+.mkj-radio-label {
+    font-size: 0.95rem;
+}
+.mkj-custom-checkbox input[type="checkbox"] {
+    accent-color: #f05a22;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+.mkj-hidden {
+    display: none !important;
+}
+.mkj-control:focus {
+    box-shadow: none !important;
+}
+.input-group:focus-within .input-group-text,
+.input-group:focus-within .mkj-control {
+    border-color: #f05a22 !important;
+}
+.input-group:focus-within .input-group-text i {
+    color: #f05a22 !important;
+}
+.input-group:focus-within {
+    box-shadow: 0 0 0 0.2rem rgba(240, 90, 34, 0.25);
+    border-radius: 0.375rem;
+}
+

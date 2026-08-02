@@ -39,20 +39,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $price = isset($_POST['price']) ? floatval($_POST['price']) : 0.0;
     $total_price = isset($_POST['total_price']) ? floatval($_POST['total_price']) : 0.0;
     $email = isset($_POST['email']) ? trim($_POST['email']) : '';
+    $full_name = isset($_POST['full_name']) ? trim($_POST['full_name']) : '';
     $mobile = isset($_POST['mobile']) ? trim($_POST['mobile']) : '';
     $address = isset($_POST['address']) ? trim($_POST['address']) : '';
+    $order_type = isset($_POST['order_type']) ? trim($_POST['order_type']) : 'Delivery';
+    $table_number = isset($_POST['table_number']) ? trim($_POST['table_number']) : null;
+    $special_instructions = isset($_POST['special_instructions']) ? trim($_POST['special_instructions']) : null;
+    $payment_method = isset($_POST['payment_method']) ? trim($_POST['payment_method']) : 'Cash on Delivery';
 
     // Basic validation
-    if ($menu_id <= 0 || empty($menu_name) || $quantity <= 0 || $price <= 0 || $total_price <= 0 || empty($email) || !preg_match('/^[0-9]{10}$/', $mobile) || empty($address)) {
+    if ($menu_id <= 0 || empty($menu_name) || $quantity <= 0 || $price <= 0 || $total_price <= 0 || empty($full_name) || !preg_match('/^[0-9]{10}$/', $mobile) || empty($address)) {
         respond_menu_order([
             'success' => false,
-            'message' => 'Invalid order data. Please fill in all fields correctly.',
+            'message' => 'Invalid order data. Please fill in all required fields correctly.',
         ], $isAjax);
     }
 
     // Insert into DB
-    $stmt = $conn->prepare("INSERT INTO orders (menu_id, menu_name, price, quantity, total_price, email, mobile, address, order_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())");
-    $stmt->bind_param("isdidsss", $menu_id, $menu_name, $price, $quantity, $total_price, $email, $mobile, $address);
+    $stmt = $conn->prepare("INSERT INTO orders (menu_id, menu_name, price, quantity, total_price, email, full_name, mobile, address, order_type, table_number, special_instructions, payment_method, order_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())");
+    $stmt->bind_param("isdidssssssss", $menu_id, $menu_name, $price, $quantity, $total_price, $email, $full_name, $mobile, $address, $order_type, $table_number, $special_instructions, $payment_method);
 
     if ($stmt->execute()) {
         respond_menu_order([

@@ -65,7 +65,7 @@ $positive_percent = $total_feedback > 0 ? round(($positive_feedback / $total_fee
   <title>Customer Feedback - Masu Ko Jhol</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,0,0" />
   <!-- Ensure this path is correct based on your folder structure -->
-  <link rel="stylesheet" href="../assets/css/adminstyle.css">
+  <link rel="stylesheet" href="../assets/css/adminstyle.css?v=<?= filemtime(__DIR__ . '/../assets/css/adminstyle.css') ?>">
   
   <style>
     /* Internal styles to complement adminstyle.css */

@@ -84,11 +84,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_action'])) {
             
         case 'checkout':
             if (!empty($_SESSION['cart'])) {
-                $email = $user['email'] ?? '';
+                $email = trim($_POST['email'] ?? '');
+                $full_name = trim($_POST['full_name'] ?? '');
                 $mobile = trim($_POST['mobile'] ?? '');
                 $address = trim($_POST['address'] ?? '');
+                $order_type = trim($_POST['order_type'] ?? 'Delivery');
+                $table_number = trim($_POST['table_number'] ?? '');
+                $special_instructions = trim($_POST['special_instructions'] ?? '');
+                $payment_method = trim($_POST['payment_method'] ?? 'Cash on Delivery');
                 
-                if (empty($email) || empty($mobile) || empty($address)) {
+                if (empty($full_name) || empty($mobile) || empty($address)) {
                     $response['message'] = 'Missing required checkout information';
                     break;
                 }
@@ -108,7 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_action'])) {
                         continue;
                     }
                     
-                    $stmt = $conn->prepare("INSERT INTO orders (menu_id, email, menu_name, quantity, price, total_price, mobile, address, status, order_time, order_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Confirmed', NOW(), CURDATE())");
+                    $stmt = $conn->prepare("INSERT INTO orders (menu_id, email, full_name, menu_name, quantity, price, total_price, mobile, address, order_type, table_number, special_instructions, payment_method, status, order_time, order_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Confirmed', NOW(), CURDATE())");
                     
                     if (!$stmt) {
                         error_log('Prepare statement failed: ' . $conn->error);
@@ -116,15 +121,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_action'])) {
                         break;
                     }
                     
-                    $result = $stmt->bind_param("issiddss", 
+                    $result = $stmt->bind_param("isssiddssssss", 
                         $item['menu_id'],
                         $email,
+                        $full_name,
                         $item['name'],
                         $item['quantity'],
                         $item['price'],
                         $item['total'],
                         $mobile,
-                        $address
+                        $address,
+                        $order_type,
+                        $table_number,
+                        $special_instructions,
+                        $payment_method
                     );
                     
                     if (!$result) {
@@ -213,7 +223,7 @@ $cart = array_values($_SESSION['cart'] ?? []);
           <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileMenu">
             <li><h6 class="dropdown-header"><?php echo htmlspecialchars($user['email'] ?? ''); ?></h6></li>
             <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="./update_password.php"><i class="fa fa-key me-2"></i>Update Password</a></li>
+            
             <li><a class="dropdown-item" href="<?php echo url('includes/logout.php'); ?>"><i class="fa fa-right-from-bracket me-2"></i>Logout</a></li>
           </ul>
         </div>

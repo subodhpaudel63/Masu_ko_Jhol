@@ -145,7 +145,7 @@ $categories = ['starter', 'breakfast', 'lunch', 'dinner'];
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Menu Management - Masu Ko Jhol</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,0,0" />
-  <link rel="stylesheet" href="../assets/css/adminstyle.css">
+  <link rel="stylesheet" href="../assets/css/adminstyle.css?v=<?= filemtime(__DIR__ . '/../assets/css/adminstyle.css') ?>">
   
   <style>
     .menu-sections {
@@ -533,15 +533,7 @@ $categories = ['starter', 'breakfast', 'lunch', 'dinner'];
            </script>
            <?php endif; ?>
 
-           <!-- Quick Links Section -->
-           <div class="quick-links">
-               <h3>Quick Links</h3>
-               <ul>
-                   <li><a href="../client/menu.php" target="_blank">View Frontend Menu Page</a> - See how customers view the menu</li>
-                   <li><a href="../client/cart.php" target="_blank">View Customer Cart</a> - Test the shopping cart functionality</li>
-                   <li><a href="analytics.php">View Menu Analytics</a> - See sales data and popular items</li>
-               </ul>
-           </div>
+           
 
            <!-- Add New Item Button -->
            <div style="margin-bottom: 2rem;">

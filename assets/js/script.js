@@ -39,19 +39,35 @@ function mkjBindFormBusyState(formSelector) {
 function mkjInitBookingForm() {
   const bookingForm = document.getElementById('bookingForm');
   const reservationDate = document.getElementById('reservationDate');
+  
   if (!bookingForm || !reservationDate) return;
+  
+  // Get today's date in YYYY-MM-DD format based on local timezone
+  // This is required for the HTML 'date' input field format
   const today = new Date().toISOString().split('T')[0];
+  
+  // Prevent users from clicking past dates on the calendar picker UI
+  // by setting the minimum allowed date to today
   reservationDate.setAttribute('min', today);
+  
   bookingForm.addEventListener('submit', function (e) {
+    // Extra fallback validation: if the user somehow submits a past date 
+    // (e.g., by manually typing it), we block the form submission
     if (reservationDate.value && reservationDate.value < today) {
-      e.preventDefault();
-      reservationDate.value = '';
+      e.preventDefault(); // Stop form submission
+      reservationDate.value = ''; // Clear the invalid date
       reservationDate.focus();
+      
+      // Show HTML5 validation error popup to the user
       reservationDate.setCustomValidity('Please select today or a future date.');
       reservationDate.reportValidity();
       return;
     }
+    
+    // Clear any previous custom errors if the date is valid
     reservationDate.setCustomValidity('');
+    
+    // Prevent double-clicking by disabling the submit button and changing text
     const submitBtn = bookingForm.querySelector('button[type="submit"]');
     if (submitBtn) {
       submitBtn.innerHTML = 'Booking...';
@@ -80,6 +96,21 @@ document.addEventListener("DOMContentLoaded", function() {
     loader.style.opacity = '0';
     loader.style.display = 'none';
   }, 3000);
+
+  // Toggle Table Number visibility based on Order Type
+  document.addEventListener('change', function(e) {
+      if (e.target.matches('.order-type-radio')) {
+          const formGroup = e.target.closest('form') || document;
+          const tableWrapper = formGroup.querySelector('#table_number_wrapper, #drawer_table_number_wrapper');
+          if (tableWrapper) {
+              if (e.target.value === 'Dine In') {
+                  tableWrapper.classList.remove('mkj-hidden');
+              } else {
+                  tableWrapper.classList.add('mkj-hidden');
+              }
+          }
+      }
+  });
 });
 
 // Header functionality
