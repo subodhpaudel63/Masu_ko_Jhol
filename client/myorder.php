@@ -146,12 +146,12 @@ if (isset($_COOKIE['user_img'])) {
                 const res = await fetch('../includes/orders_fetch.php', { credentials: 'same-origin' });
                 const data = await res.json();
                 if (!data.ok) {
-                    document.getElementById('orders-body').innerHTML = `<tr><td colspan="6" class="text-center text-muted">Please login to view your orders.</td></tr>`;
+                    document.getElementById('orders-body').innerHTML = `<tr><td colspan="4" class="text-center text-muted">Please login to view your orders.</td></tr>`;
                     return;
                 }
                 const tbody = document.getElementById('orders-body');
                 if (!data.orders || data.orders.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted">No orders found.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">No orders found.</td></tr>`;
                     previousOrders = {};
                     return;
                 }
@@ -159,21 +159,27 @@ if (isset($_COOKIE['user_img'])) {
                 // Check for status changes and create visual feedback
                 const currentOrders = {};
                 data.orders.forEach(order => {
-                    currentOrders[order.order_id] = order.status;
+                    currentOrders[order.order_number || order.order_id] = order.status;
                 });
                 
                 tbody.innerHTML = data.orders.map(o => {
-                    const previousStatus = previousOrders[o.order_id];
+                    const orderRef = o.order_number || ('ORD-' + String(o.order_id).padStart(4, '0'));
+                    const previousStatus = previousOrders[orderRef];
                     const statusChanged = previousStatus && previousStatus !== o.status;
                     const statusClass = `status-${o.status.toLowerCase()}`;
                     
+                    const itemsHtml = o.items.map(it => 
+                        `<div class="d-flex justify-content-between align-items-center py-1" style="border-bottom: 1px dashed #eee;">
+                            <span>${it.menu_name} <span class="text-muted">× ${it.quantity}</span></span>    
+                            <span class="text-muted" style="font-size:0.85rem;">Rs. ${Number(it.total_price).toFixed(2)}</span>
+                        </div>`
+                    ).join('');
+                    
                     return `
                     <tr>
-                        <td>#${o.order_id}</td>
-                        <td>${o.menu_name}</td>
-                        <td>Rs. ${Number(o.price).toFixed(2)}</td>
-                        <td>${o.quantity}</td>
-                        <td>Rs. ${Number(o.total_price).toFixed(2)}</td>
+                        <td style="font-weight: 700; color: #0d47a1;">${orderRef}</td>
+                        <td style="min-width: 250px;">${itemsHtml}</td>
+                        <td style="font-weight: 700; font-size: 1.05rem;">Rs. ${Number(o.total_amount).toFixed(2)}</td>
                         <td>
                             <div class="status-container">
                                 <span class="status-badge ${statusClass}" data-status="${o.status}" data-order-id="${o.order_id}" ${statusChanged ? 'data-status-changed="true"' : ''}>${o.status}</span>
@@ -226,7 +232,7 @@ if (isset($_COOKIE['user_img'])) {
 
     <div class="loader">
       <i class="fas fa-utensils loader-icone"></i>
-      <p>Masu Ko Jhol</p>
+      <p>Mero Bhoj</p>
       <div class="loader-ellipses">
         <span></span>
         <span></span>
@@ -239,7 +245,7 @@ if (isset($_COOKIE['user_img'])) {
         <div class="logo">
           <a href="./index.php">
             <i class="fa fa-utensils me-3"></i>
-            <h1 class="mb-0">Masu Ko Jhol</h1>
+            <h1 class="mb-0">Mero Bhoj</h1>
           </a>
         </div>
         <div class="menus">
@@ -303,7 +309,7 @@ if (isset($_COOKIE['user_img'])) {
           <div class="logo">
             <a href="./index.php">
               <i class="fa fa-utensils me-3"></i>
-              <h1 class="mb-0">Masu Ko Jhol</h1>
+              <h1 class="mb-0">Mero Bhoj</h1>
             </a>
           </div>
         </div>
@@ -366,18 +372,16 @@ if (isset($_COOKIE['user_img'])) {
         </div>
         <div class="table-responsive bg-light p-3 rounded shadow-sm">
             <table class="table align-middle">
-<thead>
+                <thead>
                     <tr>
                         <th>Order #</th>
-                        <th>Item</th>
-                        <th>Price</th>
-                        <th>Qty</th>
-                        <th>Total</th>
+                        <th>Purchased Items</th>
+                        <th>Total Amount</th>
                         <th>Status & Date</th>
                     </tr>
                 </thead>
-<tbody id="orders-body">
-                    <tr><td colspan="6" class="text-center text-muted">Loading orders...</td></tr>
+                <tbody id="orders-body">
+                    <tr><td colspan="4" class="text-center text-muted">Loading orders...</td></tr>
                 </tbody>
             </table>
         </div>

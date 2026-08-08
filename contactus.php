@@ -23,7 +23,7 @@ if (!$user) {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Masu Ko Jhol | Contact</title>
+    <title>Mero Bhoj | Contact</title>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
@@ -652,7 +652,7 @@ if (!$user) {
     
     <div class="loader">
       <i class="fas fa-utensils loader-icone"></i>
-      <p>Masu Ko Jhol</p>
+      <p>Mero Bhoj</p>
       <div class="loader-ellipses">
         <span></span>
         <span></span>
@@ -665,7 +665,7 @@ if (!$user) {
         <div class="logo">
           <a href="./index.php">
             <i class="fa fa-utensils me-3 text-dark"></i>
-            <h1 class="mb-0 text-dark">Masu Ko Jhol</h1>
+            <h1 class="mb-0 text-dark">Mero Bhoj</h1>
           </a>
         </div>
         <div class="menus">
@@ -716,7 +716,7 @@ if (!$user) {
           <div class="logo">
             <a href="./index.php">
               <i class="fa fa-utensils me-3 text-dark"></i>
-              <h1 class="mb-0 text-dark">Masu Ko Jhol</h1>
+              <h1 class="mb-0 text-dark">Mero Bhoj</h1>
             </a>
           </div>
         </div>

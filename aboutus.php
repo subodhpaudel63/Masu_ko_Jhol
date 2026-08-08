@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Masu Ko Jhol - About</title>
+    <title>Mero Bhoj - About</title>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
@@ -74,7 +74,7 @@
     <body>
     <div class="loader">
       <i class="fas fa-utensils loader-icone"></i>
-      <p>Masu Ko Jhol</p>
+      <p>Mero Bhoj</p>
       <div class="loader-ellipses">
         <span></span>
         <span></span>
@@ -87,7 +87,7 @@
         <div class="logo">
           <a href="./index.php">
             <i class="fa fa-utensils me-3 text-dark"></i>
-            <h1 class="mb-0 text-dark">Masu Ko Jhol</h1>
+            <h1 class="mb-0 text-dark">Mero Bhoj</h1>
           </a>
         </div>
         <div class="menus">
@@ -148,7 +148,7 @@
           <div class="logo">
             <a href="./index.php">
               <i class="fa fa-utensils me-3 text-dark"></i>
-              <h1 class="mb-0 text-dark">Masu Ko Jhol</h1>
+              <h1 class="mb-0 text-dark">Mero Bhoj</h1>
             </a>
           </div>
         </div>
@@ -251,7 +251,7 @@
         <div class="container">
           <div class="row" data-aos="fade-right">
             <h2 class="text-center display-6 fw-bold">
-              Masu Ko Jhol Glory Story
+              Mero Bhoj Glory Story
             </h2>
             <div
               class="about-line d-flex justify-content-center align-items-center"
@@ -321,7 +321,7 @@
                 <div>
                   <p class="text-center"><strong>16.10.2000:</strong> Humble Beginnings</p>
                   <p class="text-center">
-                    Masu Ko Jhol started as a small family-run restaurant in the heart of the city. With just a handful of tables and a passion for authentic Nepali flavors, we served our first customers with traditional recipes passed down through generations.
+                    Mero Bhoj started as a small family-run restaurant in the heart of the city. With just a handful of tables and a passion for authentic Nepali flavors, we served our first customers with traditional recipes passed down through generations.
                   </p>
                   <p class="text-center">
                     Our founder, Subodh Paudel, had a vision to bring the authentic taste of Nepali cuisine to food lovers everywhere, starting with his signature spicy meat curry that would become our namesake dish.
@@ -339,7 +339,7 @@
                 <div>
                   <p class="text-center"><strong>18.07.2004:</strong> Recognition & Awards</p>
                   <p class="text-center">
-                    Masu Ko Jhol received its first culinary award for "Best Ethnic Cuisine" from the City Food Council. This recognition motivated us to further refine our recipes and service quality.
+                    Mero Bhoj received its first culinary award for "Best Ethnic Cuisine" from the City Food Council. This recognition motivated us to further refine our recipes and service quality.
                   </p>
                   <p class="text-center">
                     We introduced our signature spice blends and began training our chefs in traditional cooking techniques to maintain consistency across all our locations.
@@ -366,7 +366,7 @@
                 <div>
                   <p class="text-center"><strong>30.09.2016:</strong> Regional Chain</p>
                   <p class="text-center">
-                    Masu Ko Jhol had grown to five locations across the region, becoming a recognized name for authentic Nepali cuisine. We established our own spice farm to ensure consistent quality.
+                    Mero Bhoj had grown to five locations across the region, becoming a recognized name for authentic Nepali cuisine. We established our own spice farm to ensure consistent quality.
                   </p>
                   <p class="text-center">
                     With our growing reputation, we began training programs for aspiring Nepali chefs and started exporting our signature spice blends to international markets.
@@ -391,7 +391,7 @@
                 <div class="slider-content pt-5 pb-4 mx-4" data-aos="fade-down-left">
                   <div>
                     <div class="testi-content">
-                      <p>"The authentic flavors of Nepal in every bite! Masu Ko Jhol brings back memories of my grandmother's cooking. Their dal bhat is exactly how I remember it from my childhood in Bangsing."</p>
+                      <p>"The authentic flavors of Nepal in every bite! Mero Bhoj brings back memories of my grandmother's cooking. Their dal bhat is exactly how I remember it from my childhood in Bangsing."</p>
                     </div>
                     <div class="d-flex justify-content-center mb-3">
                       <img src="./assets/images/testi-signal.png" alt="">
@@ -403,7 +403,7 @@
                   </div>
                   <div>
                     <div class="testi-content">
-                      <p>"As someone who has never been to Nepal, Masu Ko Jhol gave me an incredible introduction to Nepali cuisine. The atmosphere is warm and welcoming, and the food is absolutely delicious!"</p>
+                      <p>"As someone who has never been to Nepal, Mero Bhoj gave me an incredible introduction to Nepali cuisine. The atmosphere is warm and welcoming, and the food is absolutely delicious!"</p>
                     </div>
                     <div class="d-flex justify-content-center mb-3">
                       <img src="./assets/images/testi-signal.png" alt="">
@@ -415,7 +415,7 @@
                   </div>
                   <div>
                     <div class="testi-content">
-                      <p>"I've been coming to Masu Ko Jhol for over five years now, and they never disappoint. Their momos are the best I've had outside of Nepal, and their service is consistently excellent."</p>
+                      <p>"I've been coming to Mero Bhoj for over five years now, and they never disappoint. Their momos are the best I've had outside of Nepal, and their service is consistently excellent."</p>
                     </div>
                     <div class="d-flex justify-content-center mb-3">
                       <img src="./assets/images/testi-signal.png" alt="">
@@ -427,7 +427,7 @@
                   </div>
                   <div>
                     <div class="testi-content">
-                      <p>"The perfect spot for family gatherings! Masu Ko Jhol offers not just great food but an authentic cultural experience. Their thukpa warmed my heart on a cold winter evening."</p>
+                      <p>"The perfect spot for family gatherings! Mero Bhoj offers not just great food but an authentic cultural experience. Their thukpa warmed my heart on a cold winter evening."</p>
                     </div>
                     <div class="d-flex justify-content-center mb-3">
                       <img src="./assets/images/testi-signal.png" alt="">
@@ -476,7 +476,7 @@
                 <div class="box-inner">
                   <div class="box-wrapper px-4">
                     <h2 class="pb-2">FRESH MENU</h2>
-                    <p class="pb-4">Our kitchen brings you the true taste of Nepal with dishes prepared from locally sourced ingredients and traditional recipes. From the comforting masu ko jhol to crispy sel roti, every plate is crafted with care to preserve the flavors of home. Freshness isn’t just a promise—it’s our way of life.</p>
+                    <p class="pb-4">Our kitchen brings you the true taste of Nepal with dishes prepared from locally sourced ingredients and traditional recipes. From the comforting Mero Bhoj to crispy sel roti, every plate is crafted with care to preserve the flavors of home. Freshness isn’t just a promise—it’s our way of life.</p>
 
                     <div class="book-a-table">
                       <div class="anim-layer"></div>
@@ -497,7 +497,7 @@
                 <div class="box-inner">
                   <div class="box-wrapper px-4">
                     <h2 class="pb-2">VARIOUS DRINK</h2>
-                    <p class="pb-4">In Nepali culture, meals are more than nourishment — they are an act of care and community. We prepare our dishes with fresh, seasonal ingredients, honoring the tradition of cooking with the right hand, a symbol of purity and respect. Every plate, from masu ko jhol to dal bhat, is served with the warmth of home and the values of hospitality that define Nepali life.</p>
+                    <p class="pb-4">In Nepali culture, meals are more than nourishment — they are an act of care and community. We prepare our dishes with fresh, seasonal ingredients, honoring the tradition of cooking with the right hand, a symbol of purity and respect. Every plate, from Mero Bhoj to dal bhat, is served with the warmth of home and the values of hospitality that define Nepali life.</p>
 
 
 

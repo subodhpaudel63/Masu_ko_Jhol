@@ -17,6 +17,8 @@ $request_uri = trim($request_uri, '/');
 switch ($request_uri) {
     // Public routes
     case '':
+        require __DIR__ . '/index.php';
+        break;
     case 'home':
     case 'index.php':
     case 'aboutus':
@@ -47,6 +49,10 @@ switch ($request_uri) {
     case 'admin/users':
     case 'admin/bookings':
        
+        if ($request_uri === 'admin/myorder') {
+            require __DIR__ . '/admin/orders_page.php';
+            break;
+        }
         require __DIR__ . "/admin/" . basename($request_uri) . ".php";
         break;
 

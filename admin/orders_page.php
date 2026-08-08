@@ -21,10 +21,10 @@ $where = [];
 $params = [];
 $types = '';
 if ($search !== '') {
-    $where[] = "(o.menu_name LIKE ? OR o.email LIKE ? OR o.mobile LIKE ? OR o.address LIKE ? OR o.admin_note LIKE ? OR o.full_name LIKE ? OR o.order_type LIKE ? OR o.special_instructions LIKE ?)";
+    $where[] = "(o.menu_name LIKE ? OR o.email LIKE ? OR o.mobile LIKE ? OR o.address LIKE ?)";
     $like = '%' . $search . '%';
-    $params = array_merge($params, [$like, $like, $like, $like, $like, $like, $like, $like]);
-    $types .= 'ssssssss';
+    $params = array_merge($params, [$like, $like, $like, $like]);
+    $types .= 'ssss';
 }
 if ($statusFilter !== '') {
     // Map visual tab labels to database status values
@@ -43,7 +43,7 @@ if ($statusFilter !== '') {
     }
 }
 
-$sql = "SELECT o.order_id, o.menu_id, o.menu_name, o.email, o.mobile, o.address, o.quantity, o.price, o.total_price, o.status, o.order_time, o.admin_note, o.full_name, o.order_type, o.table_number, o.special_instructions, o.payment_method, m.menu_image FROM orders o LEFT JOIN menu m ON o.menu_id = m.menu_id";
+$sql = "SELECT o.order_id, o.order_number, o.menu_id, o.menu_name, o.email, o.mobile, o.address, o.quantity, o.price, o.total_price, o.status, o.order_time, o.order_date, m.menu_image FROM orders o LEFT JOIN menu m ON o.menu_id = m.menu_id";
 if ($where) $sql .= ' WHERE ' . implode(' AND ', $where);
 $sql .= " ORDER BY o.$orderBySql";
 
@@ -55,8 +55,40 @@ if ($stmt && $params) {
 } else {
     $res = $conn->query($sql);
 }
-$orders = [];
-if ($res) { while ($row = $res->fetch_assoc()) { $orders[] = $row; } }
+
+$rawOrders = [];
+if ($res) { while ($row = $res->fetch_assoc()) { $rawOrders[] = $row; } }
+
+// Group raw order rows by order_number (or order_id fallback)
+$grouped = [];
+foreach ($rawOrders as $row) {
+    $num = !empty($row['order_number']) ? $row['order_number'] : ('ORD-' . str_pad((string)$row['order_id'], 4, '0', STR_PAD_LEFT));
+    if (!isset($grouped[$num])) {
+        $grouped[$num] = [
+            'order_number' => $num,
+            'order_id' => (int)$row['order_id'],
+            'email' => $row['email'],
+            'mobile' => $row['mobile'],
+            'address' => $row['address'],
+            'status' => $row['status'],
+            'order_time' => $row['order_time'],
+            'order_date' => $row['order_date'],
+            'total_amount' => 0.0,
+            'items' => []
+        ];
+    }
+    $grouped[$num]['total_amount'] += (float)$row['total_price'];
+    $grouped[$num]['items'][] = [
+        'order_id' => (int)$row['order_id'],
+        'menu_id' => (int)$row['menu_id'],
+        'menu_name' => $row['menu_name'],
+        'quantity' => (int)$row['quantity'],
+        'price' => (float)$row['price'],
+        'total_price' => (float)$row['total_price'],
+        'menu_image' => $row['menu_image']
+    ];
+}
+$orders = array_values($grouped);
 
 // Calculate global, unfiltered statistics for summary widgets
 $all_orders_count = 0;
@@ -66,21 +98,26 @@ $out_delivery_count = 0;
 $preparing_count = 0;
 $cancelled_count = 0;
 
-$stats_res = $conn->query("SELECT status, total_price FROM orders");
+$stats_res = $conn->query("SELECT COALESCE(NULLIF(order_number, ''), CONCAT('ORD-', LPAD(order_id, 4, '0'))) as ord_num, status, total_price FROM orders");
 if ($stats_res) {
+    $seenOrders = [];
     while ($row = $stats_res->fetch_assoc()) {
-        $all_orders_count++;
+        $num = $row['ord_num'];
         $total_revenue += (float)$row['total_price'];
-        if ($row['status'] === 'Delivering') $delivered_count++;
-        elseif ($row['status'] === 'Shipping') $out_delivery_count++;
-        elseif ($row['status'] === 'Ongoing') $preparing_count++;
-        elseif ($row['status'] === 'Cancelled') $cancelled_count++;
+        if (!isset($seenOrders[$num])) {
+            $seenOrders[$num] = $row['status'];
+            $all_orders_count++;
+            if ($row['status'] === 'Delivering') $delivered_count++;
+            elseif ($row['status'] === 'Shipping') $out_delivery_count++;
+            elseif ($row['status'] === 'Ongoing') $preparing_count++;
+            elseif ($row['status'] === 'Cancelled') $cancelled_count++;
+        }
     }
 }
 
 // Fetch the 3 most recent orders for the sidebar activity list
 $recent_orders = [];
-$recent_res = $conn->query("SELECT order_id, full_name, status, order_time FROM orders ORDER BY order_id DESC LIMIT 3");
+$recent_res = $conn->query("SELECT order_id, order_number, email, status, order_time FROM orders GROUP BY COALESCE(NULLIF(order_number, ''), CONCAT('ORD-', LPAD(order_id, 4, '0'))) ORDER BY order_id DESC LIMIT 3");
 if ($recent_res) {
     while ($row = $recent_res->fetch_assoc()) {
         $recent_orders[] = $row;
@@ -93,7 +130,7 @@ if ($recent_res) {
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Orders - Masu Ko Jhol</title>
+  <title>Orders - Mero Bhoj</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,0,0" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="../assets/css/adminstyle.css?v=<?= filemtime(__DIR__ . '/../assets/css/adminstyle.css') ?>">
@@ -122,6 +159,9 @@ if ($recent_res) {
       grid-template-columns: 1fr 340px;
       gap: 1.5rem;
       align-items: start;
+    }
+    .orders-main-content {
+      min-width: 0;
     }
     @media screen and (max-width: 1024px) {
       .orders-layout {
@@ -206,6 +246,69 @@ if ($recent_res) {
       padding: 1.5rem;
       border-radius: var(--border-radius-3);
       box-shadow: var(--box-shadow);
+      min-width: 0;
+      width: 100%;
+      overflow: visible;
+      position: sticky;
+      top: 1.25rem;
+      align-self: start;
+    }
+    .tracking-sidebar * {
+      min-width: 0;
+      box-sizing: border-box;
+    }
+    .tracking-sidebar h2,
+    .tracking-sidebar h3,
+    .tracking-sidebar p,
+    .tracking-sidebar span,
+    .tracking-sidebar strong,
+    .tracking-sidebar small {
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+    .tracking-sidebar > div {
+      max-width: 100%;
+    }
+    .tracking-sidebar .recent-orders-list,
+    .tracking-sidebar .tracking-legend {
+      width: 100%;
+      max-width: 100%;
+    }
+    .recent_order table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      min-width: 1100px;
+    }
+    .recent_order td,
+    .recent_order th {
+      white-space: nowrap;
+    }
+    .order-actions-cell {
+      text-align: center;
+      min-width: 92px;
+    }
+    .btn-booking-delete {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: #fee2e2 !important;
+      color: #dc2626 !important;
+      border: 1px solid #fecaca !important;
+      display: inline-flex !important;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(220, 38, 38, 0.14);
+      font-size: 1rem;
+      padding: 0 !important;
+    }
+    .btn-booking-delete:hover {
+      background: #fecaca !important;
+      color: #b91c1c !important;
+      transform: translateY(-1px);
+    }
+    .btn-booking-delete i {
+      pointer-events: none;
     }
 
     /* Table Badges */
@@ -519,71 +622,91 @@ if ($recent_res) {
                     </div>
 
                     <!-- Table container -->
-                    <div class="recent_order" style="margin-top: 0; box-shadow: var(--box-shadow); background: var(--clr-white); padding: var(--card-padding); border-radius: var(--card-border-radius);">
-                         <table style="width: 100%; border-collapse: collapse; text-align: left;">
-                             <thead>
-                              <tr style="border-bottom: 2px solid var(--clr-info-light); color: var(--clr-dark-variant); font-size: 0.85rem;">
-                                <th style="padding: 0.8rem 0.5rem;">Order ID</th>
-                                <th style="padding: 0.8rem 0.5rem;">Customer</th>
-                                <th style="padding: 0.8rem 0.5rem;">Items</th>
-                                <th style="padding: 0.8rem 0.5rem;">Amount</th>
-                                <th style="padding: 0.8rem 0.5rem;">Payment</th>
-                                <th style="padding: 0.8rem 0.5rem;">Status</th>
-                                <th style="padding: 0.8rem 0.5rem;">Order Time</th>
-                                <th style="padding: 0.8rem 0.5rem; text-align: center;">Actions</th>
-                              </tr>
-                             </thead>
-                              <tbody>
-                                <?php if (!$orders): ?>
-                                  <tr><td colspan="8" class="text-center text-muted" style="padding: 2rem;">No orders found.</td></tr>
-                                <?php else: foreach ($orders as $o): 
-                                    $pm = $o['payment_method'] === 'Pay at Restaurant' ? 'Paid Online' : 'Cash on Delivery'; 
-                                    $pmClass = $o['payment_method'] === 'Pay at Restaurant' ? 'payment-online' : 'payment-cod';
-                                    
-                                    $stBadgeClass = 'status-new-badge';
-                                    $visualStatus = 'New';
-                                    if ($o['status'] === 'Ongoing') { $stBadgeClass = 'status-prep-badge'; $visualStatus = 'Preparing'; }
-                                    elseif ($o['status'] === 'Shipping') { $stBadgeClass = 'status-out-badge'; $visualStatus = 'Out for Delivery'; }
-                                    elseif ($o['status'] === 'Delivering') { $stBadgeClass = 'status-del-badge'; $visualStatus = 'Delivered'; }
-                                    elseif ($o['status'] === 'Cancelled') { $stBadgeClass = 'status-can-badge'; $visualStatus = 'Cancelled'; }
-                                ?>
-                                  <tr style="border-bottom: 1px solid var(--clr-info-light);">
-                                     <td style="padding: 1rem 0.5rem; font-weight: 600; color: var(--clr-dark-variant);">
-                                        <a href="order_view.php?id=<?php echo intval($o['order_id']); ?>" style="color: inherit; text-decoration: none; display: inline-flex; align-items: center;">
-                                            <i class="fa fa-chevron-right" style="font-size: 0.7rem; margin-right: 0.4rem; color: var(--clr-primary);"></i>
-                                            ORD-<?php echo sprintf("%04d", $o['order_id']); ?>
-                                        </a>
+                      <div class="recent_order" style="margin-top: 0; box-shadow: var(--box-shadow); background: var(--clr-white); padding: var(--card-padding); border-radius: var(--card-border-radius); overflow-x: auto;">
+                          <table>
+                              <thead>
+                               <tr style="border-bottom: 2px solid var(--clr-info-light); color: var(--clr-dark-variant); font-size: 0.85rem;">
+                                 <th style="padding: 0.8rem 0.5rem;">Order Number</th>
+                                 <th style="padding: 0.8rem 0.5rem;">Customer</th>
+                                 <th style="padding: 0.8rem 0.5rem;">Purchased Items</th>
+                                 <th style="padding: 0.8rem 0.5rem;">Total Amount</th>
+                                 <th style="padding: 0.8rem 0.5rem;">Payment</th>
+                                 <th style="padding: 0.8rem 0.5rem;">Status</th>
+                                 <th style="padding: 0.8rem 0.5rem;">Order Time</th>
+                                 <th style="padding: 0.8rem 0.5rem; text-align: center;">Actions</th>
+                               </tr>
+                              </thead>
+                               <tbody>
+                                 <?php if (!$orders): ?>
+                                   <tr><td colspan="8" class="text-center text-muted" style="padding: 2rem;">No orders found.</td></tr>
+                                 <?php else: foreach ($orders as $o): 
+                                     $pm = 'Cash on Delivery'; 
+                                     $pmClass = 'payment-cod';
+                                     
+                                     $stBadgeClass = 'status-new-badge';
+                                     $visualStatus = 'New';
+                                     if ($o['status'] === 'Ongoing') { $stBadgeClass = 'status-prep-badge'; $visualStatus = 'Preparing'; }
+                                     elseif ($o['status'] === 'Shipping') { $stBadgeClass = 'status-out-badge'; $visualStatus = 'Out for Delivery'; }
+                                     elseif ($o['status'] === 'Delivering') { $stBadgeClass = 'status-del-badge'; $visualStatus = 'Delivered'; }
+                                     elseif ($o['status'] === 'Cancelled') { $stBadgeClass = 'status-can-badge'; $visualStatus = 'Cancelled'; }
+                                     
+                                     $firstItem = $o['items'][0] ?? null;
+                                     $itemsCount = count($o['items']);
+                                 ?>
+                                   <tr id="order-row-<?php echo intval($o['order_id']); ?>" style="border-bottom: 1px solid var(--clr-info-light);">
+                                      <td style="padding: 1rem 0.5rem; font-weight: 600; color: var(--clr-dark-variant);">
+                                         <a href="order_view.php?order_number=<?php echo urlencode($o['order_number']); ?>" style="color: inherit; text-decoration: none; display: inline-flex; align-items: center; font-weight:700;">
+                                             <i class="fa fa-chevron-right" style="font-size: 0.7rem; margin-right: 0.4rem; color: var(--clr-primary);"></i>
+                                             <?php echo htmlspecialchars($o['order_number']); ?>
+                                         </a>
+                                      </td>
+                                      <td style="padding: 1rem 0.5rem;">
+                                        <strong style="color: var(--clr-dark);"><?php echo htmlspecialchars($o['email'] ?: 'N/A'); ?></strong><br>
+                                        <small class="text-muted" style="font-size:0.75rem;"><?php echo htmlspecialchars($o['mobile'] ?: ''); ?></small>
+                                      </td>
+                                     <td style="padding: 1rem 0.5rem; min-width: 200px;">
+                                       <?php if ($firstItem): ?>
+                                       <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.3rem;">
+                                           <img src="../<?php echo htmlspecialchars($firstItem['menu_image'] ?: 'assets/images/placeholder.jpg'); ?>" style="width: 32px; height: 32px; border-radius: 6px; object-fit: cover; border: 1px solid var(--clr-border);">
+                                           <div>
+                                               <strong style="color: var(--clr-dark); font-size: 0.85rem;"><?php echo htmlspecialchars($firstItem['menu_name']); ?></strong>
+                                               <span class="text-muted" style="font-size: 0.75rem;">× <?php echo intval($firstItem['quantity']); ?></span>
+                                           </div>
+                                       </div>
+                                       <?php endif; ?>
+                                       <?php if ($itemsCount > 1): ?>
+                                       <button type="button" onclick="toggleAdminOrderItems(<?php echo intval($o['order_id']); ?>)" id="btn-toggle-<?php echo intval($o['order_id']); ?>" style="background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 12px; padding: 2px 8px; font-size: 0.75rem; cursor: pointer; color: #334155; font-weight:600;">
+                                           <i class="fa fa-chevron-down"></i> View all <?php echo $itemsCount; ?> items
+                                       </button>
+                                       <div id="items-list-<?php echo intval($o['order_id']); ?>" style="display: none; margin-top: 0.5rem; background: #fafafa; padding: 8px; border-radius: 6px; border: 1px solid #eee;">
+                                           <?php foreach ($o['items'] as $it): ?>
+                                           <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; padding: 3px 0; border-bottom: 1px dashed #e2e8f0;">
+                                               <span><strong><?php echo htmlspecialchars($it['menu_name']); ?></strong> × <?php echo intval($it['quantity']); ?></span>
+                                               <span class="text-muted">Rs. <?php echo number_format((float)$it['total_price'], 2); ?></span>
+                                           </div>
+                                           <?php endforeach; ?>
+                                       </div>
+                                       <?php endif; ?>
                                      </td>
-                                    <td style="padding: 1rem 0.5rem;">
-                                      <strong style="color: var(--clr-dark);"><?php echo htmlspecialchars($o['full_name'] ?: 'N/A'); ?></strong><br>
-                                      <a href="orders_page.php?q=<?php echo urlencode($o['email']); ?>" title="Filter by Customer" style="font-size: 0.75rem; text-decoration: underline; color: var(--clr-primary);"><?php echo htmlspecialchars($o['email']); ?></a>
-                                    </td>
-                                    <td style="padding: 1rem 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
-                                      <img src="../<?php echo htmlspecialchars($o['menu_image'] ?: 'assets/images/placeholder.jpg'); ?>" style="width: 35px; height: 35px; border-radius: 6px; object-fit: cover; border: 1px solid var(--clr-border);">
-                                      <div>
-                                          <strong style="color: var(--clr-dark); font-size: 0.85rem;"><?php echo htmlspecialchars($o['menu_name']); ?></strong><br>
-                                          <small class="text-muted" style="font-size: 0.75rem;">x<?php echo intval($o['quantity']); ?></small>
-                                      </div>
-                                    </td>
-                                    <td style="padding: 1rem 0.5rem; font-weight: 700; color: var(--clr-dark);">Rs. <?php echo number_format((float)$o['total_price'], 2); ?></td>
-                                    <td style="padding: 1rem 0.5rem;"><span class="badge-payment <?php echo $pmClass; ?>"><?php echo $pm; ?></span></td>
-                                    <td style="padding: 1rem 0.5rem;">
-                                        <select name="status" class="booking-status-select" id="status-<?php echo intval($o['order_id']); ?>" onchange="handleOrderUpdate(<?php echo intval($o['order_id']); ?>)" style="padding: 0.25rem 0.5rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; cursor: pointer; border: 1px solid var(--clr-border); background: var(--clr-white);">
-                                          <option value="Confirmed" <?php echo $o['status']==='Confirmed'?'selected':''; ?>>New</option>
-                                          <option value="Ongoing" <?php echo $o['status']==='Ongoing'?'selected':''; ?>>Preparing</option>
-                                          <option value="Shipping" <?php echo $o['status']==='Shipping'?'selected':''; ?>>Out for Delivery</option>
-                                          <option value="Delivering" <?php echo $o['status']==='Delivering'?'selected':''; ?>>Delivered</option>
-                                          <option value="Cancelled" <?php echo $o['status']==='Cancelled'?'selected':''; ?>>Cancelled</option>
-                                        </select>
-                                    </td>
-                                    <td style="padding: 1rem 0.5rem; font-size: 0.8rem; color: var(--clr-dark-variant);"><?php echo date('d M Y h:i A', strtotime($o['order_time'])); ?></td>
-                                    <td style="padding: 1rem 0.5rem; text-align: center;">
-                                      <button type="button" class="btn-delete btn-booking-delete" onclick="handleOrderDelete(<?php echo intval($o['order_id']); ?>)" style="background: transparent; color: var(--clr-danger); border: none; font-size: 1.1rem; cursor: pointer; padding: 0.2rem;"><i class="fa fa-trash"></i></button>
-                                    </td>
-                                  </tr>
-                                <?php endforeach; endif; ?>
-                              </tbody>
-                         </table>
+                                     <td style="padding: 1rem 0.5rem; font-weight: 700; color: var(--clr-dark);">Rs. <?php echo number_format((float)$o['total_amount'], 2); ?></td>
+                                     <td style="padding: 1rem 0.5rem;"><span class="badge-payment <?php echo $pmClass; ?>"><?php echo $pm; ?></span></td>
+                                       <td style="padding: 1rem 0.5rem;">
+                                         <select name="status" class="booking-status-select" id="status-<?php echo intval($o['order_id']); ?>" data-current-status="<?php echo htmlspecialchars($o['status'], ENT_QUOTES); ?>" onchange="handleOrderUpdate('<?php echo htmlspecialchars($o['order_number'], ENT_QUOTES); ?>', <?php echo intval($o['order_id']); ?>)" style="padding: 0.25rem 0.5rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; cursor: pointer; border: 1px solid var(--clr-border); background: var(--clr-white);">
+                                           <option value="Confirmed" <?php echo $o['status']==='Confirmed'?'selected':''; ?>>New</option>
+                                           <option value="Ongoing" <?php echo $o['status']==='Ongoing'?'selected':''; ?>>Preparing</option>
+                                           <option value="Shipping" <?php echo $o['status']==='Shipping'?'selected':''; ?>>Out for Delivery</option>
+                                           <option value="Delivering" <?php echo $o['status']==='Delivering'?'selected':''; ?>>Delivered</option>
+                                           <option value="Cancelled" <?php echo $o['status']==='Cancelled'?'selected':''; ?>>Cancelled</option>
+                                         </select>
+                                     </td>
+                                     <td style="padding: 1rem 0.5rem; font-size: 0.8rem; color: var(--clr-dark-variant);"><?php echo date('d M Y h:i A', strtotime($o['order_time'])); ?></td>
+                                       <td class="order-actions-cell" style="padding: 1rem 0.5rem;">
+                                         <button type="button" class="btn-booking-delete" title="Delete order" aria-label="Delete order" onclick="handleOrderDelete('<?php echo htmlspecialchars($o['order_number'], ENT_QUOTES); ?>', <?php echo intval($o['order_id']); ?>)"><i class="fa fa-trash"></i></button>
+                                       </td>
+                                   </tr>
+                                 <?php endforeach; endif; ?>
+                               </tbody>
+                          </table>
                     </div>
                 </div>
 
@@ -662,7 +785,7 @@ if ($recent_res) {
 
                     <!-- Recent Orders -->
                     <h2 style="font-size: 1.1rem; font-weight: 700; color: var(--clr-dark); margin-bottom: 1rem; border-top: 1px solid var(--clr-border); padding-top: 1.5rem;">Recent Orders</h2>
-                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    <div class="recent-orders-list" style="display: flex; flex-direction: column; gap: 1rem;">
                         <?php foreach ($recent_orders as $ro):
                             $roBadgeClass = 'status-new-badge';
                             $roStatus = 'New';
@@ -671,10 +794,10 @@ if ($recent_res) {
                             elseif ($ro['status'] === 'Delivering') { $roBadgeClass = 'status-del-badge'; $roStatus = 'Delivered'; }
                             elseif ($ro['status'] === 'Cancelled') { $roBadgeClass = 'status-can-badge'; $roStatus = 'Cancelled'; }
                         ?>
-                        <div style="display: flex; justify-content: space-between; align-items: center; background: var(--clr-color-background); padding: 0.8rem; border-radius: 8px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; background: var(--clr-color-background); padding: 0.8rem; border-radius: 8px; width: 100%;">
                             <div>
                                 <strong style="font-size: 0.85rem; color: var(--clr-dark);">ORD-<?php echo sprintf("%04d", $ro['order_id']); ?></strong><br>
-                                <small class="text-muted" style="font-size: 0.75rem;"><?php echo htmlspecialchars($ro['full_name'] ?: 'N/A'); ?></small>
+                                <small class="text-muted" style="font-size: 0.75rem;"><?php echo htmlspecialchars($ro['email'] ?: 'N/A'); ?></small>
                             </div>
                             <div style="text-align: right;">
                                 <span class="badge-status <?php echo $roBadgeClass; ?>" style="font-size: 0.7rem; padding: 0.2rem 0.5rem;"><?php echo $roStatus; ?></span><br>
@@ -688,8 +811,8 @@ if ($recent_res) {
        </main>
 
        <!-- Replaced right sidebar block -->
-       <div class="right right-column-sidebar" style="display: none;">
-       </div>
+    <div class="right right-column-sidebar" style="display: none;">
+    </div>
 
      </div>
 </div>
@@ -699,18 +822,43 @@ if ($recent_res) {
 
 <script src="../assets/js/adminscript.js"></script>
 <script>
+function toggleAdminOrderItems(orderId) {
+    const list = document.getElementById('items-list-' + orderId);
+    const btn = document.getElementById('btn-toggle-' + orderId);
+    if (!list) return;
+    if (list.style.display === 'none') {
+        list.style.display = 'block';
+        if (btn) btn.innerHTML = '<i class="fa fa-chevron-up"></i> Hide items';
+    } else {
+        list.style.display = 'none';
+        if (btn) btn.innerHTML = '<i class="fa fa-chevron-down"></i> View items';
+    }
+}
+
 // AJAX Order Status Update
-function handleOrderUpdate(orderId) {
+function handleOrderUpdate(orderNumber, orderId) {
     const statusSelect = document.getElementById('status-' + orderId);
+    const currentStatus = statusSelect ? statusSelect.getAttribute('data-current-status') : '';
     const newStatus = statusSelect.value;
-    const button = event.target;
+
+    const allowedStatuses = ['Confirmed', 'Ongoing', 'Shipping', 'Delivering', 'Cancelled'];
+    if (!statusSelect || !Number.isInteger(Number(orderId)) || Number(orderId) <= 0) {
+        alert('Invalid order selection.');
+        return;
+    }
+
+    if (!allowedStatuses.includes(newStatus)) {
+        alert('Please choose a valid order status.');
+        statusSelect.value = currentStatus || 'Confirmed';
+        return;
+    }
+
+    if (newStatus === currentStatus) {
+        return;
+    }
+
+    statusSelect.disabled = true;
     
-    // Disable button during processing
-    const originalText = button.textContent;
-    button.disabled = true;
-    button.textContent = 'Updating...';
-    
-    // Simple AJAX call
     fetch('update_order_status_ajax.php', {
         method: 'POST',
         headers: {
@@ -718,6 +866,7 @@ function handleOrderUpdate(orderId) {
             'X-Requested-With': 'XMLHttpRequest'
         },
         body: JSON.stringify({
+            order_number: orderNumber,
             order_id: parseInt(orderId),
             status: newStatus
         })
@@ -725,26 +874,32 @@ function handleOrderUpdate(orderId) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            document.getElementById(`status-${orderId}`).value = newStatus;
+            statusSelect.value = newStatus;
+            statusSelect.setAttribute('data-current-status', newStatus);
+        } else {
+            alert(data.message || 'Unable to update the order status.');
+            statusSelect.value = currentStatus || statusSelect.value;
         }
     })
     .catch(error => {
         console.error('Error:', error);
+        alert('Something went wrong while updating the order.');
+        statusSelect.value = currentStatus || statusSelect.value;
     })
     .finally(() => {
-        button.disabled = false;
-        button.textContent = originalText;
+        statusSelect.disabled = false;
     });
 }
 
-function handleOrderDelete(orderId) {
-    event.preventDefault();
-    event.stopPropagation();
-    showDeleteConfirmation(orderId);
+function handleOrderDelete(orderNumber, orderId) {
+    if (window.event) {
+        window.event.preventDefault();
+        window.event.stopPropagation();
+    }
+    showDeleteConfirmation(orderNumber, orderId);
 }
 
-function showDeleteConfirmation(orderId) {
-    // Create modal HTML with animations
+function showDeleteConfirmation(orderNumber, orderId) {
     const modalHtml = `
         <div id="deleteConfirmModal" class="delete-confirm-overlay">
             <div class="delete-confirm-modal">
@@ -754,23 +909,20 @@ function showDeleteConfirmation(orderId) {
                     </svg>
                 </div>
                 <h3>Delete Order?</h3>
-                <p>Order #${orderId} will be permanently deleted. This action cannot be undone.</p>
+                <p>Order ${orderNumber} will be permanently deleted. This action cannot be undone.</p>
                 <div class="delete-confirm-buttons">
                     <button class="btn-cancel" onclick="closeDeleteConfirmation()">Cancel</button>
-                    <button class="btn-delete-confirm" onclick="confirmDelete(${orderId})">Delete</button>
+                    <button class="btn-delete-confirm" onclick="confirmDelete('${orderNumber}', ${orderId})">Delete</button>
                 </div>
             </div>
         </div>
     `;
     
-    // Remove existing modal if any
     const existingModal = document.getElementById('deleteConfirmModal');
     if (existingModal) existingModal.remove();
     
-    // Add modal to body
     document.body.insertAdjacentHTML('beforeend', modalHtml);
     
-    // Close modal when clicking outside
     document.getElementById('deleteConfirmModal').addEventListener('click', function(e) {
         if (e.target === this) closeDeleteConfirmation();
     });
@@ -784,11 +936,9 @@ function closeDeleteConfirmation() {
     }
 }
 
-function confirmDelete(orderId) {
-    const button = document.querySelector(`button[onclick="handleOrderDelete(${orderId})"]`);
+function confirmDelete(orderNumber, orderId) {
     closeDeleteConfirmation();
     
-    // Make delete request
     fetch('../includes/delete_order.php', {
         method: 'POST',
         headers: {
@@ -796,17 +946,19 @@ function confirmDelete(orderId) {
             'X-Requested-With': 'XMLHttpRequest'
         },
         body: JSON.stringify({
+            order_number: orderNumber,
             order_id: parseInt(orderId)
         })
     })
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            // Remove the row with animation
-            const row = document.querySelector(`button[onclick="handleOrderDelete(${orderId})"]`).closest('tr');
-            row.style.opacity = '0';
-            row.style.transform = 'translateX(100px)';
-            setTimeout(() => row.remove(), 300);
+            const row = document.getElementById('order-row-' + orderId);
+            if (row) {
+                row.style.opacity = '0';
+                row.style.transform = 'translateX(100px)';
+                setTimeout(() => row.remove(), 300);
+            }
         }
     })
     .catch(error => {

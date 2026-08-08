@@ -21,27 +21,7 @@ if ($userEmail === '' || $password === '') {
     exit();
 }
 
-/* Special case for admin user */
-if ($userEmail === 'subodhpaudel0000@gmail.com' && $password === 'admin') {
-    // Set session variables
-    $_SESSION['email'] = $userEmail;
-    $_SESSION['user_type'] = 'admin';
-    
-    // Set cookies
-    $now = time();
-    $cookieMaxAge = 86400; // 24 hours
-    
-    setcookie('email',      encrypt($userEmail,     SECRET_KEY), $now + $cookieMaxAge, '/', '', false, true);
-    setcookie('user_type',  encrypt('admin',        SECRET_KEY), $now + $cookieMaxAge, '/', '', false, true);
-    setcookie('login_time', encrypt((string) $now,  SECRET_KEY), $now + $cookieMaxAge, '/', '', false, true);
-    setcookie('user_img',   encrypt('',             SECRET_KEY), $now + $cookieMaxAge, '/', '', false, true);
-    
-    $_SESSION['msg'] = ['type' => 'success', 'text' => 'Login successful!'];
-    header('Location: /Masu%20Ko%20Jhol%28full%29/admin/index.php');
-    exit();
-}
-
-/*  Fetch user with a prepared statement  */
+/* Fetch user with a prepared statement */
 $stmt = $conn->prepare('SELECT id, email, password, user_type, user_img FROM users WHERE email = ? LIMIT 1');
 if (!$stmt) {
     $_SESSION['msg'] = ['type' => 'error', 'text' => 'Database error.'];
@@ -70,6 +50,20 @@ setcookie('email',      encrypt($user['email'],     SECRET_KEY), $now + $cookieM
 setcookie('user_type',  encrypt($user['user_type'], SECRET_KEY), $now + $cookieMaxAge, '/', '', false, true);
 setcookie('login_time', encrypt((string) $now,      SECRET_KEY), $now + $cookieMaxAge, '/', '', false, true);
 setcookie('user_img',   encrypt($user['user_img'] ?? '', SECRET_KEY), $now + $cookieMaxAge, '/', '', false, true);
+
+$lastLoginCol = false;
+$colCheck = $conn->query("SHOW COLUMNS FROM users LIKE 'last_login'");
+if ($colCheck && $colCheck->num_rows > 0) {
+    $lastLoginCol = true;
+}
+if ($lastLoginCol) {
+    $updateLogin = $conn->prepare('UPDATE users SET last_login = NOW() WHERE id = ?');
+    if ($updateLogin) {
+        $updateLogin->bind_param('i', $user['id']);
+        $updateLogin->execute();
+        $updateLogin->close();
+    }
+}
 
 $_SESSION['msg'] = ['type' => 'success', 'text' => 'Login successful!'];
 

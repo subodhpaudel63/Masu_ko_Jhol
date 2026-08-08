@@ -161,7 +161,7 @@
         <div class="logo">
           <a href="./index.php">
             <i class="fa fa-utensils me-3 text-dark"></i>
-            <h1 class="mb-0 text-dark">Masu Ko Jhol</h1>
+            <h1 class="mb-0 text-dark">Mero Bhoj</h1>
           </a>
         </div>
         <div class="menus">
@@ -230,7 +230,7 @@
           <div class="logo">
             <a href="./index.php">
               <i class="fa fa-utensils me-3 text-dark"></i>
-              <h1 class="mb-0 text-dark">Masu Ko Jhol</h1>
+              <h1 class="mb-0 text-dark">Mero Bhoj</h1>
             </a>
           </div>
         </div>

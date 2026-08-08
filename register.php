@@ -6,7 +6,7 @@ session_start();
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>Masu Ko Jhol | Register</title>
+    <title>Mero Bhoj | Register</title>
 
     <!-- Favicons -->
     <link href="assets/img/logo.png" rel="icon">
@@ -143,6 +143,8 @@ session_start();
       .field-animate:nth-child(3) { animation: fadeUp .55s cubic-bezier(.22,1,.36,1) .70s forwards; }
       .field-animate:nth-child(4) { animation: fadeUp .55s cubic-bezier(.22,1,.36,1) .78s forwards; }
       .field-animate:nth-child(5) { animation: fadeUp .55s cubic-bezier(.22,1,.36,1) .84s forwards; }
+      .field-animate:nth-child(6) { animation: fadeUp .55s cubic-bezier(.22,1,.36,1) .92s forwards; }
+      #g_id_onload { opacity: 1 !important; transform: none !important; }
 
       /* ─────────────────────────────────────────
          INPUT GROUPS — smooth transitions
@@ -468,6 +470,34 @@ session_start();
                     <button type="submit" class="btn btn-danger" id="regBtn">Register</button>
                   </div>
 
+                  <!-- Divider -->
+                  <div class="text-center mt-3 field-animate">
+                    <div class="d-flex align-items-center" style="gap:10px;">
+                      <hr style="flex:1;border-color:#e5e5e5;">
+                      <small class="text-muted">OR</small>
+                      <hr style="flex:1;border-color:#e5e5e5;">
+                    </div>
+                  </div>
+
+                  <!-- Google Sign-In -->
+                  <div class="field-animate d-grid mt-3">
+                    <div id="g_id_onload" style="display:flex;justify-content:center;">
+                      <?php if (GOOGLE_USE_FALLBACK): ?>
+                      <button type="button" id="google-fallback-btn" onclick="handleGoogleFallback()"
+                        style="display:inline-flex;align-items:center;gap:10px;padding:10px 24px;border:1px solid #dadce0;border-radius:6px;background:#fff;color:#3c4043;font-size:15px;font-family:Roboto,sans-serif;cursor:pointer;transition:box-shadow .2s;width:100%;justify-content:center;"
+                        onmouseover="this.style.boxShadow='0 1px 3px rgba(60,64,67,0.3)'" onmouseout="this.style.boxShadow='none'">
+                        <svg width="20" height="20" viewBox="0 0 48 48" style="flex-shrink:0;">
+                          <path fill="#EA4335" d="M24 9.5c3.3 0 6.2 1.1 8.5 3l6.4-6.4C34.9 2.7 29.9 0 24 0 14.6 0 6.6 5.4 2.6 13.4l7.5 5.8C12.2 13.3 17.8 9.5 24 9.5z"/>
+                          <path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.2-.4-4.7H24v9.4h12.7c-.6 3.2-2.4 5.9-5.1 7.7l7.5 5.8c4.4-4.1 7-10.2 7-18.2z"/>
+                          <path fill="#FBBC05" d="M10.1 28.2c-1-2.9-1-6 0-8.9L2.6 13.4C.7 17.6 0 21.6 0 24.5s.7 6.9 2.6 11.1l7.5-5.8z"/>
+                          <path fill="#34A853" d="M24 48c6.5 0 12-2.1 16-5.7l-7.5-5.8c-2.4 1.6-5.5 2.6-8.5 2.6-6.2 0-11.8-3.8-13.7-9.4l-7.5 5.8C6.6 42.6 14.6 48 24 48z"/>
+                        </svg>
+                        Continue with Google
+                      </button>
+                      <?php endif; ?>
+                    </div>
+                  </div>
+
                 </form>
 
                 <!-- Login link -->
@@ -485,6 +515,84 @@ session_start();
 
   <!-- Scripts -->
   <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+  <?php if (!GOOGLE_USE_FALLBACK): ?>
+  <!-- Google Identity Services -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <?php endif; ?>
+
+  <script>
+    console.log('Register page loaded, GOOGLE_USE_FALLBACK:', <?php echo GOOGLE_USE_FALLBACK ? 'true' : 'false'; ?>);
+
+    function handleGoogleCredentialResponse(response) {
+        console.log('Google credential response received');
+        fetch('includes/google_auth.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ id_token: response.credential })
+        })
+        .then(function(res) { 
+            console.log('Auth response status:', res.status);
+            return res.json(); 
+        })
+        .then(function(data) {
+            console.log('Auth response data:', data);
+            if (data.success) {
+                window.location.href = data.redirect || '/Masu%20Ko%20Jhol%28full%29/client/index.php';
+            } else {
+                alert(data.message || 'Google sign-in failed');
+            }
+        })
+        .catch(function(err) {
+            console.error('Network error during Google sign-in:', err);
+            alert('Network error during Google sign-in');
+        });
+    }
+
+    function handleGoogleFallback() {
+        alert('Google Sign-In is not configured yet.\n\nPlease set GOOGLE_CLIENT_ID in config/bootstrap.php');
+    }
+
+    function renderGoogleButton() {
+        console.log('renderGoogleButton called, google object:', typeof google);
+        
+        <?php if (!GOOGLE_USE_FALLBACK): ?>
+        if (typeof google === 'undefined' || !google.accounts) {
+            console.log('Google accounts not ready, retrying in 200ms...');
+            setTimeout(renderGoogleButton, 200);
+            return;
+        }
+        try {
+            console.log('Initializing Google Sign-In with client_id:', '<?php echo htmlspecialchars(GOOGLE_CLIENT_ID, ENT_QUOTES); ?>');
+            google.accounts.id.initialize({
+                client_id: '<?php echo htmlspecialchars(GOOGLE_CLIENT_ID, ENT_QUOTES); ?>',
+                callback: handleGoogleCredentialResponse,
+                auto_select: false,
+                cancel_on_tap_outside: false,
+            });
+            console.log('Rendering Google button...');
+            google.accounts.id.renderButton(
+                document.getElementById('g_id_onload'),
+                { theme: 'outline', size: 'large', width: '100%' }
+            );
+            console.log('Google button rendered successfully');
+        } catch (e) {
+            console.error('GIS render failed:', e);
+        }
+        <?php else: ?>
+        console.log('Using fallback button (GOOGLE_USE_FALLBACK is true)');
+        <?php endif; ?>
+    }
+
+    // Try to render immediately and also on DOMContentLoaded
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', renderGoogleButton);
+    } else {
+        renderGoogleButton();
+    }
+  </script>
 
   <script>
     /* ── TOASTS ── */

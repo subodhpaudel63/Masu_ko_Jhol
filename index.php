@@ -46,7 +46,7 @@ if (isset($_GET['action'])) {
     
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Masu Ko Jhol</title>
+    <title>Mero Bhoj</title>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
@@ -220,7 +220,7 @@ if (isset($_GET['action'])) {
 
     <div class="loader">
       <i class="fas fa-utensils loader-icone"></i>
-      <p>Masu Ko Jhol</p>
+      <p>Mero Bhoj</p>
       <div class="loader-ellipses">
         <span></span>
         <span></span>
@@ -234,7 +234,7 @@ if (isset($_GET['action'])) {
         <div class="logo">
           <a href="./index.php">
             <i class="fa fa-utensils me-3"></i>
-            <h1 class="mb-0">Masu Ko Jhol</h1>
+            <h1 class="mb-0">Mero Bhoj</h1>
           </a>
         </div>
         <div class="menus">
@@ -290,7 +290,7 @@ if (isset($_GET['action'])) {
           <div class="logo">
             <a href="./index.php">
               <i class="fa fa-utensils me-3 text-white"></i>
-              <h1 class="mb-0 text-white">Masu Ko Jhol</h1>
+              <h1 class="mb-0 text-white">Mero Bhoj</h1>
             </a>
           </div>
         </div>
@@ -365,7 +365,7 @@ if (isset($_GET['action'])) {
             <div class="col-md-6 banner-content pe-5" data-aos="fade-right" data-aos-delay="3000">
               <h1 class="display-2">Enjoy Our <br> Delicious Meal</h1>
                 <p>
-                 Step into the world of Masu Ko Jhol — where every bite tells a story. From fiery grills to rich Nepali spices, we serve tradition with a twist. Come hungry, leave inspired.
+                 Step into the world of Mero Bhoj — where every bite tells a story. From fiery grills to rich Nepali spices, we serve tradition with a twist. Come hungry, leave inspired.
                 </p>
                 <p>🔸 Book your table now and taste the legend.
                    </p>
@@ -430,7 +430,7 @@ Want to explore that next?
                   <h5>Online Order</h5>
                 </div>
                 <div class="para">
-                  <p>Craving Masu Ko Jhol from home? Our seamless online ordering brings authentic Nepali cuisine straight to your doorstep—hot, fresh, and just a click away. </p>
+                  <p>Craving Mero Bhoj from home? Our seamless online ordering brings authentic Nepali cuisine straight to your doorstep—hot, fresh, and just a click away. </p>
 
                 </div>
                 
@@ -455,7 +455,7 @@ Want to explore that next?
                   <h5>24/7 Service</h5>
                 </div>
                 <div class="para">
-                  <p>Whether it's a late-night craving or an early morning gathering, we're here for you. Masu Ko Jhol is open round the clock to serve comfort food whenever you need it.
+                  <p>Whether it's a late-night craving or an early morning gathering, we're here for you. Mero Bhoj is open round the clock to serve comfort food whenever you need it.
                       </p>
                 </div>
               </div>
@@ -485,8 +485,8 @@ Want to explore that next?
               </div>
               <div class="col-lg-6 about-content" data-aos="fade-left">
                   <h5 class="section-title">About Us</h5>
-                  <h2 class="mb-4 dis">Welcome to <i class="fa fa-utensils  me-2"></i>Masu Ko Jhol</h2>
-                  <p class="mb-4">Nestled in the heart of Nepal, Masu Ko Jhol is more than just a restaurant—it's a celebration of flavor, heritage, and hospitality. Our name pays homage to the beloved Nepali dish that brings families together and warms the soul.
+                  <h2 class="mb-4 dis">Welcome to <i class="fa fa-utensils  me-2"></i>Mero Bhoj</h2>
+                  <p class="mb-4">Nestled in the heart of Nepal, Mero Bhoj is more than just a restaurant—it's a celebration of flavor, heritage, and hospitality. Our name pays homage to the beloved Nepali dish that brings families together and warms the soul.
 
                          </p>
                   <p class="mb-4">From the smoky aroma of slow-cooked meats to the vibrant spices that dance on your tongue, every plate we serve tells a story—crafted with love, passed down through generations, and reimagined for today's food lovers.</p>
@@ -538,7 +538,7 @@ Want to explore that next?
               <div class="slider-content pt-4 pb-4 mx-4">
                 <div>
                   <div class="testi-content">
-                    <p>Masu Ko Jhol Restaurant instantly reminded me of my childhood meals in Nepal. The flavors are authentic, and the ambience feels like stepping back into an old Nepali home. It’s more than just food—it’s an experience of culture and tradition."</p>
+                    <p>Mero Bhoj Restaurant instantly reminded me of my childhood meals in Nepal. The flavors are authentic, and the ambience feels like stepping back into an old Nepali home. It’s more than just food—it’s an experience of culture and tradition."</p>
 
 
                   </div>
@@ -561,7 +561,7 @@ Want to explore that next?
                 </div>
                 <div>
                   <div class="testi-content">
-                    <p>"Dining at Masu Ko Jhol Restaurant was a beautiful experience. From the traditional seating to the folk-inspired décor, everything felt genuine. The food was flavorful and comforting, just like what my grandmother used to make."</P>
+                    <p>"Dining at Mero Bhoj Restaurant was a beautiful experience. From the traditional seating to the folk-inspired décor, everything felt genuine. The food was flavorful and comforting, just like what my grandmother used to make."</P>
 
 
                   </div>
@@ -572,7 +572,7 @@ Want to explore that next?
                 </div>
                 <div>
                   <div class="testi-content">
-                    <p>"The taste of the masu ko jhol here is unmatched. Rich flavors, perfectly cooked meat, and sides that remind you of home. The old Nepali ambience makes dining here truly unique. Highly recommended for anyone craving authentic Nepali cuisine."</p>
+                    <p>"The taste of the Mero Bhoj here is unmatched. Rich flavors, perfectly cooked meat, and sides that remind you of home. The old Nepali ambience makes dining here truly unique. Highly recommended for anyone craving authentic Nepali cuisine."</p>
 
 
                   </div>
@@ -832,7 +832,7 @@ Want to explore that next?
                 <span class="number">3</span>
               </div>
               <h4>Online Order</h4>
-              <p class="text-center">Craving masu ko jhol at home? Order online and enjoy our soulful dishes delivered straight to your doorstep
+              <p class="text-center">Craving Mero Bhoj at home? Order online and enjoy our soulful dishes delivered straight to your doorstep
 </p>
               <div class="mt-3">
                 <?php if ($user): ?>
@@ -894,7 +894,7 @@ Want to explore that next?
       </section>
 
       <!-- 
-  MASU KO JHOL FAQ SECTION
+  Mero Bhoj FAQ SECTION
   Optimized for smooth, high-performance animations.
 -->
 <section class="mkj-faq-wrapper">
@@ -1014,7 +1014,7 @@ Want to explore that next?
             <div class="mkj-faq-answer-wrapper">
                 <div class="mkj-faq-answer-overflow">
                     <div class="mkj-faq-answer-inner">
-                        At Masu ko Jhol, we celebrate the full tapestry of Nepal. Our menu features authentic dishes from the <strong>Newar</strong> community, <strong>Thakali</strong> sets, <strong>Kirat</strong> specialties, and traditional <strong>Terai</strong> flavors.
+                        At Mero Bhoj, we celebrate the full tapestry of Nepal. Our menu features authentic dishes from the <strong>Newar</strong> community, <strong>Thakali</strong> sets, <strong>Kirat</strong> specialties, and traditional <strong>Terai</strong> flavors.
                     </div>
                 </div>
             </div>

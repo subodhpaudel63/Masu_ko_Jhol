@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'type' => 'error',
             'text' => 'All fields are required and price must be greater than zero.'
         ];
-        header("Location: /college/admin/menu");
+        header("Location: /Masu%20Ko%20Jhol%28full%29/admin/menu.php");
         exit;
     }
 

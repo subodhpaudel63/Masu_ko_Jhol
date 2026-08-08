@@ -9,42 +9,48 @@ require_once __DIR__ . '/../includes/db.php';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $input = json_decode(file_get_contents('php://input'), true);
     
+    $order_id = 0;
+    $order_number = '';
     if ($input) {
-        // JSON request (AJAX)
         $order_id = intval($input['order_id'] ?? 0);
+        $order_number = trim((string)($input['order_number'] ?? ''));
     } else {
-        // Form data request
         $order_id = intval($_POST['order_id'] ?? 0);
+        $order_number = trim((string)($_POST['order_number'] ?? ''));
     }
     
-    if ($order_id > 0) {
+    if (!empty($order_number)) {
+        $stmt = $conn->prepare("DELETE FROM orders WHERE order_number = ? OR order_id = ?");
+        if ($stmt) {
+            $stmt->bind_param("si", $order_number, $order_id);
+        }
+    } else if ($order_id > 0) {
         $stmt = $conn->prepare("DELETE FROM orders WHERE order_id = ?");
-        if (!$stmt) {
-            $response = [
-                'success' => false,
-                'message' => 'Database error: ' . $conn->error
-            ];
-        } else {
+        if ($stmt) {
             $stmt->bind_param("i", $order_id);
-            
-            if ($stmt->execute()) {
-                $response = [
-                    'success' => true,
-                    'message' => 'Order deleted successfully'
-                ];
-            } else {
-                $response = [
-                    'success' => false,
-                    'message' => 'Failed to delete: ' . $stmt->error
-                ];
-            }
-            $stmt->close();
         }
     } else {
+        $stmt = null;
+    }
+
+    if (!$stmt) {
         $response = [
             'success' => false,
-            'message' => 'Invalid order ID'
+            'message' => 'Invalid order identifier or database error: ' . $conn->error
         ];
+    } else {
+        if ($stmt->execute()) {
+            $response = [
+                'success' => true,
+                'message' => 'Order deleted successfully'
+            ];
+        } else {
+            $response = [
+                'success' => false,
+                'message' => 'Failed to delete: ' . $stmt->error
+            ];
+        }
+        $stmt->close();
     }
 } else {
     $response = [

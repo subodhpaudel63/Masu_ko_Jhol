@@ -124,9 +124,57 @@ if ($res) {
     }
 }
 
+$search_query = trim($_GET['search'] ?? '');
+$selected_category = trim($_GET['category'] ?? '');
+$selected_sort = trim($_GET['sort'] ?? 'category_asc');
+
+$available_categories = ['starter', 'breakfast', 'lunch', 'dinner'];
+
+$filtered_menu_items = array_filter($menu_items, function ($item) use ($search_query, $selected_category) {
+    $matches_search = true;
+    $matches_category = true;
+
+    if ($search_query !== '') {
+        $haystack = strtolower(
+            ($item['menu_name'] ?? '') . ' ' .
+            ($item['menu_description'] ?? '') . ' ' .
+            ($item['menu_category'] ?? '')
+        );
+        $matches_search = strpos($haystack, strtolower($search_query)) !== false;
+    }
+
+    if ($selected_category !== '') {
+        $matches_category = strtolower((string)($item['menu_category'] ?? '')) === strtolower($selected_category);
+    }
+
+    return $matches_search && $matches_category;
+});
+
+usort($filtered_menu_items, function ($a, $b) use ($selected_sort) {
+    switch ($selected_sort) {
+        case 'name_asc':
+            return strcmp($a['menu_name'] ?? '', $b['menu_name'] ?? '');
+        case 'name_desc':
+            return strcmp($b['menu_name'] ?? '', $a['menu_name'] ?? '');
+        case 'price_asc':
+            return (float)($a['menu_price'] ?? 0) <=> (float)($b['menu_price'] ?? 0);
+        case 'price_desc':
+            return (float)($b['menu_price'] ?? 0) <=> (float)($a['menu_price'] ?? 0);
+        case 'category_desc':
+            return strcmp($b['menu_category'] ?? '', $a['menu_category'] ?? '');
+        case 'category_asc':
+        default:
+            $category_compare = strcmp($a['menu_category'] ?? '', $b['menu_category'] ?? '');
+            if ($category_compare !== 0) {
+                return $category_compare;
+            }
+            return strcmp($a['menu_name'] ?? '', $b['menu_name'] ?? '');
+    }
+});
+
 // Group by category for easier display
 $menu_by_category = [];
-foreach ($menu_items as $item) {
+foreach ($filtered_menu_items as $item) {
     $category = $item['menu_category'];
     if (!isset($menu_by_category[$category])) {
         $menu_by_category[$category] = [];
@@ -134,7 +182,7 @@ foreach ($menu_items as $item) {
     $menu_by_category[$category][] = $item;
 }
 
-$categories = ['starter', 'breakfast', 'lunch', 'dinner'];
+$categories = $available_categories;
 ?>
 
 <!DOCTYPE html>
@@ -143,28 +191,176 @@ $categories = ['starter', 'breakfast', 'lunch', 'dinner'];
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Menu Management - Masu Ko Jhol</title>
+  <title>Menu Management - Mero Bhoj</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,0,0" />
   <link rel="stylesheet" href="../assets/css/adminstyle.css?v=<?= filemtime(__DIR__ . '/../assets/css/adminstyle.css') ?>">
   
   <style>
+    main {
+        padding-bottom: 3rem;
+    }
+
+    .page-hero {
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(135deg, rgba(240, 90, 34, 0.12), rgba(255, 255, 255, 0.95));
+        border: 1px solid rgba(240, 90, 34, 0.12);
+        border-radius: 22px;
+        padding: 1.5rem 1.6rem;
+        margin-bottom: 1.4rem;
+        box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+    }
+
+    .page-hero::after {
+        content: '';
+        position: absolute;
+        inset: auto -60px -80px auto;
+        width: 180px;
+        height: 180px;
+        background: radial-gradient(circle, rgba(240, 90, 34, 0.18), transparent 68%);
+        pointer-events: none;
+    }
+
+    .page-hero h1 {
+        margin: 0;
+        font-size: 2rem;
+        line-height: 1.1;
+    }
+
+    .page-hero p {
+        margin: 0.55rem 0 0;
+        max-width: 720px;
+        color: #64748b;
+        font-size: 0.98rem;
+    }
+
+    .hero-actions {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        margin-top: 1rem;
+    }
+
+    .btn-soft {
+        background: rgba(255, 255, 255, 0.72);
+        color: #374151;
+        border: 1px solid rgba(148, 163, 184, 0.22);
+        padding: 0.75rem 1.1rem;
+        border-radius: 999px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+    }
+
+    .btn-soft:hover {
+        transform: translateY(-2px);
+        border-color: rgba(240, 90, 34, 0.2);
+        color: #f05a22;
+    }
+
+    .stats-row {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.4rem;
+    }
+
+    .stat-card {
+        background: rgba(255, 255, 255, 0.96);
+        border: 1px solid rgba(148, 163, 184, 0.12);
+        border-radius: 18px;
+        padding: 1rem 1.1rem;
+        box-shadow: 0 14px 30px rgba(15, 23, 42, 0.06);
+    }
+
+    .stat-card .label {
+        display: block;
+        color: #64748b;
+        font-weight: 600;
+        font-size: 0.84rem;
+        margin-bottom: 0.55rem;
+    }
+
+    .stat-card strong {
+        display: block;
+        color: #0f172a;
+        font-size: 1.55rem;
+        line-height: 1;
+    }
+
+    .stat-card small {
+        display: inline-block;
+        margin-top: 0.45rem;
+        color: #16a34a;
+        font-weight: 600;
+    }
+
+    .menu-panel {
+        background: rgba(255, 255, 255, 0.92);
+        border: 1px solid rgba(148, 163, 184, 0.12);
+        border-radius: 22px;
+        padding: 1.25rem;
+        box-shadow: 0 18px 40px rgba(15, 23, 42, 0.06);
+        backdrop-filter: blur(8px);
+    }
+
+    .section-card {
+        background: linear-gradient(180deg, #ffffff 0%, #fffaf7 100%);
+        border: 1px solid rgba(240, 90, 34, 0.08);
+        border-radius: 22px;
+        padding: 1.2rem;
+        box-shadow: 0 18px 38px rgba(15, 23, 42, 0.06);
+        transition: transform 0.28s ease, box-shadow 0.28s ease;
+    }
+
+    .section-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 24px 48px rgba(15, 23, 42, 0.1);
+    }
+
+    .menu-card {
+        border: 1px solid rgba(148, 163, 184, 0.12);
+        background: linear-gradient(180deg, #fff 0%, #fffdfb 100%);
+        display: grid;
+        grid-template-columns: 130px 1fr;
+        min-height: 170px;
+        overflow: hidden;
+        border-radius: 18px;
+        transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+
+    .menu-content {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 1rem 1rem 1rem 0;
+    }
+
+    .menu-title {
+        padding-right: 0;
+    }
+
+    .menu-price {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        background: #fff3eb;
+        padding: 0.35rem 0.7rem;
+        border-radius: 999px;
+        font-size: 1.05rem;
+    }
+
+    .btn-edit, .btn-delete, .btn-primary, .btn-secondary, .add-item-btn {
+        box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
+    }
+
     .menu-sections {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
         gap: 2rem;
         margin: 2rem 0;
-    }
-    
-    .section-card {
-        background: white;
-        border-radius: 15px;
-        padding: 1.5rem;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        transition: transform 0.3s ease;
-    }
-    
-    .section-card:hover {
-        transform: translateY(-5px);
     }
     
     .section-header {
@@ -208,32 +404,20 @@ $categories = ['starter', 'breakfast', 'lunch', 'dinner'];
         background: #45a049;
     }
     
-    .menu-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 1.5rem;
-    }
-    
-    .menu-card {
-        background: white;
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    
     .menu-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+        transform: translateY(-4px);
+        box-shadow: 0 18px 34px rgba(15,23,42,0.12);
+        border-color: rgba(240, 90, 34, 0.18);
     }
     
     .menu-image {
-        height: 180px;
-        background: #f5f5f5;
+        height: 100%;
+        min-height: 170px;
+        background: linear-gradient(135deg, #fef2e9, #fff7f1);
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #999;
+        color: #f05a22;
         font-size: 3rem;
     }
     
@@ -241,31 +425,35 @@ $categories = ['starter', 'breakfast', 'lunch', 'dinner'];
         width: 100%;
         height: 100%;
         object-fit: cover;
+        display: block;
     }
     
-    .menu-content {
-        padding: 1.25rem;
+    .menu-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 1rem;
+    }
+
+    .menu-description {
+        color: #64748b;
+        font-size: 0.92rem;
+        margin: 0 0 1rem 0;
+        line-height: 1.55;
     }
     
     .menu-title {
-        font-size: 1.1rem;
-        font-weight: 600;
-        margin: 0 0 0.5rem 0;
-        color: #333;
-    }
-    
-    .menu-description {
-        color: #666;
-        font-size: 0.9rem;
-        margin: 0 0 1rem 0;
-        line-height: 1.4;
+        font-size: 1.15rem;
+        font-weight: 700;
+        margin: 0 0 0.45rem 0;
+        color: #1f2937;
     }
     
     .menu-price {
-        font-size: 1.2rem;
+        font-size: 1.05rem;
         font-weight: 700;
         color: #ff6a00;
         margin: 0 0 1rem 0;
+        width: fit-content;
     }
     
     .menu-actions {
@@ -285,6 +473,10 @@ $categories = ['starter', 'breakfast', 'lunch', 'dinner'];
         justify-content: center;
         gap: 0.5rem;
         transition: all 0.3s ease;
+    }
+
+    .menu-card .menu-actions {
+        margin-top: auto;
     }
     
     .btn-edit {
@@ -456,6 +648,119 @@ $categories = ['starter', 'breakfast', 'lunch', 'dinner'];
     .quick-links a:hover {
         text-decoration: underline;
     }
+
+    .menu-filters {
+        background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,250,247,0.98));
+        border: 1px solid rgba(148, 163, 184, 0.12);
+        border-radius: 20px;
+        padding: 1rem;
+        margin: 1rem 0 2rem;
+        box-shadow: 0 16px 34px rgba(15,23,42,0.06);
+    }
+
+    .menu-filters form {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr 1fr auto;
+        gap: 0.75rem;
+        align-items: end;
+    }
+
+    .menu-filters .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+    }
+
+    .menu-filters label {
+        font-weight: 600;
+        color: #374151;
+        font-size: 0.9rem;
+    }
+
+    .menu-filters input,
+    .menu-filters select {
+        width: 100%;
+        padding: 0.8rem 0.9rem;
+        border: 1px solid #d1d5db;
+        border-radius: 12px;
+        font-size: 0.95rem;
+        background: #fff;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .menu-filters input:focus,
+    .menu-filters select:focus {
+        outline: none;
+        border-color: #f05a22;
+        box-shadow: 0 0 0 4px rgba(240, 90, 34, 0.12);
+    }
+
+    .filter-actions {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+
+    .btn-secondary {
+        background: #e5e7eb;
+        color: #374151;
+        border: none;
+        padding: 0.75rem 1.1rem;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+    }
+
+    .btn-secondary:hover {
+        background: #d1d5db;
+    }
+
+    .menu-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-bottom: 1rem;
+    }
+
+    .filter-summary {
+        margin-top: 0.75rem;
+        color: #6b7280;
+        font-size: 0.9rem;
+    }
+
+    @media screen and (max-width: 900px) {
+        .menu-filters form {
+            grid-template-columns: 1fr;
+        }
+
+        .stats-row {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .menu-card {
+            grid-template-columns: 1fr;
+        }
+
+        .menu-image {
+            min-height: 220px;
+        }
+
+        .menu-content {
+            padding: 1rem 1rem 1.1rem;
+        }
+    }
+
+    @media screen and (max-width: 640px) {
+        .stats-row {
+            grid-template-columns: 1fr;
+        }
+
+        .menu-grid {
+            grid-template-columns: 1fr;
+        }
+    }
   </style>
 </head>
 <body>
@@ -535,12 +840,45 @@ $categories = ['starter', 'breakfast', 'lunch', 'dinner'];
 
            
 
-           <!-- Add New Item Button -->
-           <div style="margin-bottom: 2rem;">
-               <button class="btn-primary" onclick="openModal('create')">
-                   <span class="material-symbols-sharp">add</span>
-                   Add New Menu Item
-               </button>
+           <div class="menu-filters">
+               <form method="GET" action="menu.php">
+                   <div class="filter-group">
+                       <label for="search">Search</label>
+                       <input type="text" id="search" name="search" placeholder="Search by name, description, or category" value="<?php echo htmlspecialchars($search_query); ?>">
+                   </div>
+                   <div class="filter-group">
+                       <label for="category">Category</label>
+                       <select id="category" name="category">
+                           <option value="">All categories</option>
+                           <?php foreach ($available_categories as $category): ?>
+                               <option value="<?php echo $category; ?>" <?php echo $selected_category === $category ? 'selected' : ''; ?>>
+                                   <?php echo ucfirst($category); ?>
+                               </option>
+                           <?php endforeach; ?>
+                       </select>
+                   </div>
+                   <div class="filter-group">
+                       <label for="sort">Sort by</label>
+                       <select id="sort" name="sort">
+                           <option value="category_asc" <?php echo $selected_sort === 'category_asc' ? 'selected' : ''; ?>>Category A-Z</option>
+                           <option value="category_desc" <?php echo $selected_sort === 'category_desc' ? 'selected' : ''; ?>>Category Z-A</option>
+                           <option value="name_asc" <?php echo $selected_sort === 'name_asc' ? 'selected' : ''; ?>>Name A-Z</option>
+                           <option value="name_desc" <?php echo $selected_sort === 'name_desc' ? 'selected' : ''; ?>>Name Z-A</option>
+                           <option value="price_asc" <?php echo $selected_sort === 'price_asc' ? 'selected' : ''; ?>>Price Low to High</option>
+                           <option value="price_desc" <?php echo $selected_sort === 'price_desc' ? 'selected' : ''; ?>>Price High to Low</option>
+                       </select>
+                   </div>
+                   <div class="filter-actions">
+                       <button type="submit" class="btn-primary">Apply</button>
+                       <a href="menu.php" class="btn-secondary" style="display:inline-flex; align-items:center; justify-content:center; text-decoration:none;">Reset</a>
+                   </div>
+               </form>
+               <div class="filter-summary">
+                   Showing <?php echo count($filtered_menu_items); ?> item<?php echo count($filtered_menu_items) === 1 ? '' : 's'; ?>
+                   <?php if ($search_query !== '' || $selected_category !== '' || $selected_sort !== 'category_asc'): ?>
+                       with active filters
+                   <?php endif; ?>
+               </div>
            </div>
 
            <!-- Menu Sections -->
@@ -561,7 +899,9 @@ $categories = ['starter', 'breakfast', 'lunch', 'dinner'];
                        <?php foreach ($menu_by_category[$category] as $item): ?>
                        <div class="menu-card">
                            <?php if (!empty($item['menu_image']) && file_exists('../' . $item['menu_image'])): ?>
-                               <img src="../<?php echo $item['menu_image']; ?>" alt="<?php echo htmlspecialchars($item['menu_name']); ?>" class="menu-image">
+                               <div class="menu-image">
+                                   <img src="../<?php echo $item['menu_image']; ?>" alt="<?php echo htmlspecialchars($item['menu_name']); ?>">
+                               </div>
                            <?php else: ?>
                                <div class="menu-image">
                                    <span class="material-symbols-sharp">fastfood</span>
@@ -604,7 +944,7 @@ $categories = ['starter', 'breakfast', 'lunch', 'dinner'];
           <div class="modal-content">
               <div class="modal-header">
                   <h2 class="modal-title" id="modalTitle">Add New Menu Item</h2>
-                  <button class="close" onclick="closeModal()">&times;</button>
+                  <button type="button" class="close" aria-label="Close modal" onclick="closeMenuModal()">&times;</button>
               </div>
               <div class="modal-body">
                   <form id="menuForm" enctype="multipart/form-data">
@@ -648,7 +988,7 @@ $categories = ['starter', 'breakfast', 'lunch', 'dinner'];
                       
                       <div class="form-group" style="display: flex; gap: 1rem; margin-top: 2rem;">
                           <button type="submit" class="btn-primary" style="flex: 1;">Save Item</button>
-                          <button type="button" class="btn-delete" style="flex: 1;" onclick="closeModal()">Cancel</button>
+                          <button type="button" class="btn-delete" style="flex: 1;" onclick="closeMenuModal()">Cancel</button>
                       </div>
                   </form>
               </div>
@@ -711,7 +1051,7 @@ $categories = ['starter', 'breakfast', 'lunch', 'dinner'];
            modal.classList.add('show');
        }
        
-       function closeModal() {
+       function closeMenuModal() {
            document.getElementById('menuModal').classList.remove('show');
        }
        
@@ -912,7 +1252,7 @@ $categories = ['starter', 'breakfast', 'lunch', 'dinner'];
            .then(data => {
                if (data.success) {
                    setTimeout(() => {
-                       closeModal();
+                       closeMenuModal();
                        location.reload(); // Refresh to show updated data
                    }, 1500);
                }
@@ -931,10 +1271,10 @@ $categories = ['starter', 'breakfast', 'lunch', 'dinner'];
        // Close modal when clicking outside
        document.getElementById('menuModal').addEventListener('click', function(e) {
            if (e.target === this) {
-               closeModal();
+               closeMenuModal();
            }
        });
-   </script>
+  </script>
    
    <script src="../assets/js/adminscript.js"></script>
 </body>

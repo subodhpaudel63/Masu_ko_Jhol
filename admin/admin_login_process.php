@@ -2,7 +2,8 @@
 declare(strict_types=1);
 session_start();
 
-require_once __DIR__ . '/../includes/auth_check.php';
+require_once __DIR__ . '/../includes/db.php';        // defines $conn (mysqli)
+require_once __DIR__ . '/../includes/auth_check.php'; // defines encrypt(), SECRET_KEY
 
 /* Only accept POST */
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -20,36 +21,41 @@ if ($userEmail === '' || $password === '') {
     exit();
 }
 
-/* Special admin credentials check */
-if ($userEmail === 'subodhpaudel0000@gmail.com' && $password === 'admin@123') {
-    // Set session variables
-    $_SESSION['email'] = $userEmail;
-    $_SESSION['user_type'] = 'admin';
-    
-    // Set cookies
-    $now = time();
-    $cookieMaxAge = 86400; // 24 hours
-    // ... inside your if ($userEmail === 'subodhpaudel0000@gmail.com' ...) block ...
-
-// Set session variables (use admin specific keys)
-$_SESSION['admin_email'] = $userEmail;
-$_SESSION['admin_id'] = 1; // Or the actual ID from your DB
-
-// Set cookies with unique names to avoid kicking out regular users
-$now = time();
-$cookieMaxAge = 86400; // 24 hours
-
-// FIXED: Changed cookie names from 'email' to 'admin_email', 'user_type' to 'admin_type', etc.
-setcookie('admin_email',      encrypt($userEmail,     SECRET_KEY), $now + $cookieMaxAge, '/', '', false, true);
-setcookie('admin_type',       encrypt('admin',        SECRET_KEY), $now + $cookieMaxAge, '/', '', false, true);
-setcookie('admin_login_time',  encrypt((string) $now,  SECRET_KEY), $now + $cookieMaxAge, '/', '', false, true);
-    
-    $_SESSION['msg'] = ['type' => 'success', 'text' => 'Admin login successful!'];
-    header('Location: /Masu%20Ko%20Jhol%28full%29/admin/index.php');
+/* Authenticate against the users table using a prepared statement */
+$stmt = $conn->prepare('SELECT id, email, password, user_type, user_img FROM users WHERE email = ? AND user_type = ? LIMIT 1');
+if (!$stmt) {
+    $_SESSION['msg'] = ['type' => 'error', 'text' => 'Database error.'];
+    header('Location: /Masu%20Ko%20Jhol%28full%29/admin/login.php');
     exit();
 }
 
-/* Invalid credentials */
-$_SESSION['msg'] = ['type' => 'error', 'text' => 'Invalid admin credentials.'];
-header('Location: /Masu%20Ko%20Jhol%28full%29/admin/login.php');
+$userType = 'admin';
+$stmt->bind_param('ss', $userEmail, $userType);
+$stmt->execute();
+$result = $stmt->get_result();
+$user   = $result->fetch_assoc();
+$stmt->close();
+
+/* Verify credentials */
+if (!$user || !password_verify($password, $user['password'])) {
+    $_SESSION['msg'] = ['type' => 'error', 'text' => 'Invalid admin credentials.'];
+    header('Location: /Masu%20Ko%20Jhol%28full%29/admin/login.php');
+    exit();
+}
+
+/* Successful admin login — set session & cookies */
+$now          = time();
+$cookieMaxAge = 86400; // 24h
+
+$_SESSION['admin_email'] = $userEmail;
+$_SESSION['admin_id']    = (int)$user['id'];
+$_SESSION['user_type']   = 'admin';
+
+// Set cookies with unique admin names to avoid conflict with regular user cookies
+setcookie('admin_email',      encrypt($user['email'],      SECRET_KEY), $now + $cookieMaxAge, '/', '', false, true);
+setcookie('admin_type',       encrypt('admin',             SECRET_KEY), $now + $cookieMaxAge, '/', '', false, true);
+setcookie('admin_login_time', encrypt((string) $now,       SECRET_KEY), $now + $cookieMaxAge, '/', '', false, true);
+
+$_SESSION['msg'] = ['type' => 'success', 'text' => 'Admin login successful!'];
+header('Location: /Masu%20Ko%20Jhol%28full%29/admin/index.php');
 exit();

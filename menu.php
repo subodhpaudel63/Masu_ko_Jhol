@@ -45,7 +45,7 @@ if ($catResult) {
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>Masu Ko Jhol | Menu</title>
+    <title>Mero Bhoj | Menu</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
       integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
       crossorigin="anonymous"
@@ -243,7 +243,7 @@ if ($catResult) {
 
     <div class="loader">
       <i class="fas fa-utensils loader-icone"></i>
-      <p>Masu Ko Jhol</p>
+      <p>Mero Bhoj</p>
       <div class="loader-ellipses">
         <span></span>
         <span></span>
@@ -257,7 +257,7 @@ if ($catResult) {
         <div class="logo">
           <a href="./index.php">
             <i class="fa fa-utensils me-3"></i>
-            <h1 class="mb-0">Masu Ko Jhol</h1>
+            <h1 class="mb-0">Mero Bhoj</h1>
           </a>
         </div>
         <div class="menus">
@@ -299,7 +299,7 @@ if ($catResult) {
           <div class="logo">
             <a href="./index.php">
               <i class="fa fa-utensils me-3 text-dark"></i>
-              <h1 class="mb-0 text-dark">Masu Ko Jhol</h1>
+              <h1 class="mb-0 text-dark">Mero Bhoj</h1>
             </a>
           </div>
         </div>

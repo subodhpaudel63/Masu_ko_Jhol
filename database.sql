@@ -76,6 +76,7 @@ INSERT INTO `menu` (`menu_id`, `menu_name`, `menu_description`, `menu_price`, `m
 
 CREATE TABLE `orders` (
   `order_id` int(11) NOT NULL,
+  `order_number` varchar(50) DEFAULT NULL,
   `menu_id` int(11) NOT NULL,
   `email` varchar(255) NOT NULL,
   `menu_name` varchar(255) NOT NULL,
@@ -106,7 +107,8 @@ CREATE TABLE `users` (
   `password` varchar(255) NOT NULL,
   `user_type` enum('user','admin') NOT NULL DEFAULT 'user',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `user_img` varchar(255) NOT NULL DEFAULT '../assets/img/usersprofiles/profilepic.jpg'
+  `user_img` varchar(255) NOT NULL DEFAULT '../assets/img/usersprofiles/profilepic.jpg',
+  `google_id` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -190,4 +192,9 @@ ALTER TABLE `orders`
 --
 ALTER TABLE `users`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `email` (`email`),
+  ADD UNIQUE KEY `google_id` (`google_id`);
 COMMIT;

@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Masu Ko Jhol | Page Not Found</title>
+    <title>Mero Bhoj | Page Not Found</title>
     <link rel="stylesheet" href="assets/scss/404.css">
     <style>
         .button {
@@ -257,7 +257,7 @@
         </svg>
 
         <div class="btn-box">
-            <a href="/Masu Ko Jhol(full)" class="button">
+            <a href="/Mero Bhoj(full)" class="button">
                 <span class="text">Go To Home Page</span>
                 <span class="svg">
                     <svg

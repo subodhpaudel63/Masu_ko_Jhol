@@ -108,7 +108,7 @@ header('Content-Disposition: attachment; filename="analytics_report_' . date('Y-
 $output = fopen('php://output', 'w');
 
 // Write headers
-fputcsv($output, ['Analytics Report - Masu Ko Jhol']);
+fputcsv($output, ['Analytics Report - Mero Bhoj']);
 fputcsv($output, ['Date Range:', $start_date . ' to ' . $end_date]);
 fputcsv($output, ['Generated on:', date('Y-m-d H:i:s')]);
 fputcsv($output, []);

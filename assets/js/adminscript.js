@@ -1,6 +1,5 @@
 // Booking page specific JavaScript functions
 
-// Show toast notification
 function showBookingToast(message, type = 'info') {
     const toast = document.createElement('div');
     toast.className = `toast toast-${type}`;
@@ -10,17 +9,14 @@ function showBookingToast(message, type = 'info') {
             <button class="toast-close">&times;</button>
         </div>
     `;
-    
-    // Add to container
+
     const container = document.querySelector('.toast-container') || document.body;
     container.appendChild(toast);
-    
-    // Auto remove after 5 seconds
+
     setTimeout(() => {
         toast.remove();
     }, 5000);
-    
-    // Close button handler
+
     const closeButton = toast.querySelector('.toast-close');
     if (closeButton) {
         closeButton.addEventListener('click', () => {
@@ -29,13 +25,11 @@ function showBookingToast(message, type = 'info') {
     }
 }
 
-// Update booking status
 function updateBookingStatus(bookingId, newStatus, button) {
-    // Disable button during processing
     const originalText = button.textContent;
     button.disabled = true;
     button.textContent = 'Updating...';
-    
+
     fetch('../includes/update_booking_status.php', {
         method: 'POST',
         headers: {
@@ -60,52 +54,40 @@ function updateBookingStatus(bookingId, newStatus, button) {
         showBookingToast('Error updating booking status', 'error');
     })
     .finally(() => {
-        // Re-enable button
         button.disabled = false;
         button.textContent = originalText;
     });
 }
 
-// Initialize booking page functionality
 document.addEventListener('DOMContentLoaded', function() {
-    // Handle booking update buttons
     const updateButtons = document.querySelectorAll('.btn-booking-update');
     updateButtons.forEach(button => {
         button.addEventListener('click', function() {
             const bookingId = this.getAttribute('data-booking-id');
             const select = this.closest('.booking-actions').querySelector('.booking-status-select');
             const newStatus = select.value;
-            
             updateBookingStatus(bookingId, newStatus, this);
         });
     });
-    
-    // Delete buttons are handled by the custom animated modal in bookings.php
-    // Do NOT add event listeners here - it would create conflicts
 });
 
-// Admin Dashboard JavaScript
-
-// DOM Content Loaded Event
 document.addEventListener('DOMContentLoaded', function() {
-    // Toggle sidebar
     const menuBar = document.getElementById('menu_bar');
     const sideBar = document.querySelector('aside');
     const closeBtn = document.getElementById('close_btn');
-    
-    if (menuBar) {
+
+    if (menuBar && sideBar) {
         menuBar.addEventListener('click', function() {
             sideBar.style.display = 'block';
         });
     }
-    
-    if (closeBtn) {
+
+    if (closeBtn && sideBar) {
         closeBtn.addEventListener('click', function() {
             sideBar.style.display = 'none';
         });
     }
-    
-    // Theme toggler functionality
+
     const themeToggler = document.querySelector('.theme-toggler');
     if (themeToggler) {
         const themeIcons = themeToggler.querySelectorAll('span');
@@ -113,19 +95,16 @@ document.addEventListener('DOMContentLoaded', function() {
             icon.addEventListener('click', function() {
                 themeIcons.forEach(i => i.classList.remove('active'));
                 this.classList.add('active');
-                
-                // Toggle dark/light theme
                 document.body.classList.toggle('dark-theme-variables');
             });
         });
     }
-    
-    // Smooth animations for cards
+
     const observerOptions = {
         threshold: 0.1,
         rootMargin: '0px 0px -50px 0px'
     };
-    
+
     const observer = new IntersectionObserver(function(entries) {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -134,8 +113,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }, observerOptions);
-    
-    // Observe insight cards
+
     const insightCards = document.querySelectorAll('.sales, .expenses, .income');
     insightCards.forEach(card => {
         card.style.opacity = '0';
@@ -143,19 +121,15 @@ document.addEventListener('DOMContentLoaded', function() {
         card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
         observer.observe(card);
     });
-    
-    // Form submission handlers
+
     const forms = document.querySelectorAll('form');
     forms.forEach(form => {
-        form.addEventListener('submit', function(e) {
-            // Add loading state to buttons
+        form.addEventListener('submit', function() {
             const submitBtn = this.querySelector('button[type="submit"]');
             if (submitBtn) {
                 submitBtn.disabled = true;
                 const originalText = submitBtn.textContent;
                 submitBtn.textContent = 'Processing...';
-                
-                // Re-enable after a delay or based on response
                 setTimeout(() => {
                     submitBtn.disabled = false;
                     submitBtn.textContent = originalText;
@@ -165,9 +139,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Utility functions
 function showToast(message, type = 'info') {
-    // Create toast element
     const toast = document.createElement('div');
     toast.className = `toast toast-${type}`;
     toast.innerHTML = `
@@ -176,17 +148,14 @@ function showToast(message, type = 'info') {
             <button class="toast-close">&times;</button>
         </div>
     `;
-    
-    // Add to container
+
     const container = document.querySelector('.toast-container') || document.body;
     container.appendChild(toast);
-    
-    // Auto remove after 5 seconds
+
     setTimeout(() => {
         toast.remove();
     }, 5000);
-    
-    // Close button handler
+
     const closeButton = toast.querySelector('.toast-close');
     if (closeButton) {
         closeButton.addEventListener('click', () => {
@@ -195,7 +164,6 @@ function showToast(message, type = 'info') {
     }
 }
 
-// Function to format currency
 function formatCurrency(amount) {
     return new Intl.NumberFormat('en-US', {
         style: 'currency',
@@ -203,11 +171,9 @@ function formatCurrency(amount) {
     }).format(amount);
 }
 
-// Function to update order status
 function updateOrderStatus(orderId, newStatus) {
-    // This would typically make an AJAX call to update the order status
     console.log(`Updating order ${orderId} to status: ${newStatus}`);
-    
+
     fetch('../includes/order_status_update.php', {
         method: 'POST',
         headers: {
@@ -218,19 +184,14 @@ function updateOrderStatus(orderId, newStatus) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            // Order status updated successfully
         } else {
-            // Failed to update order status
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        // Error updating order status
     });
 }
 
-/* Admin page-specific helpers
-   Keep page behavior centralized here so admin templates only load one JS file. */
 function togglePw() {
     const input = document.getElementById('password');
     if (!input) return;
@@ -261,6 +222,14 @@ function exportCSV() {
 
 function exportPDF() {
     window.print();
+}
+
+function setAnalyticsRange(range) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('date_range', range);
+    url.searchParams.delete('start_date');
+    url.searchParams.delete('end_date');
+    window.location.href = url.toString();
 }
 
 function showFullMessage(event, anchor) {
@@ -330,66 +299,264 @@ function deleteFeedback(id, name, button) {
 }
 
 function initAnalyticsCharts() {
-    const salesCanvas = document.getElementById('salesChart');
-    const statusCanvas = document.getElementById('orderStatusChart');
-    if (!salesCanvas || !statusCanvas || typeof Chart === 'undefined') return;
+    const payload = window.analyticsPayload;
+    if (!payload || typeof Chart === 'undefined') return;
+    const charts = payload.charts || payload;
 
-    const salesDataEl = document.getElementById('analyticsSalesData');
-    const orderStatsEl = document.getElementById('analyticsOrderStats');
-    const salesData = salesDataEl ? JSON.parse(salesDataEl.textContent || '[]') : [];
-    const orderStats = orderStatsEl ? JSON.parse(orderStatsEl.textContent || '[]') : [];
+    const legacySalesCanvas = document.getElementById('salesChart');
+    const legacyStatusCanvas = document.getElementById('orderStatusChart');
+    const legacySalesDataEl = document.getElementById('analyticsSalesData');
+    const legacyOrderStatsEl = document.getElementById('analyticsOrderStats');
+    if (legacySalesCanvas && legacyStatusCanvas && legacySalesDataEl && legacyOrderStatsEl) {
+        const salesData = JSON.parse(legacySalesDataEl.textContent || '[]');
+        const orderStats = JSON.parse(legacyOrderStatsEl.textContent || '[]');
 
-    new Chart(salesCanvas.getContext('2d'), {
+        new Chart(legacySalesCanvas.getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: salesData.map((item) => item.date),
+                datasets: [
+                    {
+                        label: 'Revenue (Rs)',
+                        data: salesData.map((item) => item.revenue),
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        tension: 0.4,
+                    },
+                    {
+                        label: 'Orders',
+                        data: salesData.map((item) => item.order_count),
+                        borderColor: '#764ba2',
+                        backgroundColor: 'rgba(118, 75, 162, 0.1)',
+                        tension: 0.4,
+                    },
+                ],
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: { y: { beginAtZero: true } },
+            },
+        });
+
+        new Chart(legacyStatusCanvas.getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: orderStats.map((item) => item.status),
+                datasets: [{
+                    data: orderStats.map((item) => item.count),
+                    backgroundColor: ['#4CAF50', '#2196F3', '#FF9800', '#F44336'],
+                }],
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom' } },
+            },
+        });
+        return;
+    }
+
+    const revenueCanvas = document.getElementById('revenueChart');
+    const ordersCanvas = document.getElementById('ordersChart');
+    const paymentCanvas = document.getElementById('paymentChart');
+    const paymentLegend = document.getElementById('paymentLegend');
+    if (!revenueCanvas || !ordersCanvas || !paymentCanvas) return;
+
+    const lineOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                backgroundColor: '#0f172a',
+                titleColor: '#fff',
+                bodyColor: '#fff',
+                padding: 12,
+                cornerRadius: 12,
+            },
+        },
+        scales: {
+            x: {
+                grid: { display: false },
+                ticks: { color: '#64748b', maxRotation: 0, autoSkip: true },
+            },
+            y: {
+                beginAtZero: true,
+                grid: { color: 'rgba(148, 163, 184, 0.18)' },
+                ticks: { color: '#64748b' },
+            },
+        },
+    };
+
+    if (window.analyticsCharts && typeof window.analyticsCharts.destroy === 'function') {
+        window.analyticsCharts.destroy();
+    }
+    window.analyticsCharts = window.analyticsCharts || {};
+
+    window.analyticsCharts.revenue = new Chart(revenueCanvas.getContext('2d'), {
         type: 'line',
         data: {
-            labels: salesData.map((item) => item.date),
-            datasets: [
-                {
-                    label: 'Revenue (Rs)',
-                    data: salesData.map((item) => item.revenue),
-                    borderColor: '#667eea',
-                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
-                    tension: 0.4,
-                },
-                {
-                    label: 'Orders',
-                    data: salesData.map((item) => item.order_count),
-                    borderColor: '#764ba2',
-                    backgroundColor: 'rgba(118, 75, 162, 0.1)',
-                    tension: 0.4,
-                },
-            ],
+            labels: charts.labels,
+            datasets: [{
+                data: charts.revenue,
+                borderColor: '#ff6a00',
+                backgroundColor: 'rgba(255, 106, 0, 0.12)',
+                fill: true,
+                borderWidth: 3,
+                pointRadius: 3,
+                pointHoverRadius: 5,
+                tension: 0.38,
+            }],
         },
         options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: { y: { beginAtZero: true } },
+            ...lineOptions,
+            scales: {
+                ...lineOptions.scales,
+                y: {
+                    ...lineOptions.scales.y,
+                    ticks: {
+                        color: '#64748b',
+                        callback: (value) => `\u20B9${Number(value).toLocaleString()}`,
+                    },
+                },
+            },
         },
     });
 
-    new Chart(statusCanvas.getContext('2d'), {
+    window.analyticsCharts.orders = new Chart(ordersCanvas.getContext('2d'), {
+        type: 'line',
+        data: {
+            labels: charts.labels,
+            datasets: [{
+                data: charts.orders,
+                borderColor: '#22a55f',
+                backgroundColor: 'rgba(34, 165, 95, 0.12)',
+                fill: true,
+                borderWidth: 3,
+                pointRadius: 3,
+                pointHoverRadius: 5,
+                tension: 0.38,
+            }],
+        },
+        options: lineOptions,
+    });
+
+    const paymentColors = ['#5b9dd9', '#45c4b0', '#f5b335'];
+    window.analyticsCharts.payment = new Chart(paymentCanvas.getContext('2d'), {
         type: 'doughnut',
         data: {
-            labels: orderStats.map((item) => item.status),
+            labels: charts.paymentLabels,
             datasets: [{
-                data: orderStats.map((item) => item.count),
-                backgroundColor: ['#4CAF50', '#2196F3', '#FF9800', '#F44336'],
+                data: charts.paymentValues,
+                backgroundColor: paymentColors,
+                borderWidth: 0,
+                hoverOffset: 4,
             }],
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { position: 'bottom' } },
+            cutout: '68%',
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: (context) => {
+                            const value = context.raw || 0;
+                            const total = charts.paymentTotal || 1;
+                            const percentage = Math.round((value / total) * 100);
+                            return ` ${context.label}: ${percentage}% (\u20B9${Number(value).toLocaleString()})`;
+                        },
+                    },
+                },
+            },
         },
     });
+
+    if (paymentLegend) {
+        paymentLegend.innerHTML = charts.paymentLabels.map((label, index) => `
+            <div class="payment-legend-item">
+                <span class="payment-dot" style="background:${paymentColors[index]}"></span>
+                <div>
+                    <span class="payment-label">${label}</span>
+                    <span class="payment-meta">${charts.paymentPercentages[index]}% (\u20B9${Number(charts.paymentValues[index]).toLocaleString()})</span>
+                </div>
+            </div>
+        `).join('');
+    }
+}
+
+function updateAnalyticsWidgets(payload) {
+    if (!payload) return;
+    const charts = payload.charts || payload;
+    const stats = payload.stats || payload;
+
+    const statMap = [
+        { selector: '.analytics-stat-card:nth-child(1) strong', value: `\u20B9${Number(stats.totalRevenue).toLocaleString()}` },
+        { selector: '.analytics-stat-card:nth-child(2) strong', value: Number(stats.totalOrders).toLocaleString() },
+        { selector: '.analytics-stat-card:nth-child(3) strong', value: `\u20B9${Number(stats.avgOrderValue).toLocaleString()}` },
+        { selector: '.analytics-stat-card:nth-child(4) strong', value: Number(stats.newCustomers).toLocaleString() }
+    ];
+
+    statMap.forEach(({ selector, value }) => {
+        const node = document.querySelector(selector);
+        if (node) node.textContent = value;
+    });
+
+    const lastUpdated = document.getElementById('analyticsLastUpdated');
+    if (lastUpdated) {
+        lastUpdated.textContent = `Last updated ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+    }
+
+    if (window.analyticsCharts?.revenue) {
+        window.analyticsCharts.revenue.data.labels = charts.labels;
+        window.analyticsCharts.revenue.data.datasets[0].data = charts.revenue;
+        window.analyticsCharts.revenue.update();
+    }
+    if (window.analyticsCharts?.orders) {
+        window.analyticsCharts.orders.data.labels = charts.labels;
+        window.analyticsCharts.orders.data.datasets[0].data = charts.orders;
+        window.analyticsCharts.orders.update();
+    }
+    if (window.analyticsCharts?.payment) {
+        window.analyticsCharts.payment.data.labels = charts.paymentLabels;
+        window.analyticsCharts.payment.data.datasets[0].data = charts.paymentValues;
+        window.analyticsCharts.payment.update();
+    }
+
+    const paymentLegend = document.getElementById('paymentLegend');
+    if (paymentLegend) {
+        const paymentColors = ['#5b9dd9', '#45c4b0', '#f5b335'];
+        paymentLegend.innerHTML = charts.paymentLabels.map((label, index) => `
+            <div class="payment-legend-item">
+                <span class="payment-dot" style="background:${paymentColors[index]}"></span>
+                <div>
+                    <span class="payment-label">${label}</span>
+                    <span class="payment-meta">${charts.paymentPercentages[index]}% (\u20B9${Number(charts.paymentValues[index]).toLocaleString()})</span>
+                </div>
+            </div>
+        `).join('');
+    }
+}
+
+function refreshAnalyticsData() {
+    const url = window.analyticsRefreshUrl || ('analytics_data.php' + window.location.search);
+    fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+        .then((response) => response.json())
+        .then((payload) => {
+            updateAnalyticsWidgets(payload);
+        })
+        .catch((error) => {
+            console.warn('Unable to refresh analytics data:', error);
+        });
 }
 
 document.addEventListener('DOMContentLoaded', function () {
     initAnalyticsCharts();
+    setInterval(refreshAnalyticsData, 15000);
 });
 
-/* New order alert system
-   Polls the backend for the latest order id, shows a popup, and plays a short tone. */
 const MKJ_ORDER_POLL_INTERVAL_MS = 15000;
 let mkjLatestOrderId = null;
 let mkjOrderPollTimer = null;
@@ -482,66 +649,45 @@ function mkjShowOrderNotification(order) {
     });
 }
 
-async function mkjFetchLatestOrder() {
-    const response = await fetch('get_order_notifications.php', {
-        headers: { 'X-Requested-With': 'XMLHttpRequest' },
-    });
-    if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-    }
-    return response.json();
-}
-
-async function mkjCheckForNewOrders() {
+function mkjFetchLatestOrder() {
     if (mkjOrderAlertBusy) return;
     mkjOrderAlertBusy = true;
-    try {
-        const payload = await mkjFetchLatestOrder();
-        if (!payload || !payload.success || !payload.order) return;
 
-        const latestId = Number(payload.order.order_id);
-        if (!mkjLatestOrderId) {
-            mkjLatestOrderId = latestId;
-            return;
+    fetch('get_order_notifications.php', {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
         }
+    })
+    .then((response) => response.json())
+    .then((payload) => {
+        if (!payload || payload.success !== true || !payload.order) return;
 
-        if (latestId > mkjLatestOrderId) {
-            mkjLatestOrderId = latestId;
+        const order = payload.order;
+        if (mkjLatestOrderId !== null && Number(order.order_id) !== Number(mkjLatestOrderId)) {
+            mkjShowOrderNotification(order);
             mkjPlayOrderSound();
-            mkjShowOrderNotification(payload.order);
         }
-    } catch (error) {
-        console.warn('Order notification poll failed:', error);
-    } finally {
+        mkjLatestOrderId = Number(order.order_id);
+    })
+    .catch((error) => {
+        console.warn('Unable to poll for new orders:', error);
+    })
+    .finally(() => {
         mkjOrderAlertBusy = false;
-    }
+    });
 }
 
-async function mkjInitializeOrderNotifications() {
-    try {
-        const payload = await mkjFetchLatestOrder();
-        if (payload && payload.success && payload.order) {
-            mkjLatestOrderId = Number(payload.order.order_id);
-            const storedLastSeen = Number(window.localStorage.getItem('mkj_last_seen_order_id') || 0);
-            if (storedLastSeen > 0 && mkjLatestOrderId > storedLastSeen) {
-                mkjPlayOrderSound();
-                mkjShowOrderNotification(payload.order);
-            }
-            window.localStorage.setItem('mkj_last_seen_order_id', String(mkjLatestOrderId));
-        }
-    } catch (error) {
-        console.warn('Unable to initialize order notifications:', error);
-    }
-
-    mkjCheckForNewOrders();
-    if (!mkjOrderPollTimer) {
-        mkjOrderPollTimer = window.setInterval(mkjCheckForNewOrders, MKJ_ORDER_POLL_INTERVAL_MS);
-    }
+function mkjStartOrderPolling() {
+    if (mkjOrderPollTimer) return;
+    mkjFetchLatestOrder();
+    mkjOrderPollTimer = setInterval(mkjFetchLatestOrder, MKJ_ORDER_POLL_INTERVAL_MS);
 }
 
-document.addEventListener('DOMContentLoaded', function () {
-    document.addEventListener('pointerdown', mkjUnlockOrderAudio, { once: true });
-    document.addEventListener('keydown', mkjUnlockOrderAudio, { once: true });
-    document.addEventListener('touchstart', mkjUnlockOrderAudio, { once: true });
-    mkjInitializeOrderNotifications();
+document.addEventListener('pointerdown', mkjUnlockOrderAudio, { once: true });
+document.addEventListener('keydown', mkjUnlockOrderAudio, { once: true });
+document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+        mkjFetchLatestOrder();
+    }
 });
+window.addEventListener('load', mkjStartOrderPolling);

@@ -62,7 +62,7 @@ $positive_percent = $total_feedback > 0 ? round(($positive_feedback / $total_fee
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Customer Feedback - Masu Ko Jhol</title>
+  <title>Customer Feedback - Mero Bhoj</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,0,0" />
   <!-- Ensure this path is correct based on your folder structure -->
   <link rel="stylesheet" href="../assets/css/adminstyle.css?v=<?= filemtime(__DIR__ . '/../assets/css/adminstyle.css') ?>">

@@ -82,7 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_action'])) {
             $response['message'] = 'Cart cleared';
             break;
             
-        case 'checkout':
+            case 'checkout':
             if (!empty($_SESSION['cart'])) {
                 $email = trim($_POST['email'] ?? '');
                 $full_name = trim($_POST['full_name'] ?? '');
@@ -93,8 +93,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_action'])) {
                 $special_instructions = trim($_POST['special_instructions'] ?? '');
                 $payment_method = trim($_POST['payment_method'] ?? 'Cash on Delivery');
                 
-                if (empty($full_name) || empty($mobile) || empty($address)) {
+                if (empty($email) || empty($full_name) || empty($mobile)) {
                     $response['message'] = 'Missing required checkout information';
+                    break;
+                }
+                
+                if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    $response['message'] = 'Please enter a valid email address';
                     break;
                 }
                 
@@ -102,9 +107,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_action'])) {
                     $response['message'] = 'Invalid mobile number format';
                     break;
                 }
+
+                if ($order_type === 'Delivery') {
+                    if ($address === '') {
+                        $response['message'] = 'Delivery address is required for delivery orders';
+                        break;
+                    }
+                    $table_number = '';
+                } elseif ($order_type === 'Dine In') {
+                    if ($table_number === '') {
+                        $response['message'] = 'Table number is required for dine in orders';
+                        break;
+                    }
+                    $address = '';
+                } elseif ($order_type === 'Takeaway') {
+                    $address = '';
+                    $table_number = '';
+                }
+                
+                // Generate a single unique order_number for this entire checkout
+                $order_number = 'ORD-' . date('Ymd') . '-' . sprintf('%04d', rand(1000, 9999));
+                
+                $conn->begin_transaction();
                 
                 $success_count = 0;
                 $error_occurred = false;
+                
+                $stmt = $conn->prepare("INSERT INTO orders (order_number, menu_id, email, menu_name, quantity, price, total_price, mobile, address, status, order_time, order_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Confirmed', NOW(), CURDATE())");
+                
+                if (!$stmt) {
+                    error_log('Prepare statement failed: ' . $conn->error);
+                    $conn->rollback();
+                    $response['message'] = 'Error placing order: Database error occurred';
+                    break;
+                }
                 
                 foreach ($_SESSION['cart'] as $item) {
                     if (!isset($item['menu_id']) || !isset($item['name']) || !isset($item['quantity']) || 
@@ -113,33 +149,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_action'])) {
                         continue;
                     }
                     
-                    $stmt = $conn->prepare("INSERT INTO orders (menu_id, email, full_name, menu_name, quantity, price, total_price, mobile, address, order_type, table_number, special_instructions, payment_method, status, order_time, order_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Confirmed', NOW(), CURDATE())");
-                    
-                    if (!$stmt) {
-                        error_log('Prepare statement failed: ' . $conn->error);
-                        $error_occurred = true;
-                        break;
-                    }
-                    
-                    $result = $stmt->bind_param("isssiddssssss", 
+                    $result = $stmt->bind_param("sissidsss", 
+                        $order_number,
                         $item['menu_id'],
                         $email,
-                        $full_name,
                         $item['name'],
                         $item['quantity'],
                         $item['price'],
                         $item['total'],
                         $mobile,
-                        $address,
-                        $order_type,
-                        $table_number,
-                        $special_instructions,
-                        $payment_method
+                        $address
                     );
                     
                     if (!$result) {
                         error_log('Bind param failed: ' . $stmt->error);
-                        $stmt->close();
                         $error_occurred = true;
                         break;
                     }
@@ -149,16 +172,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_action'])) {
                     } else {
                         error_log('Execute failed: ' . $stmt->error);
                         $error_occurred = true;
+                        break;
                     }
-                    $stmt->close();
                 }
+                $stmt->close();
                 
                 if ($success_count > 0 && !$error_occurred) {
+                    $conn->commit();
                     $_SESSION['cart'] = [];
                     $response['success'] = true;
                     $response['message'] = 'Order placed successfully!';
                     $response['redirect'] = 'myorder.php';
                 } else {
+                    $conn->rollback();
                     $response['message'] = 'Error placing order' . ($error_occurred ? ': Database error occurred' : '');
                 }
             } else {
@@ -178,7 +204,7 @@ $cart = array_values($_SESSION['cart'] ?? []);
 <head>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>Cart | Masu Ko Jhol</title>
+  <title>Cart | Mero Bhoj</title>
   <link rel="stylesheet" href="../assets/css/style.css" />
   <link rel="stylesheet" href="../assets/css/toast_styles.css" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" />
@@ -188,7 +214,7 @@ $cart = array_values($_SESSION['cart'] ?? []);
 <body>
   <div class="loader">
     <i class="fas fa-utensils loader-icone"></i>
-    <p>Masu Ko Jhol</p>
+    <p>Mero Bhoj</p>
     <div class="loader-ellipses">
       <span></span>
       <span></span>
@@ -201,7 +227,7 @@ $cart = array_values($_SESSION['cart'] ?? []);
       <div class="logo">
         <a href="./index.php">
           <i class="fa fa-utensils me-3"></i>
-          <h1 class="mb-0">Masu Ko Jhol</h1>
+          <h1 class="mb-0">Mero Bhoj</h1>
         </a>
       </div>
       <div class="menus">

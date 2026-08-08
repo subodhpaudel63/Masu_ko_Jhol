@@ -39,7 +39,7 @@ if (isset($_COOKIE['user_img'])) {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Masu Ko Jhol - Contact</title>
+    <title>Mero Bhoj - Contact</title>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
@@ -77,7 +77,7 @@ if (isset($_COOKIE['user_img'])) {
 
     <div class="loader">
       <i class="fas fa-utensils loader-icone"></i>
-      <p>Masu Ko Jhol</p>
+      <p>Mero Bhoj</p>
       <div class="loader-ellipses">
         <span></span>
         <span></span>
@@ -90,7 +90,7 @@ if (isset($_COOKIE['user_img'])) {
         <div class="logo">
           <a href="./index.php">
             <i class="fa fa-utensils me-3"></i>
-            <h1 class="mb-0">Masu Ko Jhol</h1>
+            <h1 class="mb-0">Mero Bhoj</h1>
           </a>
         </div>
         <div class="menus">
@@ -154,7 +154,7 @@ if (isset($_COOKIE['user_img'])) {
           <div class="logo">
             <a href="./index.php">
               <i class="fa fa-utensils me-3"></i>
-              <h1 class="mb-0">Masu Ko Jhol</h1>
+              <h1 class="mb-0">Mero Bhoj</h1>
             </a>
           </div>
         </div>

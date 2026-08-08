@@ -48,22 +48,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $payment_method = isset($_POST['payment_method']) ? trim($_POST['payment_method']) : 'Cash on Delivery';
 
     // Basic validation
-    if ($menu_id <= 0 || empty($menu_name) || $quantity <= 0 || $price <= 0 || $total_price <= 0 || empty($full_name) || !preg_match('/^[0-9]{10}$/', $mobile) || empty($address)) {
+    if ($menu_id <= 0 || empty($menu_name) || $quantity <= 0 || $price <= 0 || $total_price <= 0 || empty($email) || empty($full_name) || !preg_match('/^[0-9]{10}$/', $mobile)) {
         respond_menu_order([
             'success' => false,
             'message' => 'Invalid order data. Please fill in all required fields correctly.',
         ], $isAjax);
     }
 
-    // Insert into DB
-    $stmt = $conn->prepare("INSERT INTO orders (menu_id, menu_name, price, quantity, total_price, email, full_name, mobile, address, order_type, table_number, special_instructions, payment_method, order_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())");
-    $stmt->bind_param("isdidssssssss", $menu_id, $menu_name, $price, $quantity, $total_price, $email, $full_name, $mobile, $address, $order_type, $table_number, $special_instructions, $payment_method);
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        respond_menu_order([
+            'success' => false,
+            'message' => 'Please enter a valid email address.',
+        ], $isAjax);
+    }
+
+    if ($order_type === 'Delivery') {
+        if ($address === '') {
+            respond_menu_order([
+                'success' => false,
+                'message' => 'Delivery address is required for delivery orders.',
+            ], $isAjax);
+        }
+        $table_number = null;
+    } elseif ($order_type === 'Dine In') {
+        if ($table_number === '') {
+            respond_menu_order([
+                'success' => false,
+                'message' => 'Table number is required for dine in orders.',
+            ], $isAjax);
+        }
+        $address = '';
+    } elseif ($order_type === 'Takeaway') {
+        $address = '';
+        $table_number = null;
+    }
+
+    // Insert into DB using only columns that exist in the orders table
+    $order_number = 'ORD-' . date('Ymd') . '-' . sprintf('%04d', rand(1000, 9999));
+    $stmt = $conn->prepare("INSERT INTO orders (order_number, menu_id, menu_name, price, quantity, total_price, email, mobile, address, status, order_time, order_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Confirmed', NOW(), CURDATE())");
+    $stmt->bind_param("sisdidsss", $order_number, $menu_id, $menu_name, $price, $quantity, $total_price, $email, $mobile, $address);
 
     if ($stmt->execute()) {
         respond_menu_order([
             'success' => true,
             'message' => 'Order placed successfully!',
             'order_id' => $stmt->insert_id,
+            'order_number' => $order_number,
         ], $isAjax);
     } else {
         respond_menu_order([

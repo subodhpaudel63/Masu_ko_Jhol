@@ -37,6 +37,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
+    $bookingDate = DateTime::createFromFormat('Y-m-d', $date);
+    $today = new DateTime('today');
+    $dateErrors = DateTime::getLastErrors();
+    if (!$bookingDate || $dateErrors['warning_count'] > 0 || $dateErrors['error_count'] > 0) {
+        $_SESSION['msg'] = ['type' => 'error', 'text' => 'Please choose a valid booking date.'];
+        redirect_user();
+        exit;
+    }
+
+    if ($bookingDate < $today) {
+        $_SESSION['msg'] = ['type' => 'error', 'text' => 'You cannot book a table for a past date.'];
+        redirect_user();
+        exit;
+    }
+
     // Use prepared statements for security
     $stmt = $conn->prepare("INSERT INTO bookings (name, email, phone, booking_date, booking_time, people, message) VALUES (?, ?, ?, ?, ?, ?, ?)");
     

@@ -11,7 +11,7 @@
                 <div class="logo" data-aos="fade-down-right">
                   <a href="./index.html">
                     <i class="fa fa-utensils me-3"></i>
-                    <h1 class="mb-0">Masu Ko Jhol</h1>
+                    <h1 class="mb-0">Mero Bhoj</h1>
                   </a>
                 </div>
               </div>
@@ -27,7 +27,7 @@
               </div>
             </div>
             <div class="row pt-5 content-desc" data-aos="fade-right">
-              <p class="px-0">Thank you for visiting Masu Ko Jhol—where every dish is a tribute to Nepali tradition and every guest is family.</p>
+              <p class="px-0">Thank you for visiting Mero Bhoj—where every dish is a tribute to Nepali tradition and every guest is family.</p>
               </div>
             <div class="row" data-aos="fade-right">
               <div class="d-flex flex-column flex-lg-row px-0 justify-content-between">
@@ -82,7 +82,7 @@
           </div>
         </div>
         <div class="row">
-          <p class="text-center pt-4 mt-3 pt-lg-0">&copy; <span id="copyrightCurrentYear"></span> <b> Masu Ko Jhol.</b> All rights reserved. Design by <a href="https://www.instagram.com/subodh_543/" class="fw-bold author-name">Subodh Paudel</a></p>
+          <p class="text-center pt-4 mt-3 pt-lg-0">&copy; <span id="copyrightCurrentYear"></span> <b> Mero Bhoj.</b> All rights reserved. Design by <a href="https://www.instagram.com/subodh_543/" class="fw-bold author-name">Subodh Paudel</a></p>
         </div>
       </div>
     </footer>

@@ -51,7 +51,7 @@ if ($catResult) {
     <meta charset="utf-8">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>Masu Ko Jhol | Menu</title>
+    <title>Mero Bhoj | Menu</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
       integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
       crossorigin="anonymous"
@@ -347,7 +347,7 @@ if ($catResult) {
 
     <div class="loader">
       <i class="fas fa-utensils loader-icone"></i>
-      <p>Masu Ko Jhol</p>
+      <p>Mero Bhoj</p>
       <div class="loader-ellipses">
         <span></span>
         <span></span>
@@ -360,7 +360,7 @@ if ($catResult) {
         <div class="logo">
           <a href="./index.php">
             <i class="fa fa-utensils me-3"></i>
-            <h1 class="mb-0">Masu Ko Jhol</h1>
+            <h1 class="mb-0">Mero Bhoj</h1>
           </a>
         </div>
         <div class="menus">
@@ -426,7 +426,7 @@ if ($catResult) {
           <div class="logo">
             <a href="./index.php">
               <i class="fa fa-utensils me-3 text-dark"></i>
-              <h1 class="mb-0 text-dark">Masu Ko Jhol</h1>
+              <h1 class="mb-0 text-dark">Mero Bhoj</h1>
             </a>
           </div>
         </div>
@@ -636,10 +636,10 @@ if ($catResult) {
                                 <div class="invalid-feedback">Please enter valid number.</div>
                             </div>
                             <div class="mkj-field">
-                                <label for="email" class="mkj-order-label">Email (optional)</label>
+                                <label for="email" class="mkj-order-label">Email *</label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-white border-end-0"><i class="fa fa-envelope text-muted"></i></span>
-                                    <input type="email" id="email" name="email" class="form-control mkj-control border-start-0 ps-0" value="<?php echo htmlspecialchars($currentUser['email'] ?? ''); ?>" placeholder="Enter your email">
+                                    <input type="email" id="email" name="email" class="form-control mkj-control border-start-0 ps-0" value="<?php echo htmlspecialchars($currentUser['email'] ?? ''); ?>" placeholder="Enter your email" required>
                                 </div>
                             </div>
                             <div class="mkj-field">
@@ -667,12 +667,12 @@ if ($catResult) {
                                     </label>
                                 </div>
                             </div>
-                            <div class="mkj-field mkj-hidden" id="table_number_wrapper">
-                                <label for="table_number" class="mkj-order-label">Table Number (for Dine In)</label>
+                            <div class="mkj-field" id="table_number_wrapper" style="display:none;" hidden>
+                                <label for="table_number" class="mkj-order-label" id="table_number_label">Table Number (for Dine In)</label>
                                 <input type="text" id="table_number" name="table_number" class="form-control mkj-control" placeholder="Enter table number">
                             </div>
-                            <div class="mkj-field">
-                                <label for="address" class="mkj-order-label">Delivery Address *</label>
+                            <div class="mkj-field" id="address_wrapper">
+                                <label for="address" class="mkj-order-label" id="address_label">Delivery Address *</label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-white border-end-0 align-items-start pt-2"><i class="fa fa-location-dot text-muted"></i></span>
                                     <textarea id="address" name="address" class="form-control mkj-control border-start-0 ps-0 mkj-control-textarea" rows="3" required placeholder="Enter your complete address"></textarea>
@@ -908,16 +908,23 @@ if ($catResult) {
         const modalPrice    = document.getElementById('modal-price');
         const modalTotal    = document.getElementById('modal-total-price');
         const inputMenuId   = document.getElementById('input-menu-id');
-        const inputMenuName = document.getElementById('input-menu-name');
-        const inputPrice    = document.getElementById('input-price');
-        const inputTotal    = document.getElementById('input-total-price');
-        const quantityInput = document.getElementById('quantity');
+          const inputMenuName = document.getElementById('input-menu-name');
+          const inputPrice    = document.getElementById('input-price');
+          const inputTotal    = document.getElementById('input-total-price');
+          const quantityInput = document.getElementById('quantity');
+          const orderTypeRadios = document.querySelectorAll('input[name="order_type"]');
+          const addressWrapper = document.getElementById('address_wrapper');
+          const addressField = document.getElementById('address');
+          const addressLabel = document.getElementById('address_label');
+          const tableWrapper = document.getElementById('table_number_wrapper');
+          const tableField = document.getElementById('table_number');
+          const tableLabel = document.getElementById('table_number_label');
 
-        function recalc() {
-            const price = parseFloat(modalPrice.textContent) || 0;
-            const qty   = Math.max(1, parseInt(quantityInput.value) || 1);
-            quantityInput.value = qty;
-            const total = (price * qty).toFixed(2);
+          function recalc() {
+              const price = parseFloat(modalPrice.textContent) || 0;
+              const qty   = Math.max(1, parseInt(quantityInput.value) || 1);
+              quantityInput.value = qty;
+              const total = (price * qty).toFixed(2);
             modalTotal.textContent = total;
             inputPrice.value = price.toFixed(2);
             inputTotal.value = total;
@@ -925,9 +932,39 @@ if ($catResult) {
             const summarySubtotal = document.getElementById('summary-subtotal');
             const summaryTotal = document.getElementById('summary-total');
             if (summaryQty) summaryQty.textContent = qty;
-            if (summarySubtotal) summarySubtotal.textContent = total;
-            if (summaryTotal) summaryTotal.textContent = total;
-        }
+              if (summarySubtotal) summarySubtotal.textContent = total;
+              if (summaryTotal) summaryTotal.textContent = total;
+          }
+
+          function syncOrderTypeFields() {
+              const selected = document.querySelector('input[name="order_type"]:checked')?.value || 'Delivery';
+              const isDelivery = selected === 'Delivery';
+              const isDineIn = selected === 'Dine In';
+
+              if (addressWrapper) {
+                  addressWrapper.style.display = isDelivery ? '' : 'none';
+                  addressWrapper.hidden = !isDelivery;
+              }
+              if (addressLabel) {
+                  addressLabel.textContent = isDelivery ? 'Delivery Address *' : 'Address';
+              }
+              if (addressField) {
+                  addressField.required = isDelivery;
+                  if (!isDelivery) addressField.value = '';
+              }
+
+              if (tableWrapper) {
+                  tableWrapper.style.display = isDineIn ? '' : 'none';
+                  tableWrapper.hidden = !isDineIn;
+              }
+              if (tableLabel) {
+                  tableLabel.textContent = isDineIn ? 'Table Number *' : 'Table Number (for Dine In)';
+              }
+              if (tableField) {
+                  tableField.required = isDineIn;
+                  if (!isDineIn) tableField.value = '';
+              }
+          }
 
         document.getElementById('qty-minus')?.addEventListener('click', () => {
             quantityInput.value = Math.max(1, (parseInt(quantityInput.value) || 1) - 1);
@@ -939,19 +976,23 @@ if ($catResult) {
         });
         quantityInput?.addEventListener('input', recalc);
 
-        buyModal?.addEventListener('show.bs.modal', e => {
-            const btn = e.relatedTarget;
-            inputMenuId.value              = btn.getAttribute('data-id');
-            inputMenuName.value            = btn.getAttribute('data-name');
+          buyModal?.addEventListener('show.bs.modal', e => {
+              const btn = e.relatedTarget;
+              inputMenuId.value              = btn.getAttribute('data-id');
+              inputMenuName.value            = btn.getAttribute('data-name');
             document.getElementById('modal-name').textContent        = btn.getAttribute('data-name');
             document.getElementById('modal-description').textContent = btn.getAttribute('data-description');
             document.getElementById('modal-image').src               = btn.getAttribute('data-image');
             document.getElementById('summary-name').textContent      = btn.getAttribute('data-name');
-            document.getElementById('summary-image').src             = btn.getAttribute('data-image');
-            modalPrice.textContent = parseFloat(btn.getAttribute('data-price')).toFixed(2);
-            quantityInput.value    = 1;
-            recalc();
-        });
+              document.getElementById('summary-image').src             = btn.getAttribute('data-image');
+              modalPrice.textContent = parseFloat(btn.getAttribute('data-price')).toFixed(2);
+              quantityInput.value    = 1;
+              recalc();
+              syncOrderTypeFields();
+          });
+
+          orderTypeRadios.forEach(radio => radio.addEventListener('change', syncOrderTypeFields));
+          syncOrderTypeFields();
 
         buyModal?.querySelector('form')?.addEventListener('submit', e => {
             const form = e.currentTarget;

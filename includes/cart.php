@@ -89,15 +89,33 @@ if ($action === 'checkout' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         header('Location: ../client/cart.php');
         exit;
     }
-    $stmt = $conn->prepare("INSERT INTO orders (menu_id, menu_name, price, quantity, total_price, email, mobile, address, status, order_time, order_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Confirmed', NOW(), CURDATE())");
-    foreach ($_SESSION['cart'] as $item) {
-        $total = isset($item['total']) ? floatval($item['total']) : (floatval($item['price']) * intval($item['quantity']));
-        $stmt->bind_param("isdidsss", $item['menu_id'], $item['menu_name'] ?? $item['name'], $item['price'], $item['quantity'], $total, $email, $mobile, $address);
-        $stmt->execute();
+    $order_number = 'ORD-' . date('Ymd') . '-' . sprintf('%04d', rand(1000, 9999));
+    $conn->begin_transaction();
+    $stmt = $conn->prepare("INSERT INTO orders (order_number, menu_id, menu_name, price, quantity, total_price, email, mobile, address, status, order_time, order_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Confirmed', NOW(), CURDATE())");
+    $allOk = true;
+    if ($stmt) {
+        foreach ($_SESSION['cart'] as $item) {
+            $total = isset($item['total']) ? floatval($item['total']) : (floatval($item['price']) * intval($item['quantity']));
+            $name = $item['menu_name'] ?? $item['name'];
+            $stmt->bind_param("sisdidsss", $order_number, $item['menu_id'], $name, $item['price'], $item['quantity'], $total, $email, $mobile, $address);
+            if (!$stmt->execute()) {
+                $allOk = false;
+                break;
+            }
+        }
+        $stmt->close();
+    } else {
+        $allOk = false;
     }
-    $stmt->close();
-    $_SESSION['cart'] = [];
-    $_SESSION['msg'] = ['type' => 'success', 'text' => 'Checkout complete.'];
+    
+    if ($allOk) {
+        $conn->commit();
+        $_SESSION['cart'] = [];
+        $_SESSION['msg'] = ['type' => 'success', 'text' => 'Checkout complete.'];
+    } else {
+        $conn->rollback();
+        $_SESSION['msg'] = ['type' => 'error', 'text' => 'Error placing order.'];
+    }
     header('Location: ../client/cart.php');
     exit;
 }

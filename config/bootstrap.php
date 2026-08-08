@@ -11,6 +11,13 @@ if (session_status() === PHP_SESSION_NONE) {
 define('SITE_ROOT', str_replace('\\', '/', realpath(__DIR__ . '/..')));
 define('BASE_URL', '/Masu Ko Jhol(full)');
 
+// TODO: Replace with your actual Google OAuth Client ID from
+// https://console.cloud.google.com/apis/credentials
+define('GOOGLE_CLIENT_ID', 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com');
+
+// Show GIS fallback button when client ID is not configured
+define('GOOGLE_USE_FALLBACK', GOOGLE_CLIENT_ID === 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com');
+
 function url(string $path = ''): string {
     $path = ltrim($path, '/');
     return BASE_URL . '/' . $path;

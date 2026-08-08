@@ -1,8 +1,8 @@
 <?php
 session_start();
-if (isset($_COOKIE['user_type'])) {
+if (isset($_COOKIE['admin_type'])) {
     require_once __DIR__ . '/../includes/auth_check.php';
-    $userType = decrypt($_COOKIE['user_type'], SECRET_KEY);
+    $userType = decrypt($_COOKIE['admin_type'], SECRET_KEY);
     if ($userType === 'admin') {
         header('Location: /Masu%20Ko%20Jhol%28full%29/admin/index.php');
         exit();
@@ -14,7 +14,7 @@ if (isset($_COOKIE['user_type'])) {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Login | Masu Ko Jhol</title>
+<title>Admin Login | Mero Bhoj</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 
@@ -331,7 +331,7 @@ html, body {
   <div class="logo-area">
     <div class="logo-row">
       <i class="fas fa-utensils"></i>
-      <span>Masu Ko Jhol</span>
+      <span>Mero Bhoj</span>
     </div>
     <div class="logo-sub">Admin Panel</div>
   </div>
@@ -383,7 +383,7 @@ html, body {
       Login to Dashboard
     </button>
 
-    <div class="footer-text">© 2026 Masu Ko Jhol | Admin Panel</div>
+    <div class="footer-text">© 2026 Mero Bhoj | Admin Panel</div>
   </form>
 </div>
 

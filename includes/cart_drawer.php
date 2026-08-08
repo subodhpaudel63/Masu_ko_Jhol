@@ -583,10 +583,10 @@ $drawerCount = count($drawerCart);
                   <div class="invalid-feedback">Please enter valid number.</div>
               </div>
               <div class="mkj-field">
-                  <label for="drawerEmail" class="mkj-order-label">Email (optional)</label>
+                  <label for="drawerEmail" class="mkj-order-label">Email *</label>
                   <div class="input-group">
                       <span class="input-group-text bg-white border-end-0"><i class="fa fa-envelope text-muted"></i></span>
-                      <input type="email" id="drawerEmail" name="email" class="form-control mkj-control border-start-0 ps-0" value="<?php echo htmlspecialchars($user['email'] ?? ''); ?>" placeholder="Enter your email">
+                      <input type="email" id="drawerEmail" name="email" class="form-control mkj-control border-start-0 ps-0" value="<?php echo htmlspecialchars($user['email'] ?? ''); ?>" placeholder="Enter your email" required>
                   </div>
               </div>
               <div class="mkj-field">
@@ -614,11 +614,11 @@ $drawerCount = count($drawerCart);
                       </label>
                   </div>
               </div>
-              <div class="mkj-field mkj-hidden" id="drawer_table_number_wrapper">
+                <div class="mkj-field" id="drawer_table_number_wrapper" style="display:none;" hidden>
                   <label for="drawerTableNumber" class="mkj-order-label">Table Number (for Dine In)</label>
                   <input type="text" id="drawerTableNumber" name="table_number" class="form-control mkj-control" placeholder="Enter table number">
               </div>
-              <div class="mkj-field">
+              <div class="mkj-field" id="drawer_address_wrapper">
                   <label for="drawerAddress" class="mkj-order-label">Delivery Address *</label>
                   <div class="input-group">
                       <span class="input-group-text bg-white border-end-0 align-items-start pt-2"><i class="fa fa-location-dot text-muted"></i></span>
@@ -714,3 +714,42 @@ $drawerCount = count($drawerCart);
   window.initialCartDrawerItems = <?php echo json_encode($drawerCart); ?>;
 </script>
 <script src="<?php echo asset('js/cart_drawer.js'); ?>"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const checkoutForm = document.getElementById('checkoutForm');
+    if (!checkoutForm) return;
+
+    const orderTypeRadios = checkoutForm.querySelectorAll('input[name="order_type"]');
+    const addressWrapper = document.getElementById('drawer_address_wrapper');
+    const addressField = document.getElementById('drawerAddress');
+    const tableWrapper = document.getElementById('drawer_table_number_wrapper');
+    const tableField = document.getElementById('drawerTableNumber');
+
+    function syncOrderTypeFields() {
+      const selected = checkoutForm.querySelector('input[name="order_type"]:checked')?.value || 'Delivery';
+      const isDelivery = selected === 'Delivery';
+      const isDineIn = selected === 'Dine In';
+
+      if (addressWrapper) {
+        addressWrapper.style.display = isDelivery ? '' : 'none';
+        addressWrapper.hidden = !isDelivery;
+      }
+      if (addressField) {
+        addressField.required = isDelivery;
+        if (!isDelivery) addressField.value = '';
+      }
+
+      if (tableWrapper) {
+        tableWrapper.style.display = isDineIn ? '' : 'none';
+        tableWrapper.hidden = !isDineIn;
+      }
+      if (tableField) {
+        tableField.required = isDineIn;
+        if (!isDineIn) tableField.value = '';
+      }
+    }
+
+    orderTypeRadios.forEach(radio => radio.addEventListener('change', syncOrderTypeFields));
+    syncOrderTypeFields();
+  });
+</script>
