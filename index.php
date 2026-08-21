@@ -299,7 +299,7 @@ if (isset($_GET['action'])) {
             <a class="text-decoration-none" id="searchBtnMobile" href="#">
               <i class="fa fa-search me-3 text-white"></i>
             </a>
-            <a class="text-decoration-none" id="shoppingbuttonMobile" href="./includes/cart.php">
+            <a class="text-decoration-none" id="shoppingbuttonMobile" href="../includes/cart.php">
               <i class="fa fa-shopping-bag me-3 text-white"></i>
             </a>
           </div>
@@ -380,7 +380,7 @@ if (isset($_GET['action'])) {
             </div>
             
             <div class="col-md-6 banner-img" data-aos="fade-left" data-aos-delay="3000">
-              <img class="img  mt-5 mt-lg-0" src="./assets/images/NangloSet.png" alt="">
+              <img class="img  mt-5 mt-lg-0" src="./assets/images/naglosetx.png" alt="">
             </div>
           </div>
         </div>
@@ -786,6 +786,16 @@ Want to explore that next?
                         </div>
                       </div>
                     </div>
+                    <div class="row mt-3">
+                      <div class="col-12 mb-3">
+                        <div class="input d-flex align-items-center">
+                          <i class="fa fa-chair py-2 px-3"></i>
+                          <select id="tableSelect" name="table_id" class="form-control bg-transparent border-0 px-3 text-white" required>
+                            <option value="" style="color: white; background-color: #212529;">Select a Date, Time, and People first</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
                     <div class="d-flex justify-content-center mt-4 pt-3">
                       <button type="submit" class="btn btn-dark px-5">Book Table</button>
                     </div>
@@ -800,6 +810,95 @@ Want to explore that next?
             <div class="col-lg-6 d-none d-md-block reservation-bg" data-aos="fade-left"></div>
           </div>
         </div>
+        
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('bookingForm');
+            if (!form) return;
+            
+            const dateInput = form.querySelector('input[name="date"]');
+            const timeInput = form.querySelector('input[name="time"]');
+            const peopleInput = form.querySelector('input[name="people"]');
+            const tableSelect = document.getElementById('tableSelect');
+            
+            function updateTables() {
+                const date = dateInput.value;
+                const time = timeInput.value;
+                const people = peopleInput.value;
+                
+                if (date && time && people > 0) {
+                    tableSelect.innerHTML = '<option value="" style="color: white; background-color: #212529;">Loading available tables...</option>';
+                    
+                    const formData = new FormData();
+                    formData.append('date', date);
+                    formData.append('time', time);
+                    formData.append('people', people);
+                    
+                    fetch('./includes/get_available_tables.php', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        tableSelect.innerHTML = '<option value="" style="color: white; background-color: #212529;">Select a Table</option>';
+                        if (data.success && data.tables.length > 0) {
+                            data.tables.forEach(table => {
+                                const option = document.createElement('option');
+                                option.value = table.id;
+                                option.textContent = `${table.name} - ${table.capacity} Seats`;
+                                option.style.color = 'white';
+                                option.style.backgroundColor = '#212529';
+                                tableSelect.appendChild(option);
+                            });
+                        } else if (data.success && data.tables.length === 0) {
+                            tableSelect.innerHTML = '<option value="" style="color: white; background-color: #212529;">No tables available for this time and group size</option>';
+                        } else {
+                            tableSelect.innerHTML = '<option value="" style="color: white; background-color: #212529;">Error loading tables</option>';
+                        }
+                    })
+                    .catch(err => {
+                        tableSelect.innerHTML = '<option value="" style="color: white; background-color: #212529;">Error loading tables</option>';
+                    });
+                } else {
+                    tableSelect.innerHTML = '<option value="" style="color: white; background-color: #212529;">Select a Date, Time, and People first</option>';
+                }
+            }
+            
+            dateInput.addEventListener('change', updateTables);
+            timeInput.addEventListener('change', updateTables);
+            peopleInput.addEventListener('change', updateTables);
+            peopleInput.addEventListener('keyup', updateTables);
+            
+            form.addEventListener('submit', function(e) {
+                // Phone validation: +977 or 977 followed by 96/97/98 + 8 digits
+                const phone = form.querySelector('input[name="phone"]').value.replace(/[\s\-]/g, '');
+                if (phone && !/^(\+?977)?9[6-8]\d{8}$/.test(phone)) {
+                    e.preventDefault();
+                    alert('Please enter a valid Nepal phone number (e.g., 98XXXXXXXX or +977-98XXXXXXXX).');
+                    return;
+                }
+                
+                // Opening hours validation
+                const time = timeInput.value;
+                if (time) {
+                    const hour = parseInt(time.split(':')[0], 10);
+                    if (hour < 7 || hour >= 23) {
+                        e.preventDefault();
+                        alert('We are open from 7:00 AM to 11:00 PM. Please choose a valid time.');
+                        return;
+                    }
+                }
+                
+                // Max people validation
+                const people = parseInt(peopleInput.value, 10);
+                if (people > 8) {
+                    e.preventDefault();
+                    alert('The maximum capacity for a single table is 8 people.');
+                    return;
+                }
+            });
+        });
+        </script>
       </section>
       <section class="our-services py-5 my-5">
         <div class="container">

@@ -67,13 +67,13 @@
               <div class="reservation-wrapper">
                 <h2>Open Hours</h2>
                 <div class="reservation-date-time">
-                  <p>Tuesday: .......................... 7AM - 9PM</p>
-                  <p>Wednesday: ..................... 7AM - 9PM</p>
-                  <p>Thursday: ......................... 7AM - 9PM</p>
-                  <p>Friday: ............................... 7AM - 9PM</p>
-                  <p>Saturday: ........................... 7AM - 9PM</p>
-                  <p>Sunday: ............................. Closed</p>
-                  <p>Monday: ............................. 7AM- 10pm</p>
+                  <p>Tuesday: .......................... 7AM - 11PM</p>
+                  <p>Wednesday: ..................... 7AM - 11PM</p>
+                  <p>Thursday: ......................... 7AM - 11PM</p>
+                  <p>Friday: ............................... 7AM - 11PM</p>
+                  <p>Saturday: ........................... 7AM - 11PM</p>
+                  <p>Sunday: ............................. 7AM - 11PM</p>
+                  <p>Monday: ............................. 7AM- 11PM</p>
                 </div>
                 <h2 class="pb-2">Reservation Numbers</h2>
                 <h3>9748759699</h3>

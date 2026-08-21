@@ -126,9 +126,9 @@ try {
 
     $_SESSION['msg'] = ['type' => 'success', 'text' => 'Signed in with Google successfully!'];
 
-    $redirect = '/Mero Bhoj(full)/client/index.php';
+    $redirect = '/Masu%20Ko%20Jhol(full)/client/index.php';
     if ($user['user_type'] === 'admin') {
-        $redirect = '/Mero Bhoj(full)/admin/index.php';
+        $redirect = '/Masu%20Ko%20Jhol(full)/admin/index.php';
     }
 
     echo json_encode([

@@ -216,6 +216,7 @@ foreach($users as $user) {
   </style>
 </head>
 <body>
+  
    <div class="container">
       <aside>
            
@@ -286,6 +287,8 @@ foreach($users as $user) {
       <!-- --------------
         start main part
       --------------- -->
+      
+
 
       <main>
            <div class="users-page-header">

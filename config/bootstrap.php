@@ -8,12 +8,21 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// ── Restaurant Settings ──────────────────────────────────────────────────────
+date_default_timezone_set('Asia/Kathmandu');
+define('RESTAURANT_TIMEZONE', 'Asia/Kathmandu');
+define('RESTAURANT_OPEN_HOUR', 7);    // 7:00 AM
+define('RESTAURANT_CLOSE_HOUR', 23);  // 11:00 PM
+define('NO_SHOW_GRACE_MINUTES', 20);
+define('BOOKING_STATUSES', ['Pending', 'Confirmed', 'Checked-in', 'Completed', 'Cancelled', 'No-show']);
+
+// ── Site Paths ───────────────────────────────────────────────────────────────
 define('SITE_ROOT', str_replace('\\', '/', realpath(__DIR__ . '/..')));
 define('BASE_URL', '/Masu Ko Jhol(full)');
 
 // TODO: Replace with your actual Google OAuth Client ID from
 // https://console.cloud.google.com/apis/credentials
-define('GOOGLE_CLIENT_ID', 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com');
+define('GOOGLE_CLIENT_ID', '509413212738-dtagt4qc4cbj5c4v9aabar78jrl3h3o4.apps.googleusercontent.com');
 
 // Show GIS fallback button when client ID is not configured
 define('GOOGLE_USE_FALLBACK', GOOGLE_CLIENT_ID === 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com');

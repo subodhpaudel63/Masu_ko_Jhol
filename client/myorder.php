@@ -136,6 +136,16 @@ if (isset($_COOKIE['user_img'])) {
             padding-top: 80px;
           }
         }
+
+        /* Booking specific styles */
+        .status-pending { background: #fef3c7; color: #d97706; }
+        .status-checked-in { background: #e0f2fe; color: #0284c7; }
+        .status-no-show { background: #f3f4f6; color: #4b5563; }
+        
+        .grace-timer { font-size: 13px; font-weight: 500; }
+        .grace-warning { color: #d97706; }
+        .grace-danger { color: #dc2626; }
+        .grace-expired { color: #ef4444; font-weight: bold; }
     </style>
     <script>
         const POLL_MS = 3000; // Poll every 3 seconds for faster updates
@@ -367,23 +377,57 @@ if (isset($_COOKIE['user_img'])) {
 
     <main class="container py-5 main-content">
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h2 class="mb-0">My Orders</h2>
+            <h2 class="mb-0">My Orders & Bookings</h2>
             <a href="./menu.php" class="btn btn-outline-secondary">Back to Menu</a>
         </div>
-        <div class="table-responsive bg-light p-3 rounded shadow-sm">
-            <table class="table align-middle">
-                <thead>
-                    <tr>
-                        <th>Order #</th>
-                        <th>Purchased Items</th>
-                        <th>Total Amount</th>
-                        <th>Status & Date</th>
-                    </tr>
-                </thead>
-                <tbody id="orders-body">
-                    <tr><td colspan="4" class="text-center text-muted">Loading orders...</td></tr>
-                </tbody>
-            </table>
+        
+        <ul class="nav nav-tabs mb-4" id="myTab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active fw-bold" id="food-tab" data-bs-toggle="tab" data-bs-target="#food" type="button" role="tab" aria-controls="food" aria-selected="true">Food Orders</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link fw-bold" id="bookings-tab" data-bs-toggle="tab" data-bs-target="#bookings" type="button" role="tab" aria-controls="bookings" aria-selected="false">Table Bookings</button>
+          </li>
+        </ul>
+        
+        <div class="tab-content" id="myTabContent">
+          <!-- Food Orders Tab -->
+          <div class="tab-pane fade show active" id="food" role="tabpanel" aria-labelledby="food-tab">
+            <div class="table-responsive bg-light p-3 rounded shadow-sm">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Order #</th>
+                            <th>Purchased Items</th>
+                            <th>Total Amount</th>
+                            <th>Status & Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orders-body">
+                        <tr><td colspan="4" class="text-center text-muted">Loading orders...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+          </div>
+          
+          <!-- Table Bookings Tab -->
+          <div class="tab-pane fade" id="bookings" role="tabpanel" aria-labelledby="bookings-tab">
+            <div class="table-responsive bg-light p-3 rounded shadow-sm">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Table Info</th>
+                            <th>Date & Time</th>
+                            <th>People</th>
+                            <th>Status & Timer</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bookings-body">
+                        <tr><td colspan="4" class="text-center text-muted">Loading bookings...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+          </div>
         </div>
     </main>
     <?php include_once __DIR__ . '/../includes/cart_drawer.php'; ?>
@@ -400,9 +444,118 @@ if (isset($_COOKIE['user_img'])) {
     <script src="<?php echo asset('js/script.js'); ?>"></script>
     <script src="<?php echo asset('js/toast_notifications.js'); ?>"></script>
     <script>
+        let serverNow = "";
+        let clientTimeOffset = 0;
+        
+        function initTimeOffset(serverTimeStr) {
+            if (!serverTimeStr) return;
+            const serverTime = new Date(serverTimeStr.replace(' ', 'T'));
+            const clientTime = new Date();
+            clientTimeOffset = serverTime.getTime() - clientTime.getTime();
+        }
+
+        function getServerTime() {
+            return new Date(new Date().getTime() + clientTimeOffset);
+        }
+
+        async function fetchBookings() {
+            try {
+                const res = await fetch('../includes/bookings_fetch.php');
+                const data = await res.json();
+                
+                if (!data.ok) {
+                    document.getElementById('bookings-body').innerHTML = `<tr><td colspan="4" class="text-center text-muted">Please login to view your bookings.</td></tr>`;
+                    return;
+                }
+                
+                if (data.server_now) {
+                    initTimeOffset(data.server_now);
+                }
+                
+                const tbody = document.getElementById('bookings-body');
+                if (!data.bookings || data.bookings.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">No table bookings found.</td></tr>`;
+                    return;
+                }
+                
+                tbody.innerHTML = data.bookings.map(b => {
+                    const statusClass = `status-${b.status.toLowerCase()}`;
+                    let timerHtml = `<span class="text-muted">-</span>`;
+                    
+                    if (b.status === 'Confirmed' && b.grace_end_at) {
+                        timerHtml = `<div class="countdown-container" data-grace-end="${b.grace_end_at}">--:--</div>`;
+                    }
+                    
+                    return `
+                    <tr>
+                        <td>
+                            <strong style="color: #0d47a1;">${b.table_name}</strong><br>
+                            <small class="text-muted">Capacity: ${b.capacity}</small>
+                        </td>
+                        <td>
+                            <strong>${b.formatted_date}</strong><br>
+                            <span class="text-muted">${b.formatted_time}</span>
+                        </td>
+                        <td style="font-weight: 700;">${b.people}</td>
+                        <td>
+                            <div class="status-container">
+                                <span class="status-badge ${statusClass}">${b.status}</span>
+                                <div style="margin-top: 5px;">${timerHtml}</div>
+                            </div>
+                        </td>
+                    </tr>
+                    `;
+                }).join('');
+                
+            } catch (e) {
+                console.error(e);
+            }
+        }
+        
+        function updateCountdowns() {
+            const containers = document.querySelectorAll('.countdown-container');
+            if (containers.length === 0) return;
+            
+            const now = getServerTime();
+
+            containers.forEach(container => {
+                const graceEndStr = container.getAttribute('data-grace-end');
+                if (!graceEndStr) return;
+                
+                const graceEnd = new Date(graceEndStr.replace(' ', 'T'));
+                // Assume booking time is grace_end - 20 mins
+                const bookingTime = new Date(graceEnd.getTime() - (20 * 60 * 1000));
+
+                if (now < bookingTime) {
+                    container.innerHTML = `<span style="color:#6b7280;font-size:12px;">Starts at ${bookingTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>`;
+                } else if (now >= graceEnd) {
+                    container.innerHTML = '<span class="grace-expired">Grace period expired</span>';
+                } else {
+                    const diff = graceEnd - now;
+                    const mins = Math.floor(diff / 60000);
+                    const secs = Math.floor((diff % 60000) / 1000);
+                    const timeStr = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                    
+                    let colorClass = 'grace-timer';
+                    if (mins < 5) colorClass += ' grace-danger';
+                    else if (mins < 10) colorClass += ' grace-warning';
+                    else colorClass += ' grace-timer';
+
+                    container.innerHTML = `<div style="font-size:11px;color:#d97706;">⚠️ Booking started</div><div class="${colorClass}">⏳ ${timeStr} left</div>`;
+                }
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             fetchOrders();
-            setInterval(fetchOrders, POLL_MS);
+            fetchBookings();
+            setInterval(() => {
+                fetchOrders();
+                fetchBookings();
+            }, POLL_MS);
+            
+            setInterval(updateCountdowns, 1000);
+            
             <?php if (isset($_SESSION['msg'])): $m = $_SESSION['msg']; unset($_SESSION['msg']); ?>
               window.MKJ_SESSION_MSG = {
                 type: '<?php echo $m['type']; ?>',

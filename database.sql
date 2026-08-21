@@ -1,5 +1,3 @@
-
-
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
@@ -76,7 +74,7 @@ INSERT INTO `menu` (`menu_id`, `menu_name`, `menu_description`, `menu_price`, `m
 
 CREATE TABLE `orders` (
   `order_id` int(11) NOT NULL,
-  `order_number` varchar(50) DEFAULT NULL,
+  `group_id` int(11) DEFAULT NULL,
   `menu_id` int(11) NOT NULL,
   `email` varchar(255) NOT NULL,
   `menu_name` varchar(255) NOT NULL,
@@ -92,10 +90,33 @@ CREATE TABLE `orders` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
+-- Table structure for table `order_groups`
+--
+
+CREATE TABLE `order_groups` (
+  `group_id` int(11) NOT NULL,--new
+  `email` varchar(255) NOT NULL,
+  `mobile` varchar(15) NOT NULL,
+  `address` text NOT NULL,
+  `total_amount` int(10) NOT NULL,
+  `item_count` int(11) NOT NULL,
+  `status` enum('Confirmed','Shipping','Ongoing','Delivering') NOT NULL DEFAULT 'Confirmed',
+  `order_time` timestamp NOT NULL DEFAULT current_timestamp(),
+  `order_date` date NOT NULL DEFAULT curdate(),
+  `created_at` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
 -- Dumping data for table `orders`
 --
 
-------------
+---------------
+
+--
+-- Migration: assign legacy orders their own group so they appear in admin
+--
+
+UPDATE orders SET group_id = order_id WHERE group_id IS NULL;
 
 --
 -- Table structure for table `users`
@@ -107,8 +128,7 @@ CREATE TABLE `users` (
   `password` varchar(255) NOT NULL,
   `user_type` enum('user','admin') NOT NULL DEFAULT 'user',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `user_img` varchar(255) NOT NULL DEFAULT '../assets/img/usersprofiles/profilepic.jpg',
-  `google_id` varchar(255) DEFAULT NULL
+  `user_img` varchar(255) NOT NULL DEFAULT '../assets/img/usersprofiles/profilepic.jpg'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -135,7 +155,6 @@ ALTER TABLE `bookings`
 ALTER TABLE `feedback`
   ADD PRIMARY KEY (`feedback_id`);
 
---
 -- 
 
 --
@@ -148,7 +167,14 @@ ALTER TABLE `menu`
 -- Indexes for table `orders`
 --
 ALTER TABLE `orders`
-  ADD PRIMARY KEY (`order_id`);
+  ADD PRIMARY KEY (`order_id`),
+  ADD KEY `group_id` (`group_id`);
+
+--
+-- Indexes for table `order_groups`
+--
+ALTER TABLE `order_groups`
+  ADD PRIMARY KEY (`group_id`);
 
 --
 -- Indexes for table `users`
@@ -188,13 +214,14 @@ ALTER TABLE `orders`
   MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
+-- AUTO_INCREMENT for table `order_groups`
+--
+ALTER TABLE `order_groups`
+  MODIFY `group_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+--
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
-
-ALTER TABLE `users`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `email` (`email`),
-  ADD UNIQUE KEY `google_id` (`google_id`);
 COMMIT;
